@@ -4,7 +4,9 @@ export default function Home() {
   return (
     <div className="">
       <main className="w-full">
-        <Hero />
+        <div className="">
+          <Hero />
+        </div>
 
         {/* Example sections — add your content later */}
         <section className="py-16 px-6 text-center">
