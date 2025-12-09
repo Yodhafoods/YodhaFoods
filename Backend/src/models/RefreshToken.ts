@@ -28,4 +28,5 @@ const RefreshToken = mongoose.model<IRefreshToken>(
   refreshTokenSchema
 );
 
+
 export default RefreshToken;

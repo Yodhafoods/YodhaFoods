@@ -64,6 +64,7 @@ app.use("/api/auth", authLimiter);
 /* ----------------------------------------------------
     7. Routes
 ---------------------------------------------------- */
+
 app.use("/api/auth", authRoutes);
 
 app.get("/", (req, res) => res.send("Backend is running 🚀"));

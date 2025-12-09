@@ -18,4 +18,15 @@ router.post("/refresh", refreshTokenController);
 router.post("/logout", logoutController);
 router.get("/me", requireAuth, meController);
 
+// Forgot password
+// router.post("/forgot-password", [body("email").isEmail()], handleValidationErrors, forgotPasswordController);
+
+// Reset password
+// router.post(
+//   "/reset-password",
+//   [body("id").isString(), body("token").isString(), body("newPassword").isLength({ min: 6 })],
+//   handleValidationErrors,
+//   resetPasswordController
+// );
+
 export default router;

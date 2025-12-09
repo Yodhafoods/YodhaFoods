@@ -7,6 +7,7 @@ export interface IUser extends Document {
   email: string;
   password: string;
   role: UserRole;
+
 }
 
 const userSchema = new Schema<IUser>(
@@ -14,14 +15,25 @@ const userSchema = new Schema<IUser>(
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
+
     role: {
       type: String,
       enum: ["user", "admin"],
       default: "user",
     },
+   
   },
   { timestamps: true }
 );
 
+// remove password when returning user
+userSchema.methods.toJSON = function () {
+  const obj = this.toObject();
+  delete obj.password;
+  return obj;
+};
+
 const User = mongoose.model<IUser>("User", userSchema);
 export default User;
+
+
