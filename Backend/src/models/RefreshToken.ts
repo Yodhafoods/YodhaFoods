@@ -3,7 +3,7 @@ import mongoose, { Document, Schema } from "mongoose";
 
 export interface IRefreshToken extends Document {
   userId: mongoose.Types.ObjectId;
-  tokenHash: string;      // hashed refresh token
+  tokenHash: string;
   expiresAt: Date;
   createdAt: Date;
 }
@@ -17,7 +17,6 @@ const refreshTokenSchema = new Schema<IRefreshToken>(
   { timestamps: true }
 );
 
-// Index to auto-delete expired tokens (optional, if TTL desired)
 refreshTokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 export default mongoose.model<IRefreshToken>("RefreshToken", refreshTokenSchema);

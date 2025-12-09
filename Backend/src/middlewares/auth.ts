@@ -9,7 +9,6 @@ export interface AuthRequest extends Request {
   userId?: string;
 }
 
-/** Attach userId to request when valid */
 export const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const header = req.headers.authorization;
