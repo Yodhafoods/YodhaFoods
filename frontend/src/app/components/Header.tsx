@@ -1,157 +1,190 @@
 "use client";
 
-import Link from "next/link";
-import Image from "next/image";
-import { usePathname } from "next/navigation";
-import { ShoppingCart, User, Menu, X, Search } from "lucide-react";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-
-import SearchDialog from "./SearchDialog";
+import { motion } from "framer-motion";
+import { FaUser, FaWhatsapp } from "react-icons/fa";
+import { Menu } from "lucide-react";
+import Image from "next/image";
+import { TiShoppingCart } from "react-icons/ti";
+import Link from "next/link";
 import CartDrawer, { CartItem } from "./CartDrawer";
 import MobileMenuDrawer from "./MobileMenuDrawer";
 
+interface StoryItem {
+  label: string;
+  img: string;
+  target: string;
+  highlight?: boolean;
+}
+
+const stories: StoryItem[] = [
+  { label: "Home", img: "/assets/images/Story/home.png", target: "home" },
+  { label: "Shop", img: "/assets/images/Story/shop.png", target: "shop" },
+  {
+    label: "Instant",
+    img: "/assets/images/Story/instant.jpg",
+    target: "instant",
+    highlight: true,
+  },
+  {
+    label: "Kitchen",
+    img: "/assets/images/Story/kitchen.png",
+    target: "kitchen",
+  },
+  {
+    label: "Journey",
+    img: "/assets/images/Story/journey.png",
+    target: "journey",
+  },
+];
+
 export default function Header() {
-  const pathname = usePathname();
-  const [openMenu, setOpenMenu] = useState(false);
-  const [openSearch, setOpenSearch] = useState(false);
+  const [openDrawer, setOpenDrawer] = useState(false);
   const [openCart, setOpenCart] = useState(false);
 
-  // Mock cart data
-  const cartItems: CartItem[] = [
-    {
-      id: "1",
-      name: "Turmeric Powder",
-      price: 120,
-      qty: 1,
-      image: "/assets/images/sample-product.jpg",
-    },
-    {
-      id: "2",
-      name: "Cumin Seeds",
-      price: 80,
-      qty: 2,
-      image: "/assets/images/sample-product.jpg",
-    },
-  ];
+  // TEMP CART DATA — Replace later with global cart store
+  const [cartItems, setCartItems] = useState<CartItem[]>([
+    // Example item (remove later)
+    // {
+    //   id: "1",
+    //   name: "Tomato Powder",
+    //   qty: 2,
+    //   price: 199,
+    //   image: "/assets/images/products/tomato.jpg",
+    // },
+  ]);
+
+  const scrollTo = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth" });
+  };
 
   const cartCount = cartItems.length;
-
-  const navItems = [
-    { name: "Home", href: "/" },
-    { name: "All Products", href: "/products" },
-    { name: "Combos", href: "/combos" },
-    { name: "About Us", href: "/about-us" },
-    { name: "Blogs", href: "/blogs" },
-  ];
 
   return (
     <>
       {/* HEADER */}
-      <header className="w-full shadow-sm bg-white sticky top-0 z-50 text-black">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          {/* LEFT: Logo */}
-          <Link href="/" className="flex items-center gap-2">
-            <Image
-              src="/assets/images/logo.png"
-              alt="Logo"
-              width={40}
-              height={40}
-            />
-            <span className="font-bold text-xl text-gray-800">Yodha Foods</span>
-          </Link>
-
-          {/* RIGHT (SMALL SCREENS): Menu + Search + Cart */}
-          <div className="flex md:hidden items-center gap-5">
-            {/* Search */}
-            <button
-              onClick={() => setOpenSearch(true)}
-              className="text-gray-700 hover:text-green-600"
-            >
-              <Search size={24} />
-            </button>
-
-            {/* Cart */}
-            <button
-              onClick={() => setOpenCart(true)}
-              className="relative hover:text-green-600"
-            >
-              <ShoppingCart size={24} />
-              {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-green-600 text-white text-xs rounded-full px-1 py-0.5">
-                  {cartCount}
-                </span>
-              )}
-            </button>
-
-            {/* Menu Button */}
-            <button
-              onClick={() => setOpenMenu(true)}
-              className="text-gray-700 hover:text-green-600"
-            >
-              <Menu size={28} />
-            </button>
+      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-black/5 py-4">
+        <div className="max-w-[1440px] mx-auto px-4 flex items-center justify-between">
+          {/* LOGO */}
+          <div className="text-3xl font-black text-orange-600 tracking-tight">
+            Yodha.
           </div>
 
-          {/* DESKTOP NAV */}
-          <div className="hidden md:flex items-center gap-10 flex-1">
-            {/* Center Nav */}
-            <nav className="flex gap-8 mx-auto text-md font-medium">
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`hover:text-green-600 ${
-                    pathname === item.href
-                      ? "text-green-600 font-semibold"
-                      : "text-black"
+          {/* STORY BAR — DESKTOP */}
+          <div className="hidden md:flex items-center gap-6">
+            {/* WhatsApp Story */}
+            <motion.div
+              whileHover={{ rotate: [0, 2, -2, 0] }}
+              className="flex flex-col items-center gap-1 cursor-pointer mr-2"
+              onClick={() => window.open("https://wa.me/9705883899", "_blank")}
+            >
+              <motion.div
+                animate={{
+                  boxShadow: [
+                    "0 0 0 0 rgba(37,211,102,0.7)",
+                    "0 0 0 15px rgba(37,211,102,0)",
+                  ],
+                }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="w-[70px] h-[70px] rounded-full border-4 border-[#25D366] bg-white flex items-center justify-center"
+              >
+                <FaWhatsapp size={34} className="text-[#25D366]" />
+              </motion.div>
+              <span className="text-[11px] font-extrabold text-[#25D366] text-center leading-tight">
+                Order via <br /> WhatsApp
+              </span>
+            </motion.div>
+
+            {/* Other Stories */}
+            {stories.map((item, i) => (
+              <div
+                key={i}
+                className="flex flex-col items-center gap-1 cursor-pointer opacity-90 hover:opacity-100 hover:-translate-y-1 transition"
+                onClick={() => scrollTo(item.target)}
+              >
+                <div
+                  className={`w-[65px] h-[65px] rounded-full p-[3px]
+                  ${
+                    item.highlight
+                      ? "bg-gradient-to-br from-orange-500 to-orange-300"
+                      : "bg-gradient-to-br from-pink-400 via-red-400 to-purple-600"
                   }`}
                 >
-                  {item.name}
-                </Link>
-              ))}
-            </nav>
-
-            {/* Right Icons */}
-            <div className="flex items-center gap-6">
-              <button
-                onClick={() => setOpenSearch(true)}
-                className="hover:text-green-600 cursor-pointer"
-              >
-                <Search size={22} />
-              </button>
-
-              <button
-                onClick={() => setOpenCart(true)}
-                className="relative hover:text-green-600 cursor-pointer"
-              >
-                <ShoppingCart size={22} />
-                {cartCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-green-600 text-white text-xs rounded-full px-1.5 py-0.5">
-                    {cartCount}
-                  </span>
-                )}
-              </button>
-
-              <Link href="/profile" className="hover:text-green-600">
-                <User size={22} />
-              </Link>
-            </div>
+                  <Image
+                    src={item.img}
+                    width={65}
+                    height={65}
+                    alt={item.label}
+                    className="rounded-full border-2 border-white object-cover"
+                  />
+                </div>
+                <span className="text-sm font-semibold">{item.label}</span>
+              </div>
+            ))}
           </div>
+
+          {/* RIGHT — DESKTOP */}
+          <div className="hidden md:flex gap-4 items-center">
+            <button
+              className="flex items-center gap-1 cursor-pointer hover:-translate-y-1 transition-all duration-100"
+              onClick={() => setOpenCart(true)}
+            >
+              <TiShoppingCart size={30} /> <span>{cartCount}</span>
+            </button>
+
+            <Link
+              href="/auth/signin"
+              className="cursor-pointer hover:-translate-y-1 transition-all duration-100"
+            >
+              <FaUser size={22} />
+            </Link>
+          </div>
+
+          {/* MOBILE RIGHT: CART + MENU */}
+          <div className="flex md:hidden items-center gap-4">
+            <button onClick={() => setOpenCart(true)}>
+              <TiShoppingCart size={30} />
+            </button>
+
+            <button onClick={() => setOpenDrawer(true)}>
+              <Menu size={30} />
+            </button>
+          </div>
+        </div>
+
+        {/* MOBILE STORY SCROLLER */}
+        <div className="md:hidden mt-3 px-4 pb-2 overflow-x-auto flex gap-4 no-scrollbar">
+          {stories.map((item, i) => (
+            <div
+              key={i}
+              onClick={() => scrollTo(item.target)}
+              className="flex-shrink-0 flex flex-col items-center cursor-pointer"
+            >
+              <div
+                className={`w-[60px] h-[60px] rounded-full p-[3px]
+                ${
+                  item.highlight
+                    ? "bg-gradient-to-br from-orange-500 to-orange-300"
+                    : "bg-gradient-to-br from-pink-400 via-red-400 to-purple-600"
+                }`}
+              >
+                <Image
+                  src={item.img}
+                  width={60}
+                  height={60}
+                  alt={item.label}
+                  className="rounded-full border-2 border-white object-cover"
+                />
+              </div>
+              <span className="text-xs font-semibold mt-1">{item.label}</span>
+            </div>
+          ))}
         </div>
       </header>
 
-      {/* MOBILE MENU DRAWER */}
-      <MobileMenuDrawer
-        open={openMenu}
-        onClose={() => setOpenMenu(false)}
-        navItems={navItems}
-      />
-
-      {/* Search Dialog */}
-      <SearchDialog open={openSearch} onClose={() => setOpenSearch(false)} />
-
-      {/* Cart Drawer */}
+      {/* DRAWERS */}
+      <MobileMenuDrawer open={openDrawer} setOpen={setOpenDrawer} />
       <CartDrawer
         open={openCart}
         onClose={() => setOpenCart(false)}
