@@ -1,17 +1,21 @@
-// src/routes/auth.routes.ts
 import { Router } from "express";
 import {
-  registerUser,
   loginUser,
+  registerUser,
   refreshTokenController,
-  logoutController
-} from "../controllers/auth.controller";
+  logoutController,
+  meController,
+} from "../controllers/auth.controller.js";
+import { registerSchema, loginSchema } from "../schemas/auth.schema.js";
+import { validate } from "../middlewares/validate.js";
+import { requireAuth } from "../middlewares/auth.js";
 
 const router = Router();
 
-router.post("/register", registerUser);
-router.post("/login", loginUser);
+router.post("/register", validate(registerSchema), registerUser);
+router.post("/login", validate(loginSchema), loginUser);
 router.post("/refresh", refreshTokenController);
 router.post("/logout", logoutController);
+router.get("/me", requireAuth, meController);
 
 export default router;

@@ -1,23 +1,31 @@
-// src/models/RefreshToken.ts
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
 
 export interface IRefreshToken extends Document {
-  userId: mongoose.Types.ObjectId;
-  tokenHash: string;      // hashed refresh token
+  user: mongoose.Types.ObjectId;
+  tokenHash: string;
   expiresAt: Date;
-  createdAt: Date;
+  revoked: boolean;
+  replacedByToken?: string;
 }
 
 const refreshTokenSchema = new Schema<IRefreshToken>(
   {
-    userId: { type: Schema.Types.ObjectId, required: true, ref: "User" },
+    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+
     tokenHash: { type: String, required: true },
-    expiresAt: { type: Date, required: true }
+
+    expiresAt: { type: Date, required: true },
+
+    revoked: { type: Boolean, default: false },
+
+    replacedByToken: { type: String },
   },
   { timestamps: true }
 );
 
-// Index to auto-delete expired tokens (optional, if TTL desired)
-refreshTokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+const RefreshToken = mongoose.model<IRefreshToken>(
+  "RefreshToken",
+  refreshTokenSchema
+);
 
-export default mongoose.model<IRefreshToken>("RefreshToken", refreshTokenSchema);
+export default RefreshToken;

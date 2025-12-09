@@ -1,28 +1,43 @@
-// src/middlewares/auth.ts
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import type { UserRole } from "../models/User.js";
 
-const JWT_SECRET = process.env.JWT_SECRET as string;
-if (!JWT_SECRET) throw new Error("Missing JWT_SECRET");
+const ACCESS_SECRET = process.env.JWT_ACCESS_SECRET!;
 
-export interface AuthRequest extends Request {
-  userId?: string;
+interface DecodedToken {
+  sub: string;
+  role: UserRole;
+  iat: number;
+  exp: number;
 }
 
-/** Attach userId to request when valid */
-export const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => {
+export const requireAuth = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const token = req.cookies?.at; // access token cookie name: "at"
+  if (!token) {
+    return res.status(401).json({ message: "Not authenticated" });
+  }
+
   try {
-    const header = req.headers.authorization;
-    if (!header) return res.status(401).json({ message: "Authorization header missing" });
-
-    const [scheme, token] = header.split(" ");
-    if (scheme !== "Bearer" || !token) return res.status(401).json({ message: "Invalid auth format" });
-
-    const payload = jwt.verify(token, JWT_SECRET) as { id: string };
-    req.userId = payload.id;
+    const decoded = jwt.verify(token, ACCESS_SECRET) as DecodedToken;
+    req.user = { id: decoded.sub, role: decoded.role };
     next();
-  } catch (err) {
-    console.error("Auth middleware error:", err);
+  } catch {
     return res.status(401).json({ message: "Invalid or expired token" });
   }
+};
+
+export const requireAdmin = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  if (!req.user) return res.status(401).json({ message: "Not authenticated" });
+  if (req.user.role !== "admin") {
+    return res.status(403).json({ message: "Admin access only" });
+  }
+  next();
 };

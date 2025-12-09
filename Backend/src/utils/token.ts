@@ -1,68 +1,82 @@
-// src/utils/token.ts
 import jwt from "jsonwebtoken";
-import { randomBytes, createHash } from "crypto";
-import RefreshTokenModel from "../models/RefreshToken";
+import bcrypt from "bcryptjs";
+import RefreshToken from "../models/RefreshToken.js";
+import type { UserRole } from "../models/User.js";
 import mongoose from "mongoose";
 
-const ACCESS_TOKEN_TTL = "15m"; // adjust as needed
-const REFRESH_TOKEN_TTL_SECONDS = 7 * 24 * 3600; // 7 days
+const ACCESS_SECRET = process.env.JWT_ACCESS_SECRET!;
+const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET!;
+const ACCESS_EXPIRES_IN = "15m";
+const REFRESH_EXPIRES_IN = "7d";
 
-const JWT_SECRET = process.env.JWT_SECRET as string;
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET as string;
-
-if (!JWT_SECRET || !JWT_REFRESH_SECRET) {
-  throw new Error("Missing JWT secrets in env");
+interface JWTPayload {
+  sub: string;
+  role: UserRole;
 }
 
-/** Create access token (short lived) */
-export function createAccessToken(userId: string | mongoose.Types.ObjectId) {
-  return jwt.sign({ id: userId }, JWT_SECRET, { expiresIn: ACCESS_TOKEN_TTL });
-}
+export const createAccessToken = (userId: string, role: UserRole) => {
+  const payload: JWTPayload = { sub: userId, role };
+  return jwt.sign(payload, ACCESS_SECRET, { expiresIn: ACCESS_EXPIRES_IN });
+};
 
-/** Create refresh token as a signed JWT (long lived) */
-export function createRefreshToken(userId: string | mongoose.Types.ObjectId) {
-  return jwt.sign({ id: userId }, JWT_REFRESH_SECRET, { expiresIn: `${REFRESH_TOKEN_TTL_SECONDS}s` });
-}
+export const createRefreshToken = (userId: string) => {
+  return jwt.sign({ sub: userId }, REFRESH_SECRET, {
+    expiresIn: REFRESH_EXPIRES_IN,
+  });
+};
 
-/** Hash a token (useful to store refresh tokens securely) */
-export function hashToken(token: string) {
-  return createHash("sha256").update(token).digest("hex");
-}
+export const verifyRefreshToken = (token: string): string => {
+  const decoded = jwt.verify(token, REFRESH_SECRET) as jwt.JwtPayload;
+  return decoded.sub as string;
+};
 
-/** Persist the hashed refresh token in DB (with expiresAt) */
-export async function saveRefreshToken(userId: string | mongoose.Types.ObjectId, refreshToken: string) {
-  const tokenHash = hashToken(refreshToken);
-  const expiresAt = new Date(Date.now() + REFRESH_TOKEN_TTL_SECONDS * 1000);
+export const hashToken = async (token: string): Promise<string> => {
+  return bcrypt.hash(token, 12);
+};
 
-  // Optionally: delete old tokens for this user to enforce single session
-  await RefreshTokenModel.deleteMany({ userId });
+export const saveRefreshToken = async (
+  userId: string,
+  refreshToken: string
+) => {
+  const tokenHash = await hashToken(refreshToken);
+  const decoded = jwt.decode(refreshToken) as jwt.JwtPayload;
+  const expiresAt = decoded.exp
+    ? new Date(decoded.exp * 1000)
+    : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
-  const doc = await RefreshTokenModel.create({
-    userId,
+  return RefreshToken.create({
+    user: new mongoose.Types.ObjectId(userId),
     tokenHash,
-    expiresAt
+    expiresAt,
+  });
+};
+
+export const revokeRefreshToken = async (refreshToken: string) => {
+  const tokens = await RefreshToken.find();
+  for (const doc of tokens) {
+    const match = await bcrypt.compare(refreshToken, doc.tokenHash);
+    if (match) {
+      doc.revoked = true;
+      await doc.save();
+      break;
+    }
+  }
+};
+
+export const isRefreshTokenValid = async (
+  userId: string,
+  refreshToken: string
+): Promise<boolean> => {
+  const tokens = await RefreshToken.find({
+    user: userId,
+    revoked: false,
   });
 
-  return doc;
-}
-
-/** Verify refresh token: check signature + ensure hash exists in DB */
-export async function verifyRefreshToken(token: string) {
-  try {
-    const payload = jwt.verify(token, JWT_REFRESH_SECRET) as { id: string; iat?: number; exp?: number };
-    const tokenHash = hashToken(token);
-
-    const stored = await RefreshTokenModel.findOne({ userId: payload.id, tokenHash });
-    if (!stored) throw new Error("Refresh token not found or revoked");
-
-    return payload.id;
-  } catch (err) {
-    throw err;
+  for (const tokenDoc of tokens) {
+    const isMatch = await bcrypt.compare(refreshToken, tokenDoc.tokenHash);
+    if (isMatch && tokenDoc.expiresAt > new Date()) {
+      return true;
+    }
   }
-}
-
-/** Revoke refresh token (by hash) */
-export async function revokeRefreshToken(token: string) {
-  const tokenHash = hashToken(token);
-  await RefreshTokenModel.deleteOne({ tokenHash });
-}
+  return false;
+};
