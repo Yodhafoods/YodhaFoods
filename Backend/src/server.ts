@@ -1,7 +1,7 @@
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 
 dotenv.config();
-
+// import "dotenv/config";
 import app from "./app.js"; // for build output
 import { connectDB } from "./config/db.js";
 

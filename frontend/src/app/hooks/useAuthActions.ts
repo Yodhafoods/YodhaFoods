@@ -38,7 +38,7 @@ export function useAuthActions() {
       );
 
       toast.success("Signup successful! Redirecting...");
-      router.push("/auth/signin");
+      router.push("/auth/verify-email-info");
       return true;
     } catch (err) {
       if (err instanceof FetchError) {
@@ -60,7 +60,7 @@ export function useAuthActions() {
 
       toast.success("Signed in successfully!");
       await refreshUser();
-      router.push("/profile");
+      router.push("/");
       return true;
     } catch (err) {
       if (err instanceof FetchError) {

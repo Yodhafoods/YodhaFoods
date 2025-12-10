@@ -21,7 +21,7 @@ export default function ProductGrid({
   products,
 }: ProductGridProps) {
   return (
-    <section className="mt-20">
+    <section id="shop" className="mt-20">
       {/* Header */}
       <div className="flex justify-between items-start border-b-2 border-gray-300 pb-4 mb-10">
         <div>
