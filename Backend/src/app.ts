@@ -11,7 +11,11 @@ import categoryRoutes from "./routes/category.routes.js";
 
 
 
+import passport from "./config/passport.js";
+
 const app = express();
+
+app.use(passport.initialize());
 
 /* ----------------------------------------------------
     1. SECURITY: HTTP Headers (Helmet)

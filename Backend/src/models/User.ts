@@ -5,16 +5,17 @@ export type UserRole = "user" | "admin";
 export interface IUser extends Document {
   name: string;
   email: string;
-  password: string;
+  password?: string;
   role: UserRole;
   verified: boolean;
+  googleId?: string;
 }
 
 const userSchema = new Schema<IUser>(
   {
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
+    password: { type: String }, // Optional for Google Auth users
 
     role: {
       type: String,
@@ -22,6 +23,7 @@ const userSchema = new Schema<IUser>(
       default: "user",
     },
     verified: { type: Boolean, default: false },
+    googleId: { type: String }, // Add googleId field
   },
   { timestamps: true }
 );

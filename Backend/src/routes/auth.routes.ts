@@ -20,6 +20,22 @@ router.post("/logout", logoutController);
 router.get("/verify-email", verifyEmailController);
 router.get("/me", requireAuth, meController);
 
+// Google Auth Imports
+import passport from "../config/passport.js";
+import { googleCallbackController } from "../controllers/google.controller.js";
+
+// Google Auth Routes
+router.get(
+  "/google",
+  passport.authenticate("google", { session: false, scope: ["profile", "email"] })
+);
+
+router.get(
+  "/google/callback",
+  passport.authenticate("google", { session: false, failureRedirect: "/login" }),
+  googleCallbackController
+);
+
 // Forgot password
 // router.post("/forgot-password", [body("email").isEmail()], handleValidationErrors, forgotPasswordController);
 
