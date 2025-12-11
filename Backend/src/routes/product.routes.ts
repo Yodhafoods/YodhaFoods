@@ -7,8 +7,7 @@ import {
   getProductBySlug,
 } from "../controllers/product.controller.js";
 
-import { requireAuth } from "../middlewares/auth.js";
-import { requireRole } from "../middlewares/role.js";
+import { requireAuth, requireAdmin } from "../middlewares/auth.js";
 
 import { validate } from "../middlewares/validate.js";
 import {
@@ -38,7 +37,7 @@ router.post(
 router.put(
   "/:id",
   requireAuth,
-  requireRole("admin"),
+  requireAdmin,
   validate(updateProductSchema),
   updateProduct
 );
@@ -46,7 +45,7 @@ router.put(
 router.delete(
   "/:id",
   requireAuth,
-  requireRole("admin"),
+  requireAdmin,
   deleteProduct
 );
 
