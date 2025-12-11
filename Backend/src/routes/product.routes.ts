@@ -8,7 +8,7 @@ import {
 } from "../controllers/product.controller.js";
 
 import { requireAuth, requireAdmin } from "../middlewares/auth.js";
-
+import { upload } from "../middlewares/upload.js";
 import { validate } from "../middlewares/validate.js";
 import {
   createProductSchema,
@@ -28,8 +28,9 @@ router.get("/:slug", getProductBySlug); // product detail page
  *  ========================== */
 router.post(
   "/",
-  // requireAuth,
-  // requireRole("admin"),
+  requireAuth,
+  requireAdmin,
+  upload.array("images", 10), // Allow up to 10 images
   validate(createProductSchema),
   createProduct
 );
@@ -38,6 +39,7 @@ router.put(
   "/:id",
   requireAuth,
   requireAdmin,
+  upload.array("images", 10),
   validate(updateProductSchema),
   updateProduct
 );
