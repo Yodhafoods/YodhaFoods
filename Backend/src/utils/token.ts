@@ -4,10 +4,8 @@ import RefreshToken from "../models/RefreshToken.js";
 import type { UserRole } from "../models/User.js";
 import mongoose from "mongoose";
 
-const ACCESS_SECRET = process.env.JWT_ACCESS_SECRET_KEY!;
-const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET_KEY!;
-console.log("ACCESS SECRET >>", process.env.JWT_ACCESS_SECRET_KEY);
-console.log("REFRESH SECRET >>", process.env.JWT_REFRESH_SECRET_KEY);
+const ACCESS_SECRET = process.env.JWT_ACCESS_SECRET!;
+const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET!;
 const ACCESS_EXPIRES_IN = "15m";
 const REFRESH_EXPIRES_IN = "7d";
 
@@ -16,19 +14,32 @@ interface JWTPayload {
   role: UserRole;
 }
 
+const getSecret = (key: string): string => {
+  const value = process.env[key];
+  if (!value) {
+    throw new Error(`Environment variable ${key} is missing`);
+  }
+  return value;
+};
+
 export const createAccessToken = (userId: string, role: UserRole) => {
   const payload: JWTPayload = { sub: userId, role };
-  return jwt.sign(payload, ACCESS_SECRET, { expiresIn: ACCESS_EXPIRES_IN });
+  return jwt.sign(payload, getSecret("JWT_ACCESS_SECRET"), {
+    expiresIn: ACCESS_EXPIRES_IN,
+  });
 };
 
 export const createRefreshToken = (userId: string) => {
-  return jwt.sign({ sub: userId }, REFRESH_SECRET, {
+  return jwt.sign({ sub: userId }, getSecret("JWT_REFRESH_SECRET"), {
     expiresIn: REFRESH_EXPIRES_IN,
   });
 };
 
 export const verifyRefreshToken = (token: string): string => {
-  const decoded = jwt.verify(token, REFRESH_SECRET) as jwt.JwtPayload;
+  const decoded = jwt.verify(
+    token,
+    getSecret("JWT_REFRESH_SECRET")
+  ) as jwt.JwtPayload;
   return decoded.sub as string;
 };
 

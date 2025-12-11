@@ -5,6 +5,7 @@ import {
   refreshTokenController,
   logoutController,
   meController,
+  verifyEmailController,
 } from "../controllers/auth.controller.js";
 import { registerSchema, loginSchema } from "../schemas/auth.schema.js";
 import { validate } from "../middlewares/validate.js";
@@ -16,6 +17,7 @@ router.post("/register", validate(registerSchema), registerUser);
 router.post("/login", validate(loginSchema), loginUser);
 router.post("/refresh", refreshTokenController);
 router.post("/logout", logoutController);
+router.get("/verify-email", verifyEmailController);
 router.get("/me", requireAuth, meController);
 
 // Forgot password

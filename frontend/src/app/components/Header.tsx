@@ -68,7 +68,7 @@ export default function Header() {
         <div className="max-w-[1440px] mx-auto px-4 flex items-center justify-between">
           {/* LOGO */}
           <div className="text-3xl font-black text-orange-600 tracking-tight">
-            Yodha.
+            <Link href="/">Yodha.</Link>
           </div>
 
           {/* STORY BAR — DESKTOP */}
@@ -134,7 +134,7 @@ export default function Header() {
             </button>
 
             <Link
-              href="/auth/signin"
+              href="/profile"
               className="cursor-pointer hover:-translate-y-1 transition-all duration-100"
             >
               <FaUser size={22} />

@@ -7,7 +7,7 @@ export interface IUser extends Document {
   email: string;
   password: string;
   role: UserRole;
-
+  verified: boolean;
 }
 
 const userSchema = new Schema<IUser>(
@@ -21,7 +21,7 @@ const userSchema = new Schema<IUser>(
       enum: ["user", "admin"],
       default: "user",
     },
-   
+    verified: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
@@ -35,5 +35,3 @@ userSchema.methods.toJSON = function () {
 
 const User = mongoose.model<IUser>("User", userSchema);
 export default User;
-
-

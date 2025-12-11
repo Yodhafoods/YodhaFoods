@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
+
 import {
   createAccessToken,
   createRefreshToken,
@@ -9,9 +10,17 @@ import {
   revokeRefreshToken,
   isRefreshTokenValid,
 } from "../utils/token.js";
+
+import {
+  createEmailVerifyToken,
+  verifyEmailToken,
+} from "../utils/emailToken.js";
+
+import { sendEmail } from "../utils/sendEmail.js";
+
 import type { RegisterInput, LoginInput } from "../schemas/auth.schema.js";
 
-// utility to set cookies
+// Utility: Set cookies
 const setAuthCookies = (
   res: Response,
   accessToken: string,
@@ -21,7 +30,7 @@ const setAuthCookies = (
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
-    maxAge: 15 * 60 * 1000, // 15 minutes
+    maxAge: 15 * 60 * 1000,
   });
 
   if (refreshToken) {
@@ -29,14 +38,14 @@ const setAuthCookies = (
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
   }
 };
 
-/**
- * POST /api/auth/register
- */
+// =====================================================================
+// REGISTER USER + SEND VERIFICATION EMAIL
+// =====================================================================
 export const registerUser = async (
   req: Request<{}, {}, RegisterInput>,
   res: Response
@@ -50,18 +59,49 @@ export const registerUser = async (
     }
 
     const hash = await bcrypt.hash(password, 12);
-    await User.create({ name, email, password: hash });
 
-    return res.status(201).json({ message: "Registered successfully" });
+    const user = await User.create({
+      name,
+      email,
+      password: hash,
+      verified: false,
+    });
+
+    // Create email verification token
+    const token = createEmailVerifyToken(user._id.toString(), user.email);
+
+    const verifyUrl = `${process.env.FRONTEND_ORIGIN}/auth/verify-email?token=${encodeURIComponent(token)}`;
+
+    // Send email
+    await sendEmail(
+      user.email,
+      "Verify your Yodha Foods account",
+      `
+        <h2>Welcome to Yodha Foods, ${user.name}!</h2>
+        <p>Please verify your email by clicking the button below:</p>
+
+        <a href="${verifyUrl}"
+           style="background:#FF4500;color:white;padding:10px 16px;
+           border-radius:6px;text-decoration:none;display:inline-block;">
+           Verify Email
+        </a>
+
+        <p>This link expires in 10 minutes.</p>
+      `
+    );
+
+    return res.status(201).json({
+      message: "Registered successfully! Please verify your email.",
+    });
   } catch (err) {
     console.error("Register error:", err);
     return res.status(500).json({ message: "Server error" });
   }
 };
 
-/**
- * POST /api/auth/login
- */
+// =====================================================================
+// LOGIN USER — BLOCK IF EMAIL NOT VERIFIED
+// =====================================================================
 export const loginUser = async (
   req: Request<{}, {}, LoginInput>,
   res: Response
@@ -71,6 +111,12 @@ export const loginUser = async (
 
     const user = await User.findOne({ email });
     if (!user) return res.status(401).json({ message: "Invalid credentials" });
+
+    if (!user.verified) {
+      return res.status(403).json({
+        message: "Please verify your email before logging in.",
+      });
+    }
 
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) return res.status(401).json({ message: "Invalid credentials" });
@@ -94,9 +140,38 @@ export const loginUser = async (
   }
 };
 
-/**
- * POST /api/auth/refresh
- */
+// =====================================================================
+// VERIFY EMAIL CONTROLLER
+// =====================================================================
+export const verifyEmailController = async (req: Request, res: Response) => {
+  try {
+    const token = req.query.token as string;
+    if (!token) {
+      return res.status(400).json({ message: "Token missing" });
+    }
+
+    const decoded = verifyEmailToken(token);
+
+    const user = await User.findById(decoded.sub);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    if (user.verified) {
+      return res.json({ message: "Email already verified" });
+    }
+
+    user.verified = true;
+    await user.save();
+
+    return res.json({ message: "Email verified successfully!" });
+  } catch (err) {
+    console.error("Verify error:", err);
+    return res.status(400).json({ message: "Invalid or expired token" });
+  }
+};
+
+// =====================================================================
+// REFRESH TOKEN
+// =====================================================================
 export const refreshTokenController = async (req: Request, res: Response) => {
   try {
     const token = req.cookies?.rt;
@@ -114,7 +189,6 @@ export const refreshTokenController = async (req: Request, res: Response) => {
         .status(401)
         .json({ message: "Refresh token invalid or revoked" });
 
-    // rotate tokens
     await revokeRefreshToken(token);
 
     const newAccessToken = createAccessToken(userId, user.role);
@@ -132,18 +206,17 @@ export const refreshTokenController = async (req: Request, res: Response) => {
   }
 };
 
-/**
- * POST /api/auth/logout
- */
+// =====================================================================
+// LOGOUT
+// =====================================================================
 export const logoutController = async (req: Request, res: Response) => {
   try {
     const token = req.cookies?.rt;
-    if (token) {
-      await revokeRefreshToken(token);
-    }
+    if (token) await revokeRefreshToken(token);
 
     res.clearCookie("at");
     res.clearCookie("rt");
+
     return res.json({ message: "Logged out" });
   } catch (err) {
     console.error("Logout error:", err);
@@ -151,9 +224,9 @@ export const logoutController = async (req: Request, res: Response) => {
   }
 };
 
-/**
- * GET /api/auth/me
- */
+// =====================================================================
+// GET AUTHENTICATED USER
+// =====================================================================
 export const meController = async (req: Request, res: Response) => {
   try {
     if (!req.user) {
