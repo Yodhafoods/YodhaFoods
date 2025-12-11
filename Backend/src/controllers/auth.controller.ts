@@ -66,7 +66,7 @@ export const registerUser = async (
       password: hash,
       verified: false,
     });
-
+    
     // Create email verification token
     const token = createEmailVerifyToken(user._id.toString(), user.email);
 
@@ -97,6 +97,7 @@ export const registerUser = async (
     console.error("Register error:", err);
     return res.status(500).json({ message: "Server error" });
   }
+  
 };
 
 // =====================================================================

@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import User from "../models/User.js";
 
 /** requireRole('admin') */
-export const requireRole = (role: "admin" | "fulfillment" | "customer") => {
+export const requireRole = (role: "admin" | "user") => {
   return async (
     req: Request & { userId?: string },
     res: Response,

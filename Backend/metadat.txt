@@ -1,0 +1,20 @@
+#flow of the upload an image to Cloudinary
+
+ADMIN → selects image
+        ↓
+Frontend uploads to Cloudinary (Preset)
+        ↓
+Cloudinary returns {url, public_id}
+        ↓
+Frontend sends product JSON with images[] to backend
+        ↓
+Backend saves images[] in MongoDB
+        ↓
+Frontend loads product using images[].url
+        ↓
+CDN delivers optimized image
+
+
+//
+  "email": "rajeev2025@gmail.com",
+  "password": "rajeev@2025"
