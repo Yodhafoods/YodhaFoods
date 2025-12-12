@@ -37,7 +37,7 @@ passport.use(
                     }
                 }
 
-                return done(null, user);
+                return done(null, { id: user._id.toString(), role: user.role });
             } catch (err) {
                 return done(err, undefined);
             }

@@ -14,10 +14,10 @@ export const googleCallbackController = async (req: Request, res: Response) => {
             return res.redirect(`${process.env.FRONTEND_ORIGIN}/auth/signin?error=auth_failed`);
         }
 
-        const accessToken = createAccessToken(user._id.toString(), user.role);
-        const refreshToken = createRefreshToken(user._id.toString());
+        const accessToken = createAccessToken(user.id, user.role);
+        const refreshToken = createRefreshToken(user.id);
 
-        await saveRefreshToken(user._id.toString(), refreshToken);
+        await saveRefreshToken(user.id, refreshToken);
 
         // Set Cookies (Same config as loginUser)
         res.cookie("at", accessToken, {
