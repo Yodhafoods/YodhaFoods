@@ -9,9 +9,8 @@ export const API_BASE_URL =
 function buildUrl(path: string) {
   // allow callers to pass either "/api/..." or full URL
   if (/^https?:\/\//.test(path)) return path;
-  return `${API_BASE_URL.replace(/\/$/, "")}${
-    path.startsWith("/") ? "" : "/"
-  }${path}`;
+  return `${API_BASE_URL.replace(/\/$/, "")}${path.startsWith("/") ? "" : "/"
+    }${path}`;
 }
 
 /**
@@ -58,14 +57,16 @@ export async function post<T = unknown, B = unknown>(
   body?: B,
   init?: RequestInit
 ): Promise<T> {
+  const isFormData = body instanceof FormData;
+
   const res = await fetch(buildUrl(path), {
     method: "POST",
     credentials: "include",
     headers: {
-      "Content-Type": "application/json",
+      ...(isFormData ? {} : { "Content-Type": "application/json" }),
       ...(init?.headers as Record<string, string> | undefined),
     },
-    body: body === undefined ? undefined : JSON.stringify(body),
+    body: isFormData ? (body as BodyInit) : (body === undefined ? undefined : JSON.stringify(body)),
     ...init,
   });
 
@@ -95,14 +96,16 @@ export async function put<T = unknown, B = unknown>(
   body?: B,
   init?: RequestInit
 ): Promise<T> {
+  const isFormData = body instanceof FormData;
+
   const res = await fetch(buildUrl(path), {
     method: "PUT",
     credentials: "include",
     headers: {
-      "Content-Type": "application/json",
+      ...(isFormData ? {} : { "Content-Type": "application/json" }),
       ...(init?.headers as Record<string, string> | undefined),
     },
-    body: body === undefined ? undefined : JSON.stringify(body),
+    body: isFormData ? (body as BodyInit) : (body === undefined ? undefined : JSON.stringify(body)),
     ...init,
   });
 

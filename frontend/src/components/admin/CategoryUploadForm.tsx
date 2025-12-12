@@ -9,24 +9,30 @@ import { toast } from 'sonner';
 export function CategoryUploadForm() {
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
-    const [imageUrl, setImageUrl] = useState('');
+    const [image, setImage] = useState<File | null>(null);
 
     const { postData, isLoading } = usePost('/api/categories', {
         onSuccess: () => {
             toast.success('Category created successfully!');
             setName('');
             setDescription('');
-            setImageUrl('');
+            setImage(null);
         },
     });
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!name || !imageUrl) {
+        if (!name || !image) {
             toast.error('Please provide name and image');
             return;
         }
-        await postData({ name, description, imageUrl });
+
+        const payload = new FormData();
+        payload.append('name', name);
+        if (description) payload.append('description', description);
+        payload.append('image', image);
+
+        await postData(payload);
     };
 
     return (
@@ -58,9 +64,9 @@ export function CategoryUploadForm() {
 
                 <div>
                     <label className="block text-sm font-medium mb-1 dark:text-gray-200">Category Image</label>
-                    <UploadImage onUpload={(url) => setImageUrl(url)} />
-                    {imageUrl && (
-                        <p className="text-xs text-green-500 mt-1">Image uploaded!</p>
+                    <UploadImage onFileSelect={(file) => setImage(file)} />
+                    {image && (
+                        <p className="text-xs text-green-500 mt-1">Image selected!</p>
                     )}
                 </div>
 

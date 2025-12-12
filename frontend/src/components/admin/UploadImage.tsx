@@ -7,11 +7,12 @@ import { Loader2, Upload, X } from 'lucide-react';
 import Image from 'next/image';
 
 interface UploadImageProps {
-    onUpload: (url: string, publicId?: string) => void;
+    onUpload?: (url: string, publicId?: string) => void;
+    onFileSelect?: (file: File | null) => void;
     label?: string;
 }
 
-export function UploadImage({ onUpload, label = 'Upload Image' }: UploadImageProps) {
+export function UploadImage({ onUpload, onFileSelect, label = 'Upload Image' }: UploadImageProps) {
     const [uploading, setUploading] = useState(false);
     const [preview, setPreview] = useState<string | null>(null);
 
@@ -23,6 +24,14 @@ export function UploadImage({ onUpload, label = 'Upload Image' }: UploadImagePro
         const reader = new FileReader();
         reader.onload = () => setPreview(reader.result as string);
         reader.readAsDataURL(file);
+
+
+        if (onFileSelect) {
+            onFileSelect(file);
+            return; // Skip direct upload
+        }
+
+        if (!onUpload) return;
 
         try {
             setUploading(true);
@@ -58,7 +67,7 @@ export function UploadImage({ onUpload, label = 'Upload Image' }: UploadImagePro
             }
 
             const data = await uploadRes.json();
-            onUpload(data.secure_url, data.public_id);
+            if (onUpload) onUpload(data.secure_url, data.public_id);
             toast.success('Image uploaded successfully');
 
         } catch (error) {
@@ -72,7 +81,8 @@ export function UploadImage({ onUpload, label = 'Upload Image' }: UploadImagePro
 
     const removeImage = () => {
         setPreview(null);
-        onUpload('');
+        if (onUpload) onUpload('');
+        if (onFileSelect) onFileSelect(null);
     };
 
     return (

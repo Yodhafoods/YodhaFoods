@@ -21,7 +21,7 @@ export function ProductUploadForm() {
         description: '',
         categoryId: '',
     });
-    const [image, setImage] = useState<{ url: string; public_id: string } | null>(null);
+    const [image, setImage] = useState<File | null>(null);
 
     const [categories, setCategories] = useState<Category[]>([]);
     const [loadingCategories, setLoadingCategories] = useState(false);
@@ -75,13 +75,17 @@ export function ProductUploadForm() {
             return;
         }
 
-        await postData({
-            ...formData,
-            price: Number(formData.price),
-            discountPrice: formData.discountPrice ? Number(formData.discountPrice) : undefined,
-            stock: Number(formData.stock),
-            images: [image], // Send as array of objects
-        });
+        const payload = new FormData();
+        payload.append('name', formData.name);
+        payload.append('price', formData.price);
+        payload.append('stock', formData.stock);
+        payload.append('categoryId', formData.categoryId);
+        if (formData.description) payload.append('description', formData.description);
+        if (formData.discountPrice) payload.append('discountPrice', formData.discountPrice);
+
+        payload.append('images', image);
+
+        await postData(payload);
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -89,10 +93,8 @@ export function ProductUploadForm() {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleImageUpload = (url: string, publicId?: string) => {
-        if (url && publicId) {
-            setImage({ url, public_id: publicId });
-        }
+    const handleImageUpload = (file: File | null) => {
+        setImage(file);
     };
 
     return (
@@ -194,9 +196,9 @@ export function ProductUploadForm() {
                 {/* Image */}
                 <div>
                     <label className="block text-sm font-medium mb-1 dark:text-gray-200">Product Image</label>
-                    <UploadImage onUpload={handleImageUpload} />
+                    <UploadImage onFileSelect={handleImageUpload} />
                     {image && (
-                        <p className="text-xs text-green-500 mt-1">Image uploaded!</p>
+                        <p className="text-xs text-green-500 mt-1">Image selected!</p>
                     )}
                 </div>
 
