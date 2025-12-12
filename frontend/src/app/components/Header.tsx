@@ -7,8 +7,9 @@ import { Menu } from "lucide-react";
 import Image from "next/image";
 import { TiShoppingCart } from "react-icons/ti";
 import Link from "next/link";
-import CartDrawer, { CartItem } from "./CartDrawer";
+import CartDrawer from "./CartDrawer";
 import MobileMenuDrawer from "./MobileMenuDrawer";
+import { useAppSelector } from "@/lib/store/hooks";
 
 interface StoryItem {
   label: string;
@@ -41,25 +42,14 @@ const stories: StoryItem[] = [
 export default function Header() {
   const [openDrawer, setOpenDrawer] = useState(false);
   const [openCart, setOpenCart] = useState(false);
-
-  // TEMP CART DATA — Replace later with global cart store
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    // Example item (remove later)
-    // {
-    //   id: "1",
-    //   name: "Tomato Powder",
-    //   qty: 2,
-    //   price: 199,
-    //   image: "/assets/images/products/tomato.jpg",
-    // },
-  ]);
+  const cartItems = useAppSelector((state) => state.cart.items);
 
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
-  const cartCount = cartItems.length;
+  const cartCount = cartItems.reduce((acc, item) => acc + item.qty, 0);
 
   return (
     <>
@@ -105,11 +95,10 @@ export default function Header() {
               >
                 <div
                   className={`w-[65px] h-[65px] rounded-full p-[3px]
-                  ${
-                    item.highlight
+                  ${item.highlight
                       ? "bg-gradient-to-br from-orange-500 to-orange-300"
                       : "bg-gradient-to-br from-pink-400 via-red-400 to-purple-600"
-                  }`}
+                    }`}
                 >
                   <Image
                     src={item.img}
@@ -163,11 +152,10 @@ export default function Header() {
             >
               <div
                 className={`w-[60px] h-[60px] rounded-full p-[3px]
-                ${
-                  item.highlight
+                ${item.highlight
                     ? "bg-gradient-to-br from-orange-500 to-orange-300"
                     : "bg-gradient-to-br from-pink-400 via-red-400 to-purple-600"
-                }`}
+                  }`}
               >
                 <Image
                   src={item.img}
@@ -188,7 +176,6 @@ export default function Header() {
       <CartDrawer
         open={openCart}
         onClose={() => setOpenCart(false)}
-        items={cartItems}
       />
     </>
   );

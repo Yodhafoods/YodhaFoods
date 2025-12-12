@@ -5,21 +5,27 @@ import { X } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 
-export type CartItem = {
-  id: string;
-  name: string;
-  price: number;
-  qty: number;
-  image: string;
-};
+import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
+import { updateQuantity } from "@/lib/store/features/cart/cartSlice";
 
 interface CartDrawerProps {
   open: boolean;
   onClose: () => void;
-  items: CartItem[];
 }
 
-export default function CartDrawer({ open, onClose, items }: CartDrawerProps) {
+export default function CartDrawer({ open, onClose }: CartDrawerProps) {
+  const items = useAppSelector((state) => state.cart.items);
+  const dispatch = useAppDispatch();
+
+  const totalAmount = items.reduce(
+    (acc, item) => acc + item.price * item.qty,
+    0
+  );
+
+  const handleUpdateQty = (id: string, newQty: number) => {
+    dispatch(updateQuantity({ id, qty: newQty }));
+  };
+
   return (
     <AnimatePresence>
       {open && (
@@ -72,13 +78,39 @@ export default function CartDrawer({ open, onClose, items }: CartDrawerProps) {
                     />
 
                     <div className="flex flex-col flex-1">
-                      <span className="font-medium">{item.name}</span>
-                      <span className="text-sm text-gray-600">
-                        Qty: {item.qty}
-                      </span>
-                      <span className="text-green-700 font-semibold">
-                        ₹{item.price}
-                      </span>
+                      <div className="flex justify-between items-start">
+                        <span className="font-medium">{item.name}</span>
+                        <span className="text-green-700 font-semibold">
+                          ₹{item.price * item.qty}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-3 mt-2">
+                        <div className="flex items-center border border-gray-300 rounded-md">
+                          <button
+                            className="px-2 py-1 text-gray-600 hover:bg-gray-100 cursor-pointer"
+                            onClick={() =>
+                              handleUpdateQty(item.id, item.qty - 1)
+                            }
+                          >
+                            -
+                          </button>
+                          <span className="px-2 text-sm font-medium">
+                            {item.qty}
+                          </span>
+                          <button
+                            className="px-2 py-1 text-gray-600 hover:bg-gray-100 cursor-pointer"
+                            onClick={() =>
+                              handleUpdateQty(item.id, item.qty + 1)
+                            }
+                          >
+                            +
+                          </button>
+                        </div>
+                        <span className="text-xs text-gray-500">
+                          ₹{item.price} / unit
+                        </span>
+                      </div>
                     </div>
                   </div>
                 ))
@@ -87,8 +119,14 @@ export default function CartDrawer({ open, onClose, items }: CartDrawerProps) {
 
             {/* Footer */}
             {items.length > 0 && (
-              <div className="border-t pt-4 mt-2">
-                <button className="w-full bg-green-600 text-white py-3 font-semibold rounded-lg hover:bg-green-700 transition">
+              <div className="border-t pt-4 mt-2 mb-safe">
+                <div className="flex justify-between items-center mb-4">
+                  <span className="font-bold text-lg">Total</span>
+                  <span className="font-bold text-xl text-green-700">
+                    ₹{totalAmount}
+                  </span>
+                </div>
+                <button className="w-full cursor-pointer bg-green-600 text-white py-3 font-semibold rounded-lg hover:bg-green-700 transition">
                   Checkout
                 </button>
               </div>

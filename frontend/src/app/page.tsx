@@ -1,5 +1,6 @@
 import ProductGrid, { Product } from "./components/ProductGrid";
 import Hero from "./components/sections/Hero";
+import YodhaInstant from "./components/sections/YodhaInstant";
 
 const fruit: Product[] = [
   {
@@ -50,6 +51,9 @@ export default function Home() {
             Discover nutritious and natural superfood powders crafted from the
             best ingredients. Good health starts with good choices.
           </p>
+        </section>
+        <section>
+          <YodhaInstant />
         </section>
       </main>
     </div>

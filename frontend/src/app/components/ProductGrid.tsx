@@ -1,13 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
+import ProductCard, { Product } from "./ProductCard";
 
-export interface Product {
-  id: number | string;
-  name: string;
-  price: number;
-  img: string;
-  badge?: string;
-}
+export type { Product };
 
 interface ProductGridProps {
   title: string;
@@ -49,47 +43,7 @@ export default function ProductGrid({
         "
       >
         {products.map((p) => (
-          <div
-            key={p.id}
-            className="
-              bg-white rounded-2xl p-4 shadow-sm cursor-pointer overflow-hidden
-              transition-all duration-300 hover:-translate-y-2 hover:shadow-xl 
-              relative group min-w-[75%] sm:min-w-[45%] lg:min-w-0 snap-start
-            "
-          >
-            {/* Badge */}
-            {p.badge && (
-              <span className="absolute top-4 left-4 bg-white text-green-700 px-3 py-1 rounded-full text-xs font-bold shadow">
-                {p.badge}
-              </span>
-            )}
-
-            {/* Image Box */}
-            <div className="h-72 rounded-xl overflow-hidden bg-gray-100 relative">
-              <Image
-                src={p.img}
-                alt={p.name}
-                fill
-                className="object-cover transition-transform duration-700 group-hover:scale-110"
-              />
-
-              {/* Hover Info */}
-              <div
-                className="absolute bottom-0 left-0 w-full p-4 
-                           translate-y-full group-hover:translate-y-0 
-                           transition-all duration-300 bg-white/95 text-center"
-              >
-                <p className="font-bold text-lg">{p.name}</p>
-                <p className="text-orange-600 font-semibold">₹{p.price}</p>
-              </div>
-            </div>
-
-            {/* Title + Price */}
-            <div className="mt-3">
-              <p className="font-extrabold text-lg">{p.name}</p>
-              <p className="font-semibold text-orange-600">₹{p.price}</p>
-            </div>
-          </div>
+          <ProductCard key={p.id} product={p} />
         ))}
       </div>
     </section>

@@ -269,3 +269,36 @@ export const getProductBySlug = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
+
+
+/**
+ * GET /api/products/category/:slug
+ * Public: Get all products belonging to a category by slug
+ */
+export const getProductsByCategory = async (req: Request, res: Response) => {
+  try {
+    const { slug } = req.params;
+
+    // Find category
+    const category = await Category.findOne({ slug: slug.toLowerCase(), isActive: true });
+    if (!category) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
+    const products = await Product.find({
+      categoryId: category._id,
+      isActive: true,
+    }).populate("categoryId", "name slug");
+
+    return res.json({
+      category: {
+        name: category.name,
+        slug: category.slug,
+      },
+      products,
+    });
+  } catch (err) {
+    console.error("Get Products by Category Error:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};

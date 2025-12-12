@@ -5,6 +5,7 @@ import {
   deleteProduct,
   getProducts,
   getProductBySlug,
+  getProductsByCategory,
 } from "../controllers/product.controller.js";
 
 import { requireAuth, requireAdmin } from "../middlewares/auth.js";
@@ -22,6 +23,7 @@ const router = Router();
  *  ========================== */
 router.get("/", getProducts); // list products
 router.get("/:slug", getProductBySlug); // product detail page
+router.get("/category/:slug", getProductsByCategory); // list products by category
 
 /** ==========================
  *  ADMIN ROUTES
