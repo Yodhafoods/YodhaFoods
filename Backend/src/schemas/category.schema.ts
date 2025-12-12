@@ -22,6 +22,7 @@ const parseBoolean = (val: unknown) => {
 export const createCategorySchema = z.object({
   name: z.string().min(2).max(80),
   description: z.string().max(500).optional(),
+  imageUrl: z.string().optional(),
   isActive: z.preprocess(parseBoolean, z.boolean().optional()),
   sortOrder: z.coerce.number().optional(),
 
@@ -38,6 +39,7 @@ export const createCategorySchema = z.object({
 export const updateCategorySchema = z.object({
   name: z.string().min(2).max(80).optional(),
   description: z.string().max(500).optional(),
+  imageUrl: z.string().optional(),
   isActive: z.preprocess(parseBoolean, z.boolean().optional()),
   sortOrder: z.coerce.number().optional(),
 

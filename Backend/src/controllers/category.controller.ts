@@ -33,6 +33,9 @@ export const createCategory = async (req: Request, res: Response) => {
     if (req.file) {
       const uploadResult = await uploadToCloudinary(req.file.buffer);
       imageUrl = uploadResult.secure_url;
+    } else if (req.body.imageUrl || req.body.image) {
+      // Accept image URL from frontend upload
+      imageUrl = req.body.imageUrl || req.body.image;
     }
 
     // Parse seo if it's sent as a string (multipart/form-data often sends nested objects as strings)

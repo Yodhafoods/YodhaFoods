@@ -47,13 +47,22 @@ export const createProduct = async (req: Request, res: Response) => {
     }
 
     // Handle Image Uploads
-    const images: { url: string; public_id: string }[] = [];
-    if (req.files && Array.isArray(req.files)) {
+    // Handle Image Uploads
+    let images: { url: string; public_id: string }[] = [];
+    if (req.files && Array.isArray(req.files) && req.files.length > 0) {
       const uploadPromises = (req.files as Express.Multer.File[]).map(file =>
         uploadToCloudinary(file.buffer)
       );
       const results = await Promise.all(uploadPromises);
       results.forEach(res => images.push({ url: res.secure_url, public_id: res.public_id }));
+    } else if (req.body.images) {
+      // If images sent as JSON (e.g. from frontend direct upload)
+      if (Array.isArray(req.body.images)) {
+        images = req.body.images;
+      } else if (typeof req.body.images === 'string') {
+        // Fallback for single image string (optional, but good for robustness)
+        images.push({ url: req.body.images, public_id: 'external_' + Date.now() });
+      }
     }
 
     const product = await Product.create({

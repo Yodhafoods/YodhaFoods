@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useAuthActions } from "../../hooks/useAuthActions";
+import { useAuthActions } from "@/hooks/useAuthActions";
 import AuthCard from "../../components/AuthCard";
 import GoogleButton from "../../components/GoogleButton";
 
@@ -45,9 +45,8 @@ export default function SigninClient() {
         <button
           type="submit"
           disabled={loading}
-          className={`w-full bg-green-700 hover:bg-green-800 text-white py-2.5 rounded-lg cursor-pointer font-semibold transition ${
-            loading ? "opacity-60 cursor-not-allowed" : ""
-          }`}
+          className={`w-full bg-green-700 hover:bg-green-800 text-white py-2.5 rounded-lg cursor-pointer font-semibold transition ${loading ? "opacity-60 cursor-not-allowed" : ""
+            }`}
         >
           {loading ? "Signing in..." : "Sign In"}
         </button>
