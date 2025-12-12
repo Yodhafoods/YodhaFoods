@@ -66,7 +66,7 @@ export const registerUser = async (
       password: hash,
       verified: false,
     });
-    
+
     // Create email verification token
     const token = createEmailVerifyToken(user._id.toString(), user.email);
 
@@ -97,7 +97,7 @@ export const registerUser = async (
     console.error("Register error:", err);
     return res.status(500).json({ message: "Server error" });
   }
-  
+
 };
 
 // =====================================================================
@@ -119,6 +119,10 @@ export const loginUser = async (
       });
     }
     if (!user.password) return res.status(401).json({ message: "Invalid credentials" });
+
+    if (!user.password) {
+      return res.status(400).json({ message: "Please login with Google" });
+    }
 
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) return res.status(401).json({ message: "Invalid credentials" });
