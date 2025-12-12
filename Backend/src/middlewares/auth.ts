@@ -2,6 +2,17 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import type { UserRole } from "../models/User.js";
 
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        id: string;
+        role: UserRole;
+      };
+    }
+  }
+}
+
 const ACCESS_SECRET = process.env.JWT_ACCESS_SECRET!;
 
 interface DecodedToken {

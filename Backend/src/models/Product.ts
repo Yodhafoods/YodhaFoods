@@ -126,15 +126,13 @@ const ProductSchema = new Schema<IProduct>(
 );
 
 // Auto-generate slug
-ProductSchema.pre("validate", function (next: any) {
-  const doc = this as unknown as IProduct;
-  if (!doc.slug && doc.name) {
-    doc.slug = doc.name
+ProductSchema.pre("validate", async function () {
+  if (!this.slug && this.name) {
+    this.slug = this.name
       .toLowerCase()
       .replace(/ /g, "-")
       .replace(/[^\w-]+/g, "");
   }
-  next();
 });
 
 const Product =
