@@ -10,6 +10,7 @@ import Link from "next/link";
 import CartDrawer from "./CartDrawer";
 import MobileMenuDrawer from "./MobileMenuDrawer";
 import { useAppSelector } from "@/lib/store/hooks";
+import SearchModal from "./SearchModal";
 
 interface StoryItem {
   label: string;
@@ -42,6 +43,7 @@ const stories: StoryItem[] = [
 export default function Header() {
   const [openDrawer, setOpenDrawer] = useState(false);
   const [openCart, setOpenCart] = useState(false);
+  const [openSearch, setOpenSearch] = useState(false);
   const cartItems = useAppSelector((state) => state.cart.items);
 
   const scrollTo = (id: string) => {
@@ -117,6 +119,7 @@ export default function Header() {
           <div className="hidden md:flex gap-4 items-center">
             <button
               className="border border-gray-800 text-xs text-gray-600 flex items-center gap-1 cursor-pointer hover:bg-gray-300 p-2 rounded-full transition-all duration-100"
+              onClick={() => setOpenSearch(true)}
             >
               Search...
               <span>
@@ -142,6 +145,7 @@ export default function Header() {
           <div className="flex md:hidden items-center gap-4">
             <button
               className="text-xs text-gray-900 flex items-center gap-1 cursor-pointer hover:bg-gray-300 p-2 rounded-full transition-all duration-100"
+              onClick={() => setOpenSearch(true)}
             >
               <Search size={28} />
             </button>
@@ -189,6 +193,10 @@ export default function Header() {
       <CartDrawer
         open={openCart}
         onClose={() => setOpenCart(false)}
+      />
+      <SearchModal
+        isOpen={openSearch}
+        onClose={() => setOpenSearch(false)}
       />
     </>
   );
