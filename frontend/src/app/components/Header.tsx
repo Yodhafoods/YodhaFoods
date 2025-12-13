@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { FaUser, FaWhatsapp } from "react-icons/fa";
-import { Menu } from "lucide-react";
+import { Menu, Search } from "lucide-react";
 import Image from "next/image";
 import { TiShoppingCart } from "react-icons/ti";
 import Link from "next/link";
@@ -116,6 +116,14 @@ export default function Header() {
           {/* RIGHT — DESKTOP */}
           <div className="hidden md:flex gap-4 items-center">
             <button
+              className="border border-gray-800 text-xs text-gray-600 flex items-center gap-1 cursor-pointer hover:bg-gray-300 p-2 rounded-full transition-all duration-100"
+            >
+              Search...
+              <span>
+                <Search />
+              </span>
+            </button>
+            <button
               className="flex items-center gap-1 cursor-pointer hover:-translate-y-1 transition-all duration-100"
               onClick={() => setOpenCart(true)}
             >
@@ -130,8 +138,13 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* MOBILE RIGHT: CART + MENU */}
+          {/* MOBILE RIGHT: CART + MENU + Search */}
           <div className="flex md:hidden items-center gap-4">
+            <button
+              className="text-xs text-gray-900 flex items-center gap-1 cursor-pointer hover:bg-gray-300 p-2 rounded-full transition-all duration-100"
+            >
+              <Search size={28} />
+            </button>
             <button onClick={() => setOpenCart(true)}>
               <TiShoppingCart size={30} />
             </button>

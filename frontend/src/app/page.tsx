@@ -1,5 +1,6 @@
 import ProductGrid, { Product } from "./components/ProductGrid";
 import Hero from "./components/sections/Hero";
+import JourneySection from "./components/sections/Journey";
 import YodhaInstant from "./components/sections/YodhaInstant";
 
 const fruit: Product[] = [
@@ -54,6 +55,9 @@ export default function Home() {
         </section>
         <section>
           <YodhaInstant />
+        </section>
+        <section>
+          <JourneySection />
         </section>
       </main>
     </div>
