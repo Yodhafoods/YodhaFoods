@@ -2,6 +2,7 @@ import Hero from "./components/sections/Hero";
 import JourneySection from "./components/sections/Journey";
 import YodhaInstant from "./components/sections/YodhaInstant";
 import Candy from "./components/sections/Candy";
+import CategoriesSection from "./components/sections/CategoriesSection";
 
 export default function Home() {
   return (
@@ -10,6 +11,9 @@ export default function Home() {
         <div className="">
           <Hero />
         </div>
+
+        {/* Categories Section */}
+        <CategoriesSection />
 
         {/* Nature’s Candy */}
         <div id="shop" className="">

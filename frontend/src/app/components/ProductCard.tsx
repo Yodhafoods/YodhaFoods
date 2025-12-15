@@ -2,9 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useAppDispatch } from "@/lib/store/hooks";
-import { addToCart } from "@/lib/store/features/cart/cartSlice";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { addToCart, updateQuantity } from "@/lib/store/features/cart/cartSlice";
 import { toast } from "sonner";
+import { RiAddFill, RiSubtractFill } from "react-icons/ri";
+import { IoAdd } from "react-icons/io5";
 
 export interface Product {
     id: number | string;
@@ -21,6 +23,8 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
     const dispatch = useAppDispatch();
+    const cart = useAppSelector((state) => state.cart.items);
+    const cartItem = cart.find((item) => item.id === String(product.id));
 
     const handleAddToCart = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -35,6 +39,22 @@ export default function ProductCard({ product }: ProductCardProps) {
             })
         );
         toast.success("Added to cart");
+    };
+
+    const handleIncrement = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
+        if (cartItem) {
+            dispatch(updateQuantity({ id: String(product.id), qty: cartItem.qty + 1 }));
+        }
+    };
+
+    const handleDecrement = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
+        if (cartItem) {
+            dispatch(updateQuantity({ id: String(product.id), qty: cartItem.qty - 1 }));
+        }
     };
 
     return (
@@ -70,12 +90,31 @@ export default function ProductCard({ product }: ProductCardProps) {
                     <p className="font-bold text-lg">{product.name}</p>
                     <p className="text-gray-900 font-semibold">₹{product.price}</p>
                 </div>
-                <button
-                    onClick={handleAddToCart}
-                    className="bg-black text-white px-4 py-2 rounded-full font-bold group-hover:bg-orange-600 transition-colors text-sm cursor-pointer"
-                >
-                    Add to Cart
-                </button>
+                {cartItem ? (
+                    <div className="group-hover:bg-orange-600 flex items-center gap-3 bg-black text-white px-3 py-2 rounded-full font-bold">
+                        <button
+                            onClick={handleDecrement}
+                            className="text-white hover:bg-gray-900 px-1 md:px-2 py-1 rounded-full cursor-pointer  transition-colors"
+                        >
+                            <RiSubtractFill />
+                        </button>
+                        <span className="text-sm">{cartItem.qty}</span>
+                        <button
+                            onClick={handleIncrement}
+                            className="text-white hover:bg-gray-900 px-1 md:px-2 py-1 rounded-full cursor-pointer  transition-colors"
+                        >
+                            <RiAddFill />
+                        </button>
+                    </div>
+                ) : (
+                    <button
+                        onClick={handleAddToCart}
+                        className="bg-black text-white px-4 py-2 rounded-full font-bold group-hover:bg-orange-600 transition-colors text-sm cursor-pointer"
+                    >
+                        <span className="sm:hidden">Add</span>
+                        <span className="hidden sm:inline">Add to Cart</span>
+                    </button>
+                )}
             </div>
         </Link>
     );
