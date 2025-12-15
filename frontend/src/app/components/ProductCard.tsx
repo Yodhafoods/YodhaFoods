@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image";
+import Link from "next/link";
 import { useAppDispatch } from "@/lib/store/hooks";
 import { addToCart } from "@/lib/store/features/cart/cartSlice";
 import { toast } from "sonner";
@@ -11,6 +12,7 @@ export interface Product {
     price: number;
     img: string;
     badge?: string;
+    slug: string;
 }
 
 interface ProductCardProps {
@@ -36,11 +38,13 @@ export default function ProductCard({ product }: ProductCardProps) {
     };
 
     return (
-        <div
+        <Link
+            href={`/products/${product.slug}`}
             className="
         bg-white rounded-2xl p-4 shadow-sm cursor-pointer overflow-hidden
         transition-all duration-300 hover:-translate-y-2 hover:shadow-xl 
         relative group min-w-[75%] sm:min-w-[45%] lg:min-w-0 snap-start
+        block
       "
         >
             {/* Badge */}
@@ -58,28 +62,21 @@ export default function ProductCard({ product }: ProductCardProps) {
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
                 />
+            </div>
 
-                {/* Hover Info */}
-                <div
-                    className="absolute bottom-0 left-0 w-full p-4 
-                     translate-y-full group-hover:translate-y-0 
-                     transition-all duration-300 bg-white/95 text-center flex flex-col gap-2"
-                >
+            {/* Title + Price + Add to Cart */}
+            <div className="mt-3 flex items-center justify-between">
+                <div>
                     <p className="font-bold text-lg">{product.name}</p>
-                    <p className="text-orange-600 font-semibold">₹{product.price}</p>
-                    <button
-                        onClick={handleAddToCart}
-                        className="w-full cursor-pointer bg-orange-600 text-white py-2 rounded-full font-bold hover:bg-orange-700 transition-colors"
-                    >
-                        Add to cart
-                    </button>
+                    <p className="text-gray-900 font-semibold">₹{product.price}</p>
                 </div>
+                <button
+                    onClick={handleAddToCart}
+                    className="bg-black text-white px-4 py-2 rounded-full font-bold group-hover:bg-orange-600 transition-colors text-sm cursor-pointer"
+                >
+                    Add to Cart
+                </button>
             </div>
-
-            {/* Title + Price */}
-            <div className="mt-3">
-                <p className="font-extrabold text-lg">{product.name}</p>
-            </div>
-        </div>
+        </Link>
     );
 }
