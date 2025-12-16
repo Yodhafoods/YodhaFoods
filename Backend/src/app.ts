@@ -8,7 +8,7 @@ import morgan from "morgan";
 import authRoutes from "./routes/auth.routes.js";
 import productRoutes from "./routes/product.routes.js";
 import categoryRoutes from "./routes/category.routes.js";
-
+import addressRoutes from "./routes/address.routes.js";
 
 
 import passport from "./config/passport.js";
@@ -76,6 +76,7 @@ app.use("/api/auth", authLimiter);
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
+app.use("/api/addresses", addressRoutes);
 
 
 
