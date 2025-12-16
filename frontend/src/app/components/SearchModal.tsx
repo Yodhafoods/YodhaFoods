@@ -6,7 +6,6 @@ import { Search, X, Loader2, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useProducts } from "@/hooks/useProducts";
 
 // Define Product interface compatible with API response
 interface Product {
@@ -31,8 +30,6 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
-
-  const { products: suggestedProducts, loading: suggestionsLoading } = useProducts("yodha-instant"); // Fetching initial suggestions
 
   // Handle focus on open
   useEffect(() => {
@@ -115,7 +112,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
               <input
                 ref={inputRef}
                 type="text"
-                placeholder="Search for products (e.g., 'soup', 'spices')..."
+                placeholder="Search for products (e.g., 'Momos', 'Chutney')..."
                 className="flex-1 text-lg outline-none text-gray-800 placeholder:text-gray-400 font-medium"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
@@ -129,17 +126,6 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                   </button>
                 )
               )}
-
-              {/* Divider */}
-              <div className="h-6 w-px bg-gray-200 mx-1"></div>
-
-              {/* Close Modal Button */}
-              <button
-                onClick={handleClose}
-                className="p-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-600 transition-colors cursor-pointer"
-              >
-                <X size={20} />
-              </button>
             </div>
 
             {/* Results Area */}
@@ -150,58 +136,10 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                   - No results: Show message
                   - Results: Show list
               */}
-
+              
               {!debouncedQuery && (
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-500 mb-3 px-2">Suggested for you</h3>
-                  {suggestionsLoading ? (
-                    <div className="flex justify-center py-10">
-                      <Loader2 className="w-6 h-6 text-orange-500 animate-spin" />
-                    </div>
-                  ) : (
-                    <div className="space-y-1">
-                      {suggestedProducts.slice(0, 3).map((product) => (
-                        <div
-                          key={product._id}
-                          onClick={() => navigateToProduct(product.slug)}
-                          className="flex items-center gap-4 p-3 hover:bg-white hover:shadow-sm rounded-xl cursor-pointer transition-all group border border-transparent hover:border-gray-100"
-                        >
-                          <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden shrink-0 relative">
-                            {product.images?.[0]?.url ? (
-                              <Image
-                                src={product.images[0].url}
-                                alt={product.name}
-                                fill
-                                className="object-cover"
-                              />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center text-gray-300">
-                                <Search size={20} />
-                              </div>
-                            )}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <h4 className="font-semibold text-gray-800 group-hover:text-orange-600 transition-colors truncate">
-                              {product.name}
-                            </h4>
-                            <p className="text-xs text-gray-500 truncate">
-                              {product.description || "No description available"}
-                            </p>
-                            <div className="flex items-center gap-2 mt-1">
-                              <span className="text-sm font-bold text-gray-900">₹{product.price}</span>
-                              {/* Handle category display if available in the type */}
-                              {(product as any).category?.name && (
-                                <span className="text-[10px] px-2 py-0.5 bg-gray-100 text-gray-500 rounded-full">
-                                  {(product as any).category.name}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                          <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-orange-500 -translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all" />
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                <div className="text-center py-10 text-gray-400 text-sm">
+                  Start typing to see products...
                 </div>
               )}
 
@@ -228,7 +166,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-gray-300">
-                          <Search size={20} />
+                           <Search size={20} />
                         </div>
                       )}
                     </div>
@@ -253,7 +191,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                 ))}
               </div>
             </div>
-
+            
             {/* Footer */}
             <div className="px-4 py-3 bg-gray-50 border-t border-gray-100 text-xs text-gray-400 flex justify-between">
               <span>Press ESC to close</span>

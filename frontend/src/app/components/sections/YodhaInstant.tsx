@@ -1,25 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
-import { useAppDispatch } from "@/lib/store/hooks";
-import { addToCart } from "@/lib/store/features/cart/cartSlice";
-import { toast } from "sonner";
 
 interface Product {
     _id: string;
     name: string;
     images: { url: string }[];
     description?: string;
-    slug: string;
-    price: number;
 }
 
 export default function YodhaInstant() {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
-    const dispatch = useAppDispatch();
 
     useEffect(() => {
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/category/yodha-instant`)
@@ -29,24 +22,6 @@ export default function YodhaInstant() {
             })
             .finally(() => setLoading(false));
     }, []);
-
-    const handleAddToCart = (e: React.MouseEvent, product: Product) => {
-        e.preventDefault(); // Prevent navigation
-        // e.stopPropagation() is implied by Link behavior if button is inside, 
-        // but explicit preventDefault is key for Next.js Links.
-        // Actually e.preventDefault() prevents the Link from navigating.
-
-        dispatch(
-            addToCart({
-                id: product._id,
-                name: product.name,
-                price: product.price,
-                qty: 1,
-                image: product.images?.[0]?.url || "",
-            })
-        );
-        toast.success("Added to cart");
-    };
 
     return (
         <section
@@ -72,10 +47,9 @@ export default function YodhaInstant() {
             {!loading && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 relative z-10">
                     {products.map((product) => (
-                        <Link
-                            href={`/products/${product.slug}`}
+                        <div
                             key={product._id}
-                            className="bg-[#1a1a1a] rounded-2xl p-6 border border-[#333] transition-transform duration-300 hover:scale-105 hover:border-[#ff4500] cursor-pointer flex flex-col relative group"
+                            className="bg-[#1a1a1a] rounded-2xl p-6 border border-[#333] transition-transform duration-300 hover:scale-105 hover:border-[#ff4500] cursor-pointer"
                         >
                             <div className="h-[200px] mb-5 overflow-hidden rounded-xl">
                                 <Image
@@ -89,20 +63,10 @@ export default function YodhaInstant() {
 
                             <h3 className="text-xl font-bold mb-1">{product.name}</h3>
 
-                            <p className="text-gray-300 text-sm mb-4">
+                            <p className="text-gray-300 text-sm">
                                 {product.description || "Delicious & Ready Instantly"}
                             </p>
-
-                            <div className="mt-auto flex justify-between items-center">
-                                <span className="text-gray-300 font-bold text-lg ">₹{product.price}</span>
-                                <button
-                                    onClick={(e) => handleAddToCart(e, product)}
-                                    className="bg-white text-black px-4 py-2 rounded-full font-bold text-sm hover:bg-orange-500 hover:text-white transition-colors cursor-pointer"
-                                >
-                                    Add to Cart
-                                </button>
-                            </div>
-                        </Link>
+                        </div>
                     ))}
                 </div>
             )}

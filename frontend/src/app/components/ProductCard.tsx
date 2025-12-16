@@ -1,12 +1,9 @@
 "use client"
 
 import Image from "next/image";
-import Link from "next/link";
-import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
-import { addToCart, updateQuantity } from "@/lib/store/features/cart/cartSlice";
+import { useAppDispatch } from "@/lib/store/hooks";
+import { addToCart } from "@/lib/store/features/cart/cartSlice";
 import { toast } from "sonner";
-import { RiAddFill, RiSubtractFill } from "react-icons/ri";
-import { IoAdd } from "react-icons/io5";
 
 export interface Product {
     id: number | string;
@@ -14,7 +11,6 @@ export interface Product {
     price: number;
     img: string;
     badge?: string;
-    slug: string;
 }
 
 interface ProductCardProps {
@@ -23,8 +19,6 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
     const dispatch = useAppDispatch();
-    const cart = useAppSelector((state) => state.cart.items);
-    const cartItem = cart.find((item) => item.id === String(product.id));
 
     const handleAddToCart = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -41,30 +35,12 @@ export default function ProductCard({ product }: ProductCardProps) {
         toast.success("Added to cart");
     };
 
-    const handleIncrement = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        e.preventDefault();
-        if (cartItem) {
-            dispatch(updateQuantity({ id: String(product.id), qty: cartItem.qty + 1 }));
-        }
-    };
-
-    const handleDecrement = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        e.preventDefault();
-        if (cartItem) {
-            dispatch(updateQuantity({ id: String(product.id), qty: cartItem.qty - 1 }));
-        }
-    };
-
     return (
-        <Link
-            href={`/products/${product.slug}`}
+        <div
             className="
         bg-white rounded-2xl p-4 shadow-sm cursor-pointer overflow-hidden
         transition-all duration-300 hover:-translate-y-2 hover:shadow-xl 
         relative group min-w-[75%] sm:min-w-[45%] lg:min-w-0 snap-start
-        block
       "
         >
             {/* Badge */}
@@ -82,40 +58,28 @@ export default function ProductCard({ product }: ProductCardProps) {
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
                 />
-            </div>
 
-            {/* Title + Price + Add to Cart */}
-            <div className="mt-3 flex items-center justify-between">
-                <div>
+                {/* Hover Info */}
+                <div
+                    className="absolute bottom-0 left-0 w-full p-4 
+                     translate-y-full group-hover:translate-y-0 
+                     transition-all duration-300 bg-white/95 text-center flex flex-col gap-2"
+                >
                     <p className="font-bold text-lg">{product.name}</p>
-                    <p className="text-gray-900 font-semibold">₹{product.price}</p>
-                </div>
-                {cartItem ? (
-                    <div className="group-hover:bg-orange-600 flex items-center gap-3 bg-black text-white px-3 py-2 rounded-full font-bold">
-                        <button
-                            onClick={handleDecrement}
-                            className="text-white hover:bg-gray-900 px-1 md:px-2 py-1 rounded-full cursor-pointer  transition-colors"
-                        >
-                            <RiSubtractFill />
-                        </button>
-                        <span className="text-sm">{cartItem.qty}</span>
-                        <button
-                            onClick={handleIncrement}
-                            className="text-white hover:bg-gray-900 px-1 md:px-2 py-1 rounded-full cursor-pointer  transition-colors"
-                        >
-                            <RiAddFill />
-                        </button>
-                    </div>
-                ) : (
+                    <p className="text-orange-600 font-semibold">₹{product.price}</p>
                     <button
                         onClick={handleAddToCart}
-                        className="bg-black text-white px-4 py-2 rounded-full font-bold group-hover:bg-orange-600 transition-colors text-sm cursor-pointer"
+                        className="w-full cursor-pointer bg-orange-600 text-white py-2 rounded-full font-bold hover:bg-orange-700 transition-colors"
                     >
-                        <span className="sm:hidden">Add</span>
-                        <span className="hidden sm:inline">Add to Cart</span>
+                        Add to cart
                     </button>
-                )}
+                </div>
             </div>
-        </Link>
+
+            {/* Title + Price */}
+            <div className="mt-3">
+                <p className="font-extrabold text-lg">{product.name}</p>
+            </div>
+        </div>
     );
 }

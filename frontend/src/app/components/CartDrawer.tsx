@@ -7,7 +7,6 @@ import React from "react";
 
 import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
 import { updateQuantity } from "@/lib/store/features/cart/cartSlice";
-import Link from "next/link";
 
 interface CartDrawerProps {
   open: boolean;
@@ -63,12 +62,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
             <div className="flex-1 overflow-y-auto space-y-4">
               <p className="text-green-800">Products</p>
               {items.length === 0 ? (
-                <div className="mt-10 flex flex-col gap-2 justify-center items-center">
-                  <p className="text-gray-500 text-center">Your cart is empty.</p>
-                  <Link href="/products">
-                    <button className="px-4 py-2 bg-green-800 text-white hover:bg-green-900 rounded-sm  cursor-pointer">Continue Shopping </button>
-                  </Link>
-                </div>
+                <p className="text-gray-500">Your cart is empty.</p>
               ) : (
                 items.map((item) => (
                   <div

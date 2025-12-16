@@ -8,13 +8,8 @@ import morgan from "morgan";
 import authRoutes from "./routes/auth.routes.js";
 import productRoutes from "./routes/product.routes.js";
 import categoryRoutes from "./routes/category.routes.js";
-<<<<<<< HEAD
 import cartRoutes from "./routes/cart.routes.js";
 import orderRoutes from "./routes/order.routes.js";
-=======
-import addressRoutes from "./routes/address.routes.js";
-
->>>>>>> 77e383d27cf228ea01b38eca1c91ae6364689404
 
 import passport from "./config/passport.js";
 
@@ -81,12 +76,8 @@ app.use("/api/auth", authLimiter);
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
-<<<<<<< HEAD
 app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
-=======
-app.use("/api/addresses", addressRoutes);
->>>>>>> 77e383d27cf228ea01b38eca1c91ae6364689404
 
 
 

@@ -1,8 +1,34 @@
+import ProductGrid, { Product } from "./components/ProductGrid";
 import Hero from "./components/sections/Hero";
 import JourneySection from "./components/sections/Journey";
 import YodhaInstant from "./components/sections/YodhaInstant";
-import Candy from "./components/sections/Candy";
-import CategoriesSection from "./components/sections/CategoriesSection";
+
+const fruit: Product[] = [
+  {
+    id: 5,
+    name: "Mango Powder",
+    price: 249,
+    img: "/assets/images/fruits/Mango-Powder.jpg",
+  },
+  {
+    id: 6,
+    name: "Strawberry",
+    price: 299,
+    img: "/assets/images/fruits/strawberry.jpg",
+  },
+  {
+    id: 7,
+    name: "Pineapple",
+    price: 269,
+    img: "/assets/images/fruits/pineapple.jpg",
+  },
+  {
+    id: 8,
+    name: "Pomegranate",
+    price: 299,
+    img: "/assets/images/fruits/pomegranate.jpg",
+  },
+];
 
 export default function Home() {
   return (
@@ -12,13 +38,12 @@ export default function Home() {
           <Hero />
         </div>
 
-        {/* Categories Section */}
-        <CategoriesSection />
-
         {/* Nature’s Candy */}
-        <div id="shop" className="">
-          <Candy />
-        </div>
+        <ProductGrid
+          title="Nature's Candy"
+          subtitle="100% Fruit Powders for guilt-free sweetness."
+          products={fruit}
+        />
 
         {/* Example sections — add your content later */}
         <section className="py-16 px-6 text-center">
