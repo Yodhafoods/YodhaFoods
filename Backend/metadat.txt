@@ -15,27 +15,6 @@ Frontend loads product using images[].url
 CDN delivers optimized image
 
 
-// API related to Add to card
-Add to Cart (temporary, per user)
-        ↓
-Create Order (price + stock validated)
-        ↓
-Payment (Razorpay later)
-
-❗ Key rule in real e-commerce:
-
-Cart is TEMPORARY
-
-Order is PERMANENT
-
-Payment always happens on Order
-
-| API                                  | Purpose             |
-| ------------------------------------ | ------------------- |
-| POST `/api/cart/add`                 | Add product to cart |
-| GET `/api/cart`                      | Get user cart       |
-| PUT `/api/cart/update`               | Update quantity     |
-| DELETE `/api/cart/remove/:productId` | Remove item         |
-| DELETE `/api/cart/clear`             | Clear cart          |
-| POST `/api/order                     | place an order      |
-
+//
+  "email": "rajeev2025@gmail.com",
+  "password": "rajeev@2025"
