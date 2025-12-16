@@ -130,7 +130,7 @@ export default function RelatedProducts({ categoryId, currentProductId }: Relate
                         href="/products"
                         className="inline-flex items-center justify-center px-8 py-3 border-2 border-gray-900 text-gray-900 font-bold rounded-full hover:bg-gray-900 hover:text-white transition-colors uppercase tracking-wide text-sm"
                     >
-                        Shop Related Products
+                        Explore More Products
                     </Link>
                 </div>
             </div>
