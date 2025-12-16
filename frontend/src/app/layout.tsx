@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Yodha Foods - Ancient Powders.Reimagined for Today.",
+  title: "Yodha Foods | Ancient Powders -Reimagined for Today.",
   description: "Yodha Foods - Ancient Powders.Reimagined for Today.",
 };
 
@@ -33,6 +33,7 @@ export default function RootLayout({
       >
         <>
           <Toaster richColors position="top-center" />
+
           <StoreProvider>
             <AuthProvider>
               <Header />

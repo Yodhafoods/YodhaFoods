@@ -1,58 +1,38 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
+import Sidebar from "../components/profile/Sidebar";
+import OrdersList from "../components/profile/OrdersList";
+import AddressList from "../components/profile/AddressList";
+import AccountDetails from "../components/profile/AccountDetails";
 
 export default function ProfilePage() {
-  const { user, loading, logout } = useAuth();
+  const { user, loading } = useAuth();
   const router = useRouter();
+  const [active, setActive] = useState<"orders" | "addresses" | "account">("orders");
 
-  // Redirect if not logged in
   useEffect(() => {
     if (!loading && !user) {
       router.replace("/auth/signin");
     }
   }, [loading, user, router]);
 
-  if (loading || !user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-500">Loading...</p>
-      </div>
-    );
-  }
+  if (!user) return null;
 
   return (
-    <div className="min-h-screen flex justify-center px-4 py-10 bg-gray-50">
-      <div className="max-w-md w-full bg-white shadow-lg rounded-2xl p-8">
-        {/* Title */}
-        <h2 className="text-2xl font-bold text-center mb-6">Your Profile</h2>
+    <div className="min-h-screen bg-gray-100 flex justify-center py-10">
+      <div className="flex flex-col md:flex-row w-full max-w-6xl bg-gray-50 rounded-xl shadow-lg overflow-hidden">
+        <Sidebar active={active} setActive={setActive} />
 
-        {/* User Card */}
-        <div className="space-y-4 border p-5 rounded-xl bg-gray-50">
-          <div>
-            <p className="text-sm text-gray-500">Name</p>
-            <p className="font-semibold">{user.name}</p>
-          </div>
+        <main className="flex-1 p-8">
+          <h1 className="text-2xl font-bold mb-6">
+            {active === "orders" ? "My Orders" : active === "addresses" ? "Addresses" : "Account"}
+          </h1>
 
-          <div>
-            <p className="text-sm text-gray-500">Email</p>
-            <p className="font-semibold">{user.email}</p>
-          </div>
-        </div>
-
-        {/* Logout Button */}
-        <button
-          onClick={logout}
-          className="
-            w-full mt-6 bg-red-600 hover:bg-red-700 
-            text-white py-3 rounded-lg font-semibold 
-            transition cursor-pointer
-          "
-        >
-          Logout
-        </button>
+          {active === "orders" ? <OrdersList /> : active === "addresses" ? <AddressList /> : <AccountDetails />}
+        </main>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
+import { ArrowRight, X } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 
@@ -132,9 +132,11 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                     ₹{totalAmount}
                   </span>
                 </div>
-                <button className="w-full cursor-pointer bg-green-600 text-white py-3 font-semibold rounded-lg hover:bg-green-700 transition">
-                  Checkout
-                </button>
+                <Link href="/checkout">
+                  <button className="group w-full flex items-center justify-center gap-2 cursor-pointer bg-green-600 text-white py-3 font-semibold rounded-lg hover:bg-green-700 transition">
+                    Proceed to Checkout <ArrowRight size={22} className="group-hover:translate-x-1 transition" />
+                  </button>
+                </Link>
               </div>
             )}
           </motion.div>
