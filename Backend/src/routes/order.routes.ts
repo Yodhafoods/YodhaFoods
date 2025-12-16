@@ -1,12 +1,5 @@
 import { Router } from "express";
-<<<<<<< HEAD
-import { requireAuth } from "../middlewares/auth.js";
-import { createOrder } from "../controllers/order.controller.js";
 
-const router = Router();
-
-router.post("/", requireAuth, createOrder);
-=======
 import {
     createOrder,
     getMyOrders,
@@ -51,6 +44,5 @@ router.get("/:id", requireAuth, getOrderById);
  * Update order status (admin only)
  */
 router.put("/:id/status", requireAuth, requireAdmin, updateOrderStatus);
->>>>>>> 77e383d27cf228ea01b38eca1c91ae6364689404
 
 export default router;
