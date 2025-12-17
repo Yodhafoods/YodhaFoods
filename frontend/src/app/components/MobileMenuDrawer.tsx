@@ -2,7 +2,9 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 export default function MobileMenuDrawer({
   open,
@@ -11,6 +13,15 @@ export default function MobileMenuDrawer({
   open: boolean;
   setOpen: (val: boolean) => void;
 }) {
+  const { user, logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await logout();
+    setOpen(false);
+    router.push("/");
+  };
+
   return (
     <>
       {/* Background Overlay */}
@@ -37,16 +48,46 @@ export default function MobileMenuDrawer({
 
         <h2 className="text-2xl font-bold mb-6">Menu</h2>
 
-        <Link
-          href="/auth/signin"
-          className="text-lg font-semibold py-3 border-b"
-          onClick={() => setOpen(false)}
-        >
-          Sign In
-        </Link>
+        <div className="flex flex-col gap-2">
+          {!user ? (
+            <Link
+              href="/auth/signin"
+              className="text-lg font-semibold py-3 border-b border-gray-100"
+              onClick={() => setOpen(false)}
+            >
+              Sign In
+            </Link>
+          ) : (
+            <>
+              {/* Profile Link (All Users) */}
+              <Link
+                href="/profile"
+                className="text-lg font-semibold py-3 border-b border-gray-100"
+                onClick={() => setOpen(false)}
+              >
+                Profile
+              </Link>
 
-        <div className="mt-6 text-gray-500 text-sm">
-          More options coming soon...
+              {/* Admin Dashboard (Admin Only) */}
+              {user.role === "admin" && (
+                <Link
+                  href="/admin/dashboard"
+                  className="text-lg font-semibold py-3 border-b border-gray-100 text-orange-600"
+                  onClick={() => setOpen(false)}
+                >
+                  Admin Dashboard
+                </Link>
+              )}
+
+              {/* Logout Button */}
+              <button
+                onClick={handleLogout}
+                className="text-lg font-semibold py-3 border-b border-gray-100 text-left text-red-500"
+              >
+                Logout
+              </button>
+            </>
+          )}
         </div>
       </motion.div>
     </>

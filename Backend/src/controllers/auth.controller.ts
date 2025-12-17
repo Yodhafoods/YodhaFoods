@@ -136,9 +136,13 @@ export const loginUser = async (
 
     const { password: _, ...safeUser } = user.toObject();
 
+    // expiry = now + 15m
+    const accessTokenExpiry = Date.now() + 15 * 60 * 1000;
+
     return res.json({
       message: "Login successful",
       user: safeUser,
+      accessTokenExpiry,
     });
   } catch (err) {
     console.error("Login error:", err);
@@ -203,7 +207,10 @@ export const refreshTokenController = async (req: Request, res: Response) => {
 
     setAuthCookies(res, newAccessToken, newRefreshToken);
 
-    return res.json({ message: "Token refreshed" });
+    // expiry = now + 15m (must match token.ts ACCESS_EXPIRES_IN)
+    const accessTokenExpiry = Date.now() + 15 * 60 * 1000;
+
+    return res.json({ message: "Token refreshed", accessTokenExpiry });
   } catch (err) {
     console.error("Refresh error:", err);
     return res

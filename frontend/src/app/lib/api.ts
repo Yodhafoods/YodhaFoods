@@ -14,20 +14,42 @@ function buildUrl(path: string) {
 }
 
 /**
+ * Track the current refresh promise to prevent concurrent refreshes
+ */
+let refreshPromise: Promise<boolean> | null = null;
+
+/**
  * Refresh the access token
  * Returns true if successful, false otherwise
  */
-async function refreshToken(): Promise<boolean> {
-  try {
-    const res = await fetch(buildUrl("/api/auth/refresh"), {
-      method: "POST",
-      credentials: "include",
-    });
-    return res.ok;
-  } catch (err) {
-    console.error("Failed to refresh token", err);
-    return false;
+export async function refreshToken(): Promise<boolean> {
+  // If a refresh is already in progress, return that promise
+  if (refreshPromise) {
+    return refreshPromise;
   }
+
+  // Create a new promise for the refresh
+  refreshPromise = (async () => {
+    try {
+      const res = await fetch(buildUrl("/api/auth/refresh"), {
+        method: "POST",
+        credentials: "include",
+      });
+      // If we got a new token, the backend also sent the new expiry
+      // Ideally we would capture it here, but `customFetch` or `AuthContext`
+      // usage complicates "global" state update from a pure lib file.
+      // For now, this ensures the cookie is updated.
+      return res.ok;
+    } catch (err) {
+      console.error("Failed to refresh token", err);
+      return false;
+    } finally {
+      // Clear the promise so next time we can try again
+      refreshPromise = null;
+    }
+  })();
+
+  return refreshPromise;
 }
 
 /**
@@ -44,8 +66,6 @@ async function customFetch(
     const refreshed = await refreshToken();
     if (refreshed) {
       // Retry the original request
-      // Note: We don't need to manually attach the new token if it's in a cookie
-      // simply retrying with credentials: 'include' should work
       res = await fetch(url, options);
     }
   }
@@ -188,6 +208,7 @@ export const api = {
   post,
   put,
   del,
+  refreshToken,
 };
 
 /**
