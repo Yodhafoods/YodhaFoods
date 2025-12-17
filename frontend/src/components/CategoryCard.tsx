@@ -26,12 +26,9 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category }) => {
                         </div>
                     )}
                     {/* Overlay Button */}
-                    <div className="absolute inset-0 flex items-end p-4">
-                        <button className="flex items-center gap-2 px-6 py-2 bg-white text-black font-medium shadow-md rounded-full transition-colors duration-300 group-hover:bg-orange-500 cursor-pointer">
-                            Order Now <span><ArrowRight size={22} className='group-hover:translate-x-2 transition-all duration-300' /> </span>
-                        </button>
-                    </div>
+
                 </div>
+
             </div>
         </Link>
     );

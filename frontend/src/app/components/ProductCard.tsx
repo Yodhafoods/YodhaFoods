@@ -96,7 +96,7 @@ export default function ProductCard({ product, className }: ProductCardProps) {
             )}
 
             {/* Image Box */}
-            <div className="h-36 sm:h-52 md:h-64 lg:h-72 rounded-xl overflow-hidden bg-gray-100 relative w-full">
+            <div className="h-32 sm:h-40 md:h-48 lg:h-52 rounded-xl overflow-hidden bg-gray-100 relative w-full">
                 <Image
                     src={product.img}
                     alt={product.name}

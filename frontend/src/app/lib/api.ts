@@ -14,6 +14,46 @@ function buildUrl(path: string) {
 }
 
 /**
+ * Refresh the access token
+ * Returns true if successful, false otherwise
+ */
+async function refreshToken(): Promise<boolean> {
+  try {
+    const res = await fetch(buildUrl("/api/auth/refresh"), {
+      method: "POST",
+      credentials: "include",
+    });
+    return res.ok;
+  } catch (err) {
+    console.error("Failed to refresh token", err);
+    return false;
+  }
+}
+
+/**
+ * Custom fetch wrapper that handles 401s by refreshing the token
+ */
+async function customFetch(
+  url: string,
+  options: RequestInit = {}
+): Promise<Response> {
+  let res = await fetch(url, options);
+
+  // If 401 Unauthorized, try to refresh the token
+  if (res.status === 401) {
+    const refreshed = await refreshToken();
+    if (refreshed) {
+      // Retry the original request
+      // Note: We don't need to manually attach the new token if it's in a cookie
+      // simply retrying with credentials: 'include' should work
+      res = await fetch(url, options);
+    }
+  }
+
+  return res;
+}
+
+/**
  * Generic GET
  * @template T - expected response JSON shape
  */
@@ -21,7 +61,7 @@ export async function get<T = unknown>(
   path: string,
   init?: RequestInit
 ): Promise<T> {
-  const res = await fetch(buildUrl(path), {
+  const res = await customFetch(buildUrl(path), {
     method: "GET",
     credentials: "include",
     ...init,
@@ -59,14 +99,18 @@ export async function post<T = unknown, B = unknown>(
 ): Promise<T> {
   const isFormData = body instanceof FormData;
 
-  const res = await fetch(buildUrl(path), {
+  const res = await customFetch(buildUrl(path), {
     method: "POST",
     credentials: "include",
     headers: {
       ...(isFormData ? {} : { "Content-Type": "application/json" }),
       ...(init?.headers as Record<string, string> | undefined),
     },
-    body: isFormData ? (body as BodyInit) : (body === undefined ? undefined : JSON.stringify(body)),
+    body: isFormData
+      ? (body as BodyInit)
+      : body === undefined
+        ? undefined
+        : JSON.stringify(body),
     ...init,
   });
 
@@ -98,14 +142,18 @@ export async function put<T = unknown, B = unknown>(
 ): Promise<T> {
   const isFormData = body instanceof FormData;
 
-  const res = await fetch(buildUrl(path), {
+  const res = await customFetch(buildUrl(path), {
     method: "PUT",
     credentials: "include",
     headers: {
       ...(isFormData ? {} : { "Content-Type": "application/json" }),
       ...(init?.headers as Record<string, string> | undefined),
     },
-    body: isFormData ? (body as BodyInit) : (body === undefined ? undefined : JSON.stringify(body)),
+    body: isFormData
+      ? (body as BodyInit)
+      : body === undefined
+        ? undefined
+        : JSON.stringify(body),
     ...init,
   });
 
@@ -121,7 +169,7 @@ export async function del<T = unknown>(
   path: string,
   init?: RequestInit
 ): Promise<T> {
-  const res = await fetch(buildUrl(path), {
+  const res = await customFetch(buildUrl(path), {
     method: "DELETE",
     credentials: "include",
     ...init,
