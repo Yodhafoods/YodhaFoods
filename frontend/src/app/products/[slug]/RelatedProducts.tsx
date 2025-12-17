@@ -1,13 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { Star, ShoppingCart } from "lucide-react";
-import { useDispatch } from "react-redux";
-import { addToCart } from "@/lib/store/features/cart/cartSlice";
-import { toast } from "react-toastify";
+import ProductCard from "@/app/components/ProductCard";
 
 interface Product {
     _id: string;
@@ -27,7 +22,6 @@ interface RelatedProductsProps {
 export default function RelatedProducts({ categoryId, currentProductId }: RelatedProductsProps) {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
-    const dispatch = useDispatch();
 
     useEffect(() => {
         const fetchRelated = async () => {
@@ -38,8 +32,8 @@ export default function RelatedProducts({ categoryId, currentProductId }: Relate
 
                 if (data.products) {
                     const filtered = data.products
-                        .filter((p: Product) => p._id !== currentProductId)
-                        .slice(0, 4);
+                        .filter((p: Product) => p._id !== currentProductId) // Filter out current product
+                        .slice(0, 4); // Take top 4
                     setProducts(filtered);
                 }
             } catch (error) {
@@ -56,72 +50,24 @@ export default function RelatedProducts({ categoryId, currentProductId }: Relate
 
     if (loading || products.length === 0) return null;
 
-    const handleAddToCart = (e: React.MouseEvent, product: Product) => {
-        e.preventDefault(); // Prevent navigation if inside a link
-        dispatch(
-            addToCart({
-                id: product._id,
-                name: product.name,
-                price: product.price,
-                qty: 1,
-                image: product.images?.[0]?.url || "",
-            })
-        );
-        toast.success("Added to cart!", {
-            position: "bottom-right",
-            autoClose: 2000,
-        });
-    };
-
     return (
         <section className="py-16 bg-white">
             <div className="max-w-7xl mx-auto px-4 md:px-8">
                 <h2 className="text-3xl font-bold text-gray-900 mb-8">Shop Related Products</h2>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
                     {products.map((product) => (
-                        <Link href={`/products/${product.slug}`} key={product._id} className="group cursor-pointer">
-                            <motion.div
-                                whileHover={{ y: -5 }}
-                                className="bg-white rounded-2xl overflow-hidden border border-gray-100 hover:shadow-xl transition-all duration-300"
-                            >
-                                {/* Image */}
-                                <div className="aspect-[4/5] relative bg-gray-50 overflow-hidden">
-                                    <Image
-                                        src={product.images[0]?.url || "/placeholder.png"}
-                                        alt={product.name}
-                                        fill
-                                        className="object-cover group-hover:scale-105 transition-transform duration-500"
-                                    />
-                                    {/* Quick Add Button */}
-                                    <button
-                                        onClick={(e) => handleAddToCart(e, product)}
-                                        className="absolute bottom-4 right-4 w-10 h-10 bg-white/90 backdrop-blur text-gray-900 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 hover:bg-orange-500 hover:text-white shadow-lg z-10"
-                                    >
-                                        <ShoppingCart size={18} />
-                                    </button>
-                                </div>
-
-                                {/* Info */}
-                                <div className="p-4">
-                                    <div className="text-xs text-orange-600 font-bold uppercase tracking-wider mb-1">
-                                        {product.category?.name}
-                                    </div>
-                                    <h3 className="font-bold text-gray-900 mb-2 truncate group-hover:text-orange-600 transition-colors">
-                                        {product.name}
-                                    </h3>
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-1 text-yellow-400">
-                                            <Star size={14} fill="currentColor" />
-                                            <span className="text-sm font-medium text-gray-500">4.5</span>
-                                        </div>
-                                        <div className="text-lg font-bold text-gray-900">
-                                            ₹{product.price}
-                                        </div>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        </Link>
+                        <ProductCard
+                            key={product._id}
+                            product={{
+                                id: product._id,
+                                name: product.name,
+                                price: product.price,
+                                img: product.images[0]?.url || "/placeholder.png",
+                                slug: product.slug,
+                            }}
+                            className="min-w-0"
+                        />
                     ))}
                 </div>
 

@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { useDispatch } from "react-redux";
-import { useAppSelector } from "@/lib/store/hooks";
-import { addToCart, updateQuantity } from "@/lib/store/features/cart/cartSlice";
+import { useAppSelector, useAppDispatch } from "@/lib/store/hooks"; // Added useAppDispatch
+import { addItemToCart, updateCartItemQty } from "@/lib/store/features/cart/cartSlice"; // Updated imports
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion } from "framer-motion";
@@ -27,7 +26,7 @@ interface ProductClientProps {
 }
 
 export default function ProductClient({ product }: ProductClientProps) {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch(); // Use typed dispatch
     const [selectedImage, setSelectedImage] = useState(product.images?.[0]?.url || "");
 
     // Get cart item from Redux
@@ -37,34 +36,49 @@ export default function ProductClient({ product }: ProductClientProps) {
 
     const qty = cartItem ? cartItem.qty : 0;
 
-    const handleAddToCart = () => {
-        dispatch(
-            addToCart({
-                id: product._id,
-                name: product.name,
-                price: product.price,
-                qty: 1, // Start with 1
-                image: product.images?.[0]?.url || "",
-            })
-        );
-        toast.success("Added to cart!", {
-            position: "bottom-right",
-            autoClose: 2000,
-        });
-    };
-
-    const incrementQty = () => {
-        if (!cartItem) return;
-        if (cartItem.qty < product.stock) {
-            dispatch(updateQuantity({ id: product._id, qty: cartItem.qty + 1 }));
+    const handleAddToCart = async () => {
+        try {
+            await dispatch(
+                addItemToCart({
+                    product: {
+                        id: product._id,
+                        name: product.name,
+                        price: product.price,
+                        qty: 1,
+                        image: product.images?.[0]?.url || "",
+                    },
+                    quantity: 1
+                })
+            ).unwrap();
+            toast.success("Added to cart!", {
+                position: "bottom-right",
+                autoClose: 2000,
+            });
+        } catch (error) {
+            toast.error("Failed to add to cart");
         }
     };
 
-    const decrementQty = () => {
+    const incrementQty = async () => {
+        if (!cartItem) return;
+        if (cartItem.qty < product.stock) {
+            try {
+                await dispatch(updateCartItemQty({ productId: product._id, quantity: cartItem.qty + 1 })).unwrap();
+            } catch (error) {
+                toast.error("Failed to update quantity");
+            }
+        }
+    };
+
+    const decrementQty = async () => {
         if (!cartItem) return;
         // Constraint: product quantity should not be decreased to 0 from here
         if (cartItem.qty > 1) {
-            dispatch(updateQuantity({ id: product._id, qty: cartItem.qty - 1 }));
+            try {
+                await dispatch(updateCartItemQty({ productId: product._id, quantity: cartItem.qty - 1 })).unwrap();
+            } catch (error) {
+                toast.error("Failed to update quantity");
+            }
         }
     };
 
