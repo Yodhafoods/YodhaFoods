@@ -27,7 +27,7 @@ export default function RelatedProducts({ categoryId, currentProductId }: Relate
         const fetchRelated = async () => {
             try {
                 // Fetch more than 4 to ensure we have enough after filtering
-                const res = await fetch(`http://localhost:5000/api/products?category=${categoryId}&limit=6`);
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products?category=${categoryId}&limit=6`);
                 const data = await res.json();
 
                 if (data.products) {
@@ -73,7 +73,7 @@ export default function RelatedProducts({ categoryId, currentProductId }: Relate
 
                 <div className="mt-12 text-center">
                     <Link
-                        href="/products"
+                        href="/shop"
                         className="inline-flex items-center justify-center px-8 py-3 border-2 border-gray-900 text-gray-900 font-bold rounded-full hover:bg-gray-900 hover:text-white transition-colors uppercase tracking-wide text-sm"
                     >
                         Explore More Products

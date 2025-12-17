@@ -76,7 +76,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
               {items.length === 0 ? (
                 <div className="mt-10 flex flex-col gap-2 justify-center items-center">
                   <p className="text-gray-500 text-center">Your cart is empty.</p>
-                  <Link href="/products">
+                  <Link href="/shop">
                     <button className="px-4 py-2 bg-green-800 text-white hover:bg-green-900 rounded-sm  cursor-pointer">Continue Shopping </button>
                   </Link>
                 </div>

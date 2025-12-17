@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 async function getProduct(slug: string) {
     try {
-        const res = await fetch(`http://localhost:5000/api/products/${slug}`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/${slug}`, {
             cache: "no-store",
         });
 

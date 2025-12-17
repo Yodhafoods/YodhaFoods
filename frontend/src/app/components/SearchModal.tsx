@@ -62,7 +62,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
       setLoading(true);
       try {
-        const res = await fetch(`http://localhost:5000/api/products?search=${encodeURIComponent(debouncedQuery)}&limit=6`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products?search=${encodeURIComponent(debouncedQuery)}&limit=6`);
         const data = await res.json();
         // The API returns { products: [], pagination: ... }
         if (data.products) {
@@ -89,7 +89,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
   const navigateToProduct = (slug: string) => {
     handleClose();
-    router.push(`/products/${slug}`);
+    router.push(`/shop/${slug}`);
   };
 
   return (

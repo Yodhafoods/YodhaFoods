@@ -79,7 +79,7 @@ export default function ProductCard({ product, className }: ProductCardProps) {
 
     return (
         <Link
-            href={`/products/${product.slug}`}
+            href={`/shop/${product.slug}`}
             className={`
         bg-white rounded-2xl p-2.5 sm:p-4 shadow-sm cursor-pointer overflow-hidden
         transition-all duration-300 hover:-translate-y-2 hover:shadow-xl 

@@ -26,7 +26,7 @@ export default function Hero() {
 
               {/* CTA: purely CSS animated (no client JS needed) */}
               <Link
-                href="/products"
+                href="/shop"
                 className="inline-block mt-8 hero-cta px-8 py-4 rounded-full text-lg font-bold shadow-md"
                 aria-label="Explore The Pantry"
               >

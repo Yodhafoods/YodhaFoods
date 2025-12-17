@@ -77,7 +77,7 @@ export default function YodhaInstant() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 relative z-10">
                     {products.map((product) => (
                         <Link
-                            href={`/products/${product.slug}`}
+                            href={`/shop/${product.slug}`}
                             key={product._id}
                             className="bg-[#1a1a1a] rounded-2xl p-6 border border-[#333] transition-transform duration-300 hover:scale-105 hover:border-[#ff4500] cursor-pointer flex flex-col relative group"
                         >
