@@ -1,0 +1,27 @@
+[33m1dc5357[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m HEAD@{0}: commit: restore backend to stable order APIs (77e383d)
+[33m9ca88f9[m HEAD@{1}: commit: restore backend to stable order APIs (77e383d)
+[33mf03eb4d[m HEAD@{2}: commit: Revert "add cart and order api"
+[33md26e877[m HEAD@{3}: commit: Revert "Merge branch 'main' of https://github.com/Yodhafoods/YodhaFoods"
+[33mddd72f4[m HEAD@{4}: commit: Fix repo structure and backend changes
+[33m3034624[m HEAD@{5}: checkout: moving from main to main
+[33m3034624[m HEAD@{6}: branch: Reset to origin/main
+[33m3034624[m HEAD@{7}: commit (merge): Merge branch 'main' of https://github.com/Yodhafoods/YodhaFoods
+[33mf9fde16[m HEAD@{8}: commit: add cart and order api
+[33m1a1faf1[m HEAD@{9}: pull: Fast-forward
+[33mac0c437[m HEAD@{10}: pull: Fast-forward
+[33m6a2f780[m HEAD@{11}: pull: Merge made by the 'ort' strategy.
+[33m40d30a6[m HEAD@{12}: commit: test product api
+[33m27a5e52[m HEAD@{13}: pull: Fast-forward
+[33m9873e81[m HEAD@{14}: commit: fix error
+[33m7fa5057[m HEAD@{15}: commit (merge): fix token
+[33m591d8c8[m HEAD@{16}: commit: fix error
+[33mcf45653[m HEAD@{17}: pull: Merge made by the 'ort' strategy.
+[33m9fb5583[m HEAD@{18}: commit: add products and category apis
+[33mf605d03[m HEAD@{19}: pull: Fast-forward
+[33m2cf7166[m HEAD@{20}: commit: comment email service
+[33me1832b5[m HEAD@{21}: pull: Merge made by the 'ort' strategy.
+[33m7ad7f73[m HEAD@{22}: commit: fix auth routes
+[33mc3e91f9[m HEAD@{23}: commit: add auth routes
+[33m6303be2[m HEAD@{24}: commit: initialise backend
+[33m43de80a[m HEAD@{25}: Branch: renamed refs/heads/main to refs/heads/main
+[33m43de80a[m HEAD@{27}: commit (initial): first commit

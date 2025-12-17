@@ -2,16 +2,33 @@ import { Request, Response } from "express";
 import Cart from "../models/Cart.js";
 import Product from "../models/Product.js";
 import Order from "../models/Order.js";
+import Address from "../models/Address.js";
 
 /**
  * POST /api/orders
- * Create order from cart (NO payment yet)
+ * Create order from cart + address snapshot
+ * (NO PAYMENT HERE)
  */
 export const createOrder = async (req: Request, res: Response) => {
   try {
     const userId = req.user!.id;
+    const { addressId } = req.body;
 
-    // 1. Load cart
+    if (!addressId) {
+      return res.status(400).json({ message: "Address is required" });
+    }
+
+    /**
+     * 1️⃣ Fetch address (ownership check)
+     */
+    const address = await Address.findOne({ _id: addressId, userId });
+    if (!address) {
+      return res.status(404).json({ message: "Address not found" });
+    }
+
+    /**
+     * 2️⃣ Fetch cart
+     */
     const cart = await Cart.findOne({ userId }).populate("items.productId");
     if (!cart || cart.items.length === 0) {
       return res.status(400).json({ message: "Cart is empty" });
@@ -20,7 +37,9 @@ export const createOrder = async (req: Request, res: Response) => {
     let subtotal = 0;
     const orderItems = [];
 
-    // 2. Validate products & calculate price
+    /**
+     * 3️⃣ Validate products & freeze price snapshot
+     */
     for (const item of cart.items) {
       const product = item.productId as any;
 
@@ -44,23 +63,40 @@ export const createOrder = async (req: Request, res: Response) => {
         name: product.name,
         price,
         quantity: item.quantity,
+        image: product.images?.[0]?.url || "",
       });
     }
 
-    // 3. Create order (CREATED state)
+    /**
+     * 4️⃣ Create order (PLACED + PAYMENT PENDING)
+     */
     const order = await Order.create({
       userId,
       items: orderItems,
       subtotal,
-      total: subtotal, // tax/shipping later
-      status: "CREATED",
+      totalAmount: subtotal,
+      status: "PLACED",
+      paymentStatus: "PENDING",
+
+      shippingAddress: {
+        fullName: address.fullName,
+        phone: address.phone,
+        addressLine1: address.addressLine1,
+        addressLine2: address.addressLine2,
+        city: address.city,
+        state: address.state,
+        pincode: address.pincode,
+        country: address.country,
+      },
     });
 
-    // 4. Clear cart AFTER order creation
+    /**
+     * 5️⃣ Clear cart after order creation
+     */
     await Cart.deleteOne({ userId });
 
     return res.status(201).json({
-      message: "Order created",
+      message: "Order created successfully",
       order,
     });
   } catch (error) {
@@ -80,20 +116,20 @@ export const getMyOrders = async (req: Request, res: Response) => {
     const orders = await Order.find({ userId }).sort({ createdAt: -1 });
     return res.json({ orders });
   } catch (error) {
-    console.error("Get My Orders Error:", error);
+    console.error("Get Orders Error:", error);
     return res.status(500).json({ message: "Server error" });
   }
 };
 
 /**
  * GET /api/orders/:id
- * User gets own order, admin gets any
+ * User gets own order, admin can access any
  */
 export const getOrderById = async (req: Request, res: Response) => {
   try {
+    const { id } = req.params;
     const userId = req.user!.id;
     const role = req.user!.role;
-    const { id } = req.params;
 
     const order =
       role === "admin"
@@ -121,9 +157,10 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
     const { status } = req.body;
 
     const allowedStatuses = [
-      "CREATED",
-      "PAID",
+      "PLACED",
+      "CONFIRMED",
       "SHIPPED",
+      "OUT_FOR_DELIVERY",
       "DELIVERED",
       "CANCELLED",
     ];

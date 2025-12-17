@@ -14,7 +14,15 @@ Frontend loads product using images[].url
         ↓
 CDN delivers optimized image
 
+Payment flow
 
-//
-  "email": "rajeev2025@gmail.com",
-  "password": "rajeev@2025"
+Cart → Create Order (DB)
+      ↓
+Create Razorpay Order (server)
+      ↓
+Frontend pays Razorpay
+      ↓
+Verify payment (server)
+      ↓
+Mark order PAID + Deduct stock
+
