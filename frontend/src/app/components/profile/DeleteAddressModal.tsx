@@ -1,32 +1,23 @@
-"use client";
-
 import { IoMdClose } from "react-icons/io";
 import { Address } from "@/types/address";
-import { useAddresses } from "@/hooks/useAddresses";
 
 interface DeleteAddressModalProps {
     address?: Address;
     isOpen: boolean;
     onClose: () => void;
+    onConfirm: () => void;
+    loading: boolean;
 }
 
 export default function DeleteAddressModal({
     address,
     isOpen,
     onClose,
+    onConfirm,
+    loading,
 }: DeleteAddressModalProps) {
-    const { deleteAddress, actionLoading } = useAddresses();
 
     if (!isOpen || !address) return null;
-
-    const handleConfirm = async () => {
-        try {
-            await deleteAddress(address._id);
-            onClose();
-        } catch {
-            alert("Failed to delete address");
-        }
-    };
 
     return (
         <div
@@ -68,11 +59,11 @@ export default function DeleteAddressModal({
                     </button>
 
                     <button
-                        onClick={handleConfirm}
-                        disabled={actionLoading}
+                        onClick={onConfirm}
+                        disabled={loading}
                         className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 cursor-pointer"
                     >
-                        {actionLoading ? "Deleting..." : "Delete"}
+                        {loading ? "Deleting..." : "Delete"}
                     </button>
                 </div>
             </div>

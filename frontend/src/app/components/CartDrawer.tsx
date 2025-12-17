@@ -6,8 +6,9 @@ import Image from "next/image";
 import React from "react";
 
 import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
-import { updateQuantity } from "@/lib/store/features/cart/cartSlice";
+import { updateCartItemQty, removeItemFromCart } from "@/lib/store/features/cart/cartSlice";
 import Link from "next/link";
+import { toast } from "sonner";
 
 interface CartDrawerProps {
   open: boolean;
@@ -23,8 +24,18 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
     0
   );
 
-  const handleUpdateQty = (id: string, newQty: number) => {
-    dispatch(updateQuantity({ id, qty: newQty }));
+  const handleUpdateQty = async (id: string, newQty: number) => {
+    try {
+      if (newQty <= 0) {
+        await dispatch(removeItemFromCart(id)).unwrap();
+        toast.success("Item removed from cart");
+      } else {
+        await dispatch(updateCartItemQty({ productId: id, quantity: newQty })).unwrap();
+        // toast.success("Cart updated"); // Optional, might be too noisy
+      }
+    } catch (error) {
+      toast.error("Failed to update cart");
+    }
   };
 
   return (

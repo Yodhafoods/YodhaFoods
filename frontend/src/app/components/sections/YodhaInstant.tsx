@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useAppDispatch } from "@/lib/store/hooks";
-import { addToCart } from "@/lib/store/features/cart/cartSlice";
+import { addItemToCart } from "@/lib/store/features/cart/cartSlice";
 import { toast } from "sonner";
 
 interface Product {
@@ -30,22 +30,26 @@ export default function YodhaInstant() {
             .finally(() => setLoading(false));
     }, []);
 
-    const handleAddToCart = (e: React.MouseEvent, product: Product) => {
-        e.preventDefault(); // Prevent navigation
-        // e.stopPropagation() is implied by Link behavior if button is inside, 
-        // but explicit preventDefault is key for Next.js Links.
-        // Actually e.preventDefault() prevents the Link from navigating.
+    const handleAddToCart = async (e: React.MouseEvent, product: Product) => {
+        e.preventDefault();
 
-        dispatch(
-            addToCart({
-                id: product._id,
-                name: product.name,
-                price: product.price,
-                qty: 1,
-                image: product.images?.[0]?.url || "",
-            })
-        );
-        toast.success("Added to cart");
+        try {
+            await dispatch(
+                addItemToCart({
+                    product: {
+                        id: product._id,
+                        name: product.name,
+                        price: product.price,
+                        qty: 1,
+                        image: product.images?.[0]?.url || "",
+                    },
+                    quantity: 1
+                })
+            ).unwrap();
+            toast.success("Added to cart");
+        } catch (error) {
+            toast.error("Failed to add to cart");
+        }
     };
 
     return (

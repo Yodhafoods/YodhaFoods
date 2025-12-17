@@ -7,11 +7,22 @@ import { IoMdAdd } from "react-icons/io";
 import { Address } from "@/types/address";
 
 export default function AddressList() {
-    const { addresses, loading } = useAddresses();
+    const { addresses, loading, refetch, deleteAddress, actionLoading } = useAddresses();
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingAddress, setEditingAddress] = useState<Address | undefined>();
     const [deletingAddress, setDeletingAddress] = useState<Address | undefined>();
+
+    const handleDelete = async () => {
+        if (deletingAddress) {
+            try {
+                await deleteAddress(deletingAddress._id);
+                setDeletingAddress(undefined);
+            } catch (error) {
+                // error handled in hook
+            }
+        }
+    };
 
     if (loading) return <p className="text-gray-500">Loading addresses...</p>;
 
@@ -44,7 +55,10 @@ export default function AddressList() {
                 isOpen={isModalOpen}
                 address={editingAddress}
                 onClose={() => setIsModalOpen(false)}
-                onSuccess={() => setIsModalOpen(false)}
+                onSuccess={() => {
+                    setIsModalOpen(false);
+                    refetch();
+                }}
             />
 
             {/* Delete */}
@@ -52,6 +66,8 @@ export default function AddressList() {
                 isOpen={!!deletingAddress}
                 address={deletingAddress}
                 onClose={() => setDeletingAddress(undefined)}
+                onConfirm={handleDelete}
+                loading={actionLoading}
             />
         </div>
     );

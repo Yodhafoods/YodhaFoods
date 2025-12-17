@@ -1,9 +1,8 @@
 "use client"
-
 import Image from "next/image";
 import Link from "next/link";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
-import { addToCart, updateQuantity } from "@/lib/store/features/cart/cartSlice";
+import { addItemToCart, updateCartItemQty } from "@/lib/store/features/cart/cartSlice";
 import { toast } from "sonner";
 import { RiAddFill, RiSubtractFill } from "react-icons/ri";
 import { IoAdd } from "react-icons/io5";
@@ -26,34 +25,49 @@ export default function ProductCard({ product }: ProductCardProps) {
     const cart = useAppSelector((state) => state.cart.items);
     const cartItem = cart.find((item) => item.id === String(product.id));
 
-    const handleAddToCart = (e: React.MouseEvent) => {
+    const handleAddToCart = async (e: React.MouseEvent) => {
         e.stopPropagation();
         e.preventDefault();
-        dispatch(
-            addToCart({
-                id: String(product.id),
-                name: product.name,
-                price: product.price,
-                qty: 1,
-                image: product.img,
-            })
-        );
-        toast.success("Added to cart");
-    };
-
-    const handleIncrement = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        e.preventDefault();
-        if (cartItem) {
-            dispatch(updateQuantity({ id: String(product.id), qty: cartItem.qty + 1 }));
+        try {
+            await dispatch(
+                addItemToCart({
+                    product: {
+                        id: String(product.id),
+                        name: product.name,
+                        price: product.price,
+                        qty: 1,
+                        image: product.img,
+                    },
+                    quantity: 1
+                })
+            ).unwrap();
+            toast.success("Added to cart");
+        } catch (error) {
+            toast.error("Failed to add to cart");
         }
     };
 
-    const handleDecrement = (e: React.MouseEvent) => {
+    const handleIncrement = async (e: React.MouseEvent) => {
         e.stopPropagation();
         e.preventDefault();
         if (cartItem) {
-            dispatch(updateQuantity({ id: String(product.id), qty: cartItem.qty - 1 }));
+            try {
+                await dispatch(updateCartItemQty({ productId: String(product.id), quantity: cartItem.qty + 1 })).unwrap();
+            } catch (error) {
+                toast.error("Failed to update quantity");
+            }
+        }
+    };
+
+    const handleDecrement = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
+        if (cartItem) {
+            try {
+                await dispatch(updateCartItemQty({ productId: String(product.id), quantity: cartItem.qty - 1 })).unwrap();
+            } catch (error) {
+                toast.error("Failed to update quantity");
+            }
         }
     };
 

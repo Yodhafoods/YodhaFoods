@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FaUser, FaWhatsapp } from "react-icons/fa";
 import { Menu, Search } from "lucide-react";
@@ -9,7 +9,8 @@ import { TiShoppingCart } from "react-icons/ti";
 import Link from "next/link";
 import CartDrawer from "./CartDrawer";
 import MobileMenuDrawer from "./MobileMenuDrawer";
-import { useAppSelector } from "@/lib/store/hooks";
+import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
+import { fetchCartItems } from "@/lib/store/features/cart/cartSlice";
 import SearchModal from "./SearchModal";
 
 interface StoryItem {
@@ -45,6 +46,11 @@ export default function Header() {
   const [openCart, setOpenCart] = useState(false);
   const [openSearch, setOpenSearch] = useState(false);
   const cartItems = useAppSelector((state) => state.cart.items);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(fetchCartItems());
+  }, [dispatch]);
 
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
