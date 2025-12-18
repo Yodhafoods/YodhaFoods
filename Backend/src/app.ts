@@ -8,10 +8,11 @@ import morgan from "morgan";
 import authRoutes from "./routes/auth.routes.js";
 import productRoutes from "./routes/product.routes.js";
 import categoryRoutes from "./routes/category.routes.js";
-import addressRoutes from "./routes/address.routes.js";
 import cartRoutes from "./routes/cart.routes.js";
+import orderRoutes from "./routes/order.routes.js";
 import paymentRoutes from "./routes/payment.routes.js";
-
+import webhookRoutes from "./routes/webhook.routes.js";
+import addressRoutes from "./routes/address.routes.js";
 
 import passport from "./config/passport.js";
 
@@ -48,6 +49,14 @@ if (process.env.NODE_ENV !== "production") {
   app.use(morgan("combined")); // production logs
 }
 
+/**
+ * Webhook needs RAW body
+ */
+app.use(
+  "/api/webhooks/razorpay",
+  express.raw({ type: "application/json" })
+);
+
 /* ----------------------------------------------------
     4. Body Parser + cookie parser
 ---------------------------------------------------- */
@@ -80,10 +89,10 @@ app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/addresses", addressRoutes);
 app.use("/api/cart", cartRoutes);
+app.use("/api/orders", orderRoutes);
 app.use("/api/payments",paymentRoutes);
+app.use("/api/webhooks", webhookRoutes);
 
-
-app.get("/", (req, res) => res.send("Backend is running 🚀"));
 
 /* ----------------------------------------------------
     8. Centralized Error Handler (Production Safe)

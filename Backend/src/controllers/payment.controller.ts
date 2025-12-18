@@ -15,7 +15,6 @@ export const createRazorpayOrder = async (
     const userId = req.user!.id;
     const { orderId } = req.body;
 
-    // 1️⃣ Fetch order
     const order = await Order.findOne({ _id: orderId, userId });
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
@@ -25,25 +24,22 @@ export const createRazorpayOrder = async (
       return res.status(400).json({ message: "Order already paid" });
     }
 
-    // 2️⃣ Create Razorpay order
     const razorpayOrder = await razorpay.orders.create({
-      amount: order.totalAmount * 100, // Razorpay uses paise
+      amount: order.totalAmount * 100,
       currency: "INR",
       receipt: `order_${order._id}`,
     });
 
-    // 3️⃣ Save Razorpay order id
     order.payment = {
       razorpayOrderId: razorpayOrder.id,
     };
     await order.save();
 
-    // 4️⃣ Send details to frontend
     return res.json({
       razorpayOrderId: razorpayOrder.id,
       amount: razorpayOrder.amount,
       currency: razorpayOrder.currency,
-      key: process.env.RAZORPAY_KEY_ID, // public key
+      key: process.env.RAZORPAY_KEY_ID,
     });
   } catch (error) {
     console.error("Create Razorpay Order Error:", error);
@@ -53,6 +49,7 @@ export const createRazorpayOrder = async (
 
 /**
  * POST /api/payments/verify
+ * Frontend-triggered verification (FAST UX)
  */
 export const verifyRazorpayPayment = async (
   req: Request,
@@ -66,13 +63,25 @@ export const verifyRazorpayPayment = async (
       orderId,
     } = req.body;
 
-    // 1️⃣ Fetch order
     const order = await Order.findById(orderId);
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    // 2️⃣ Verify signature
+    /**
+     * 🔐 IDEMPOTENCY CHECK
+     * Prevent double execution (verify + webhook)
+     */
+    if (order.paymentStatus === "PAID") {
+      return res.json({
+        message: "Payment already verified",
+        order,
+      });
+    }
+
+    /**
+     * Verify Razorpay signature
+     */
     const body = razorpay_order_id + "|" + razorpay_payment_id;
 
     const expectedSignature = crypto
@@ -84,7 +93,9 @@ export const verifyRazorpayPayment = async (
       return res.status(400).json({ message: "Invalid payment signature" });
     }
 
-    // 3️⃣ Mark order paid
+    /**
+     * Mark order as PAID
+     */
     order.paymentStatus = "PAID";
     order.status = "CONFIRMED";
     order.payment = {
@@ -95,7 +106,9 @@ export const verifyRazorpayPayment = async (
 
     await order.save();
 
-    // 4️⃣ Deduct stock SAFELY (AFTER payment)
+    /**
+     * Deduct stock ONCE
+     */
     for (const item of order.items) {
       await Product.findByIdAndUpdate(item.productId, {
         $inc: { stock: -item.quantity },
