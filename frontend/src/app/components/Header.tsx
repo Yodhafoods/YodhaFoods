@@ -21,23 +21,23 @@ interface StoryItem {
 }
 
 const stories: StoryItem[] = [
-  { label: "Home", img: "/assets/images/Story/home.png", target: "home" },
-  { label: "Shop", img: "/assets/images/Story/shop.png", target: "shop" },
+  { label: "Home", img: "/assets/images/Story/home.png", target: "/" },
+  { label: "Shop", img: "/assets/images/Story/shop.png", target: "/shop" },
   {
     label: "Instant",
     img: "/assets/images/Story/instant.jpg",
-    target: "instant",
+    target: "/instant",
     highlight: true,
   },
   {
     label: "Kitchen",
     img: "/assets/images/Story/kitchen.png",
-    target: "kitchen",
+    target: "/kitchen",
   },
   {
     label: "Journey",
     img: "/assets/images/Story/journey.png",
-    target: "journey",
+    target: "/about-us",
   },
 ];
 
@@ -96,28 +96,28 @@ export default function Header() {
 
             {/* Other Stories */}
             {stories.map((item, i) => (
-              <div
-                key={i}
-                className="flex flex-col items-center gap-1 cursor-pointer opacity-90 hover:opacity-100 hover:-translate-y-1 transition"
-                onClick={() => scrollTo(item.target)}
-              >
+              <Link href={item.target} key={i}>
                 <div
-                  className={`w-[65px] h-[65px] rounded-full p-[3px]
-                  ${item.highlight
-                      ? "bg-gradient-to-br from-orange-500 to-orange-300"
-                      : "bg-gradient-to-br from-pink-400 via-red-400 to-purple-600"
-                    }`}
+                  className="flex flex-col items-center gap-1 cursor-pointer opacity-90 hover:opacity-100 hover:-translate-y-1 transition"
                 >
-                  <Image
-                    src={item.img}
-                    width={65}
-                    height={65}
-                    alt={item.label}
-                    className="rounded-full border-2 border-white object-cover"
-                  />
+                  <div
+                    className={`w-[65px] h-[65px] rounded-full p-[3px]
+                  ${item.highlight
+                        ? "bg-gradient-to-br from-orange-500 to-orange-300"
+                        : "bg-gradient-to-br from-pink-400 via-red-400 to-purple-600"
+                      }`}
+                  >
+                    <Image
+                      src={item.img}
+                      width={65}
+                      height={65}
+                      alt={item.label}
+                      className="rounded-full border-2 border-white object-cover"
+                    />
+                  </div>
+                  <span className="text-sm font-semibold">{item.label}</span>
                 </div>
-                <span className="text-sm font-semibold">{item.label}</span>
-              </div>
+              </Link>
             ))}
           </div>
 
@@ -168,28 +168,30 @@ export default function Header() {
         {/* MOBILE STORY SCROLLER */}
         <div className="md:hidden mt-3 px-4 pb-2 overflow-x-auto flex gap-4 no-scrollbar">
           {stories.map((item, i) => (
-            <div
-              key={i}
-              onClick={() => scrollTo(item.target)}
-              className="flex-shrink-0 flex flex-col items-center cursor-pointer"
-            >
+            <Link href={item.target} key={i}>
+
               <div
-                className={`w-[60px] h-[60px] rounded-full p-[3px]
-                ${item.highlight
-                    ? "bg-gradient-to-br from-orange-500 to-orange-300"
-                    : "bg-gradient-to-br from-pink-400 via-red-400 to-purple-600"
-                  }`}
+                className="flex-shrink-0 flex flex-col items-center cursor-pointer"
               >
-                <Image
-                  src={item.img}
-                  width={60}
-                  height={60}
-                  alt={item.label}
-                  className="rounded-full border-2 border-white object-cover"
-                />
+                <div
+                  className={`w-[60px] h-[60px] rounded-full p-[3px]
+                ${item.highlight
+                      ? "bg-gradient-to-br from-orange-500 to-orange-300"
+                      : "bg-gradient-to-br from-pink-400 via-red-400 to-purple-600"
+                    }`}
+                >
+                  <Image
+                    src={item.img}
+                    width={60}
+                    height={60}
+                    alt={item.label}
+                    className="rounded-full border-2 border-white object-cover"
+                  />
+                </div>
+                <span className="text-xs font-semibold mt-1">{item.label}</span>
               </div>
-              <span className="text-xs font-semibold mt-1">{item.label}</span>
-            </div>
+            </Link>
+
           ))}
         </div>
       </header>

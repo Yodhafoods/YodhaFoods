@@ -84,7 +84,7 @@ export default function ProductCard({ product, className }: ProductCardProps) {
         bg-white rounded-2xl p-2.5 sm:p-4 shadow-sm cursor-pointer overflow-hidden
         transition-all duration-300 hover:-translate-y-2 hover:shadow-xl 
         relative group min-w-[75%] sm:min-w-[45%] lg:min-w-0 snap-start
-        block flex flex-col h-full
+        flex flex-col h-full
         ${className || ""}
       `}
         >
@@ -109,36 +109,39 @@ export default function ProductCard({ product, className }: ProductCardProps) {
             {/* Title + Price + Add to Cart */}
             {/* Title + Price + Add to Cart */}
             {/* Title + Price + Add to Cart */}
-            <div className="mt-3 flex flex-col md:flex-row md:items-center md:justify-between gap-2 flex-grow">
-                <div>
-                    <p className="font-bold text-sm sm:text-lg line-clamp-1">{product.name}</p>
-                    <p className="text-gray-900 font-semibold text-sm sm:text-base">₹{product.price}</p>
+            {/* Title + Price + Add to Cart */}
+            {/* Title + Price + Add to Cart */}
+            <div className="mt-3 flex items-center justify-between gap-2">
+                <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+                    <p className="font-bold text-xs sm:text-sm line-clamp-2 leading-tight text-gray-800" title={product.name}>
+                        {product.name}
+                    </p>
+                    <p className="text-gray-900 font-bold text-xs sm:text-sm">₹{product.price}</p>
                 </div>
 
-                <div className="mt-auto md:mt-0">
+                <div className="shrink-0">
                     {cartItem ? (
-                        <div className="group-hover:bg-orange-600 flex items-center justify-between bg-black text-white px-1 py-1.5 sm:px-3 sm:py-2 rounded-full font-bold w-full md:w-auto gap-2 transition-colors">
+                        <div className="group-hover:bg-orange-600 flex items-center justify-between bg-black text-white px-2 py-1.5 rounded-full font-bold gap-2 transition-colors min-w-[80px]">
                             <button
                                 onClick={handleDecrement}
-                                className="text-white hover:bg-gray-800 p-1 rounded-full cursor-pointer transition-colors"
+                                className="text-white hover:bg-gray-800 p-0.5 rounded-full cursor-pointer transition-colors shrink-0 flex items-center justify-center"
                             >
-                                <RiSubtractFill size={14} className="sm:w-4 sm:h-4" />
+                                <RiSubtractFill size={12} />
                             </button>
-                            <span className="text-xs sm:text-sm">{cartItem.qty}</span>
+                            <span className="text-xs">{cartItem.qty}</span>
                             <button
                                 onClick={handleIncrement}
-                                className="text-white hover:bg-gray-800 p-1 rounded-full cursor-pointer transition-colors"
+                                className="text-white hover:bg-gray-800 p-0.5 rounded-full cursor-pointer transition-colors shrink-0 flex items-center justify-center"
                             >
-                                <RiAddFill size={14} className="sm:w-4 sm:h-4" />
+                                <RiAddFill size={12} />
                             </button>
                         </div>
                     ) : (
                         <button
                             onClick={handleAddToCart}
-                            className="w-full md:w-auto bg-black text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-full font-bold group-hover:bg-orange-600 transition-colors text-xs sm:text-sm cursor-pointer whitespace-nowrap"
+                            className="bg-black text-white px-3 py-1.5 rounded-full font-bold group-hover:bg-orange-600 transition-colors text-xs cursor-pointer whitespace-nowrap"
                         >
-                            <span className="md:hidden">Add</span>
-                            <span className="hidden md:inline">Add to Cart</span>
+                            <span>Add to Cart</span>
                         </button>
                     )}
                 </div>

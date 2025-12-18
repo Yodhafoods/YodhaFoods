@@ -16,7 +16,7 @@ export default function ShopSidebar({
     onSelectCategory,
 }: ShopSidebarProps) {
     return (
-        <aside className="w-[85px] md:w-28 lg:w-32 flex-shrink-0 bg-white border-r border-gray-200 overflow-y-auto no-scrollbar pb-20">
+        <aside className="w-[85px] md:w-28 lg:w-32 flex-shrink-0 bg-white border-r border-gray-200 overflow-y-auto no-scrollbar pb-20 h-full overscroll-y-contain">
             <div className="flex flex-col">
                 {/* "All" Option */}
                 <button

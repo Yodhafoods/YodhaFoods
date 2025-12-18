@@ -7,6 +7,7 @@ import ProductCard from "@/app/components/ProductCard";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import ShopSidebar from "@/app/components/ShopSidebar";
+import DesktopCategoryBar from "@/app/components/DesktopCategoryBar";
 
 export default function ShopPage() {
   const { categories, loading: categoriesLoading } = useCategories();
@@ -24,30 +25,37 @@ export default function ShopPage() {
     );
   }
 
-  // Blinkit-style Layout:
   // Fixed sidebar on left (scrollable), Main content on right (scrollable)
   // Mobile: Sidebar is narrow (w-20 or w-1/4), Desktop: w-64
   return (
-    <div className="flex h-[calc(100vh-64px)] overflow-hidden bg-gray-50">
-      {/* Sidebar */}
-      {/* Sidebar */}
-      <ShopSidebar
-        categories={categories}
-        selectedCategory={selectedCategory}
-        onSelectCategory={setSelectedCategory}
-      />
+    <div className="flex h-[calc(100vh-64px)] overflow-hidden bg-gray-50 md:px-4">
+      {/* Sidebar - Mobile Only */}
+      <div className="block md:hidden h-full flex-shrink-0">
+        <ShopSidebar
+          categories={categories}
+          selectedCategory={selectedCategory}
+          onSelectCategory={setSelectedCategory}
+        />
+      </div>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto p-3 md:p-6 pb-24">
+      <main className="flex-1 overflow-y-auto p-1 md:p-1 md:[&::-webkit-scrollbar]:hidden md:[-ms-overflow-style:none] md:[scrollbar-width:none]">
         <div className="max-w-7xl mx-auto">
+          {/* Desktop Category Bar - Desktop Only */}
+          <DesktopCategoryBar
+            categories={categories}
+            selectedCategory={selectedCategory}
+            onSelectCategory={setSelectedCategory}
+          />
+
           {/* Header for Mobile/Desktop context */}
-          <div className="mb-6 flex items-center justify-between">
-            <h1 className="text-xl md:text-3xl font-bold text-gray-800">
+          <div className="mb-1 flex items-center justify-between">
+            <h1 className="text-lg font-bold text-gray-800">
               {selectedCategory
                 ? categories.find(c => c.slug === selectedCategory)?.name
                 : "All Products"}
             </h1>
-            <span className="text-xs md:text-sm text-gray-500">
+            <span className="text-xs text-gray-500">
               {products.length} Items
             </span>
           </div>
@@ -69,7 +77,7 @@ export default function ShopPage() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-6">
               {products.map((product) => (
                 <ProductCard
                   key={product._id}
