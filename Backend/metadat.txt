@@ -14,15 +14,31 @@ Frontend loads product using images[].url
         ↓
 CDN delivers optimized image
 
+
+
 Payment flow
 
-Cart → Create Order (DB)
+DB Order (PLACED)
       ↓
-Create Razorpay Order (server)
+Create Razorpay Order (no money)
       ↓
-Frontend pays Razorpay
+Frontend opens Razorpay UI
       ↓
-Verify payment (server)
+User pays
       ↓
-Mark order PAID + Deduct stock
+Frontend receives payment details
+      ↓
+Backend verifies signature
+      ↓
+Order = PAID + CONFIRMED
+      ↓
+Stock deducted
 
+//updated 
+1. User pays via Razorpay UI
+2. Razorpay captures payment
+3. Frontend MAY call /verify (best case)
+4. Razorpay ALWAYS sends webhook (guaranteed)
+5. Backend processes webhook
+6. Order marked PAID / FAILED
+7. Stock updated or refunded
