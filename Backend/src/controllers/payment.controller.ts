@@ -3,6 +3,8 @@ import razorpay from "../config/razorpay.js";
 import Order from "../models/Order.js";
 import crypto from "crypto";
 import Product from "../models/Product.js";
+import { sendEmail } from "../utils/sendEmail.js";
+import { getOrderConfirmationTemplate } from "../utils/emailTemplates.js";
 
 /**
  * POST /api/payments/create-razorpay-order
@@ -113,6 +115,27 @@ export const verifyRazorpayPayment = async (
       await Product.findByIdAndUpdate(item.productId, {
         $inc: { stock: -item.quantity },
       });
+    }
+
+    /**
+     * Send Confirmation Email
+     */
+    /**
+     * Send Confirmation Email
+     */
+    try {
+      // Req.user only has id/role, so we must fetch the user.
+      const orderWithUser = await Order.findById(order._id).populate("userId");
+
+      if (orderWithUser && orderWithUser.userId) {
+        const user = orderWithUser.userId as any;
+        const emailHtml = getOrderConfirmationTemplate(orderWithUser, user.name || "Customer");
+        await sendEmail(user.email, `Order Confirmation #${order._id.toString().slice(-6)}`, emailHtml);
+        console.log(`Order confirmation email sent to ${user.email}`);
+      }
+    } catch (emailErr) {
+      console.error("Failed to send order email:", emailErr);
+      // Don't fail the request if email fails
     }
 
     return res.json({

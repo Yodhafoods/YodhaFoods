@@ -143,7 +143,9 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                     ₹{totalAmount}
                   </span>
                 </div>
-                <Link href="/checkout">
+                <Link href="/checkout"
+                  onClick={onClose}
+                >
                   <button className="group w-full flex items-center justify-center gap-2 cursor-pointer bg-green-600 text-white py-3 font-semibold rounded-lg hover:bg-green-700 transition">
                     Proceed to Checkout <ArrowRight size={22} className="group-hover:translate-x-1 transition" />
                   </button>

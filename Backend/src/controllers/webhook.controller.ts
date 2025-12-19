@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import crypto from "crypto";
 import Order from "../models/Order.js";
 import Product from "../models/Product.js";
+import { sendEmail } from "../utils/sendEmail.js";
+import { getOrderConfirmationTemplate } from "../utils/emailTemplates.js";
 
 /**
  * POST /api/webhooks/razorpay
@@ -70,6 +72,22 @@ export const razorpayWebhook = async (req: Request, res: Response) => {
           await Product.findByIdAndUpdate(item.productId, {
             $inc: { stock: -item.quantity },
           });
+        }
+
+        /**
+         * Send Confirmation Email
+         */
+        try {
+          // Re-fetch to populate user
+          const orderWithUser = await Order.findById(order._id).populate("userId");
+          if (orderWithUser && orderWithUser.userId) {
+            const user = orderWithUser.userId as any;
+            const emailHtml = getOrderConfirmationTemplate(orderWithUser, user.name);
+            await sendEmail(user.email, `Order Confirmation #${order._id.toString().slice(-6)}`, emailHtml);
+            console.log(`Webhook: Order confirmation email sent to ${user.email}`);
+          }
+        } catch (emailErr) {
+          console.error("Webhook: Failed to send order email:", emailErr);
         }
       }
     }
