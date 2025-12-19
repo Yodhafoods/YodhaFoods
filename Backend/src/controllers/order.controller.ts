@@ -55,7 +55,11 @@ export const createOrder = async (req: Request, res: Response) => {
         });
       }
 
-      const price = product.discountPrice ?? product.price;
+      const price =
+        product.discountPrice && product.discountPrice > 0
+          ? product.discountPrice
+          : product.price;
+
       subtotal += price * item.quantity;
 
       orderItems.push({
