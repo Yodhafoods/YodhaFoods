@@ -17,9 +17,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Yodha Foods | Ancient Powders -Reimagined for Today.",
+  title: "Yodha Foods | Ancient Powders - Reimagined for Today.",
   description: "Yodha Foods - Ancient Powders.Reimagined for Today.",
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-icon.png",
+  },
 };
+{/* <meta name="apple-mobile-web-app-title" content="Yodha Foods" /> */ }
 
 export default function RootLayout({
   children,
@@ -45,3 +50,4 @@ export default function RootLayout({
     </html>
   );
 }
+// npx realfavicon check 3000
