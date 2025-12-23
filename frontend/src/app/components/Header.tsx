@@ -48,6 +48,44 @@ export default function Header() {
   const cartItems = useAppSelector((state) => state.cart.items);
   const dispatch = useAppDispatch();
 
+  // Search typing animation
+  const [searchPlaceholder, setSearchPlaceholder] = useState("");
+  const [typingIndex, setTypingIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [phraseIndex, setPhraseIndex] = useState(0);
+
+  const searchPhrases = [
+    "Search for fruit powders...",
+    "Search for flower powders...",
+    "Search for healthy mixes...",
+    "Search for instant powders..."
+  ];
+
+  useEffect(() => {
+    const currentPhrase = searchPhrases[phraseIndex];
+    const typeSpeed = isDeleting ? 50 : 100;
+
+    if (!isDeleting && typingIndex === currentPhrase.length) {
+      // Finished typing, wait then delete
+      setTimeout(() => setIsDeleting(true), 1500);
+      return;
+    }
+
+    if (isDeleting && typingIndex === 0) {
+      // Finished deleting, move to next phrase
+      setIsDeleting(false);
+      setPhraseIndex((prev) => (prev + 1) % searchPhrases.length);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setSearchPlaceholder(currentPhrase.substring(0, typingIndex + (isDeleting ? -1 : 1)));
+      setTypingIndex((prev) => prev + (isDeleting ? -1 : 1));
+    }, typeSpeed);
+
+    return () => clearTimeout(timer);
+  }, [typingIndex, isDeleting, phraseIndex]);
+
   useEffect(() => {
     dispatch(fetchCartItems());
   }, [dispatch]);
@@ -124,12 +162,12 @@ export default function Header() {
           {/* RIGHT — DESKTOP */}
           <div className="hidden md:flex gap-4 items-center">
             <button
-              className="border border-gray-800 text-xs text-gray-600 flex items-center gap-1 cursor-pointer hover:bg-gray-300 p-2 rounded-full transition-all duration-100"
+              className="border border-gray-800 text-xs font-medium text-gray-800 flex items-center justify-between gap-2 cursor-pointer hover:bg-gray-100 p-2 pl-4 rounded-full transition-all duration-100 min-w-[200px]"
               onClick={() => setOpenSearch(true)}
             >
-              Search...
+              <span className="">{searchPlaceholder}</span>
               <span>
-                <Search />
+                <Search size={16} />
               </span>
             </button>
             <button

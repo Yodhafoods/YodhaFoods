@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "./components/Header";
+import Footer from "./components/Footer";
 import { Toaster } from "sonner";
 import AuthProvider from "./context/AuthContext";
 import StoreProvider from "./StoreProvider";
@@ -24,7 +25,6 @@ export const metadata: Metadata = {
     apple: "/apple-icon.png",
   },
 };
-{/* <meta name="apple-mobile-web-app-title" content="Yodha Foods" /> */ }
 
 export default function RootLayout({
   children,
@@ -43,6 +43,7 @@ export default function RootLayout({
             <AuthProvider>
               <Header />
               {children}
+              <Footer />
             </AuthProvider>
           </StoreProvider>
         </>
@@ -50,4 +51,3 @@ export default function RootLayout({
     </html>
   );
 }
-// npx realfavicon check 3000
