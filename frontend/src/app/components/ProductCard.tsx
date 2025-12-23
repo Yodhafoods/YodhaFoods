@@ -141,7 +141,7 @@ export default function ProductCard({ product, className }: ProductCardProps) {
                             onClick={handleAddToCart}
                             className="bg-black text-white px-3 py-1.5 rounded-full font-bold group-hover:bg-orange-600 transition-colors text-xs cursor-pointer whitespace-nowrap"
                         >
-                            <span>Add to Cart</span>
+                            <span>Add </span>
                         </button>
                     )}
                 </div>
