@@ -13,6 +13,8 @@ import orderRoutes from "./routes/order.routes.js";
 import paymentRoutes from "./routes/payment.routes.js";
 import webhookRoutes from "./routes/webhook.routes.js";
 import addressRoutes from "./routes/address.routes.js";
+import videoRuotes from "./routes/video.routes.js";
+
 
 import passport from "./config/passport.js";
 
@@ -92,6 +94,7 @@ app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/payments",paymentRoutes);
 app.use("/api/webhooks", webhookRoutes);
+app.use("/api/videos", videoRuotes);
 
 
 /* ----------------------------------------------------

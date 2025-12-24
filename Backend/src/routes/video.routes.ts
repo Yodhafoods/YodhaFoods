@@ -1,0 +1,40 @@
+import { Router } from "express";
+import multer from "multer";
+import { validate } from "../middlewares/validate.js";
+import { createVideoSchema } from "../schemas/video.schema.js";
+import {
+  createVideo,
+  getKitchenVideos,
+} from "../controllers/video.controller.js";
+import { requireAuth, requireAdmin } from "../middlewares/auth.js";
+
+const router = Router();
+
+// Multer setup for video uploads
+const upload = multer({
+  limits: { fileSize: 20 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    if (!file.mimetype.startsWith("video/")) {
+      cb(new Error("Only video files allowed"));
+    }
+    cb(null, true);
+  },
+});
+
+
+// Admin upload
+
+router.post(
+  "/",
+  requireAuth,
+  requireAdmin,
+  upload.single("video"),          // 1️⃣ file
+  validate(createVideoSchema),     // 2️⃣ metadata
+  createVideo                      // 3️⃣ controller
+);
+
+
+// Public kitchen page
+router.get("/kitchen", getKitchenVideos);
+
+export default router;
