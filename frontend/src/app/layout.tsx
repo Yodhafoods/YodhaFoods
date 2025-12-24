@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import RunningBanner from "./components/RunningBanner";
+
 import { Toaster } from "sonner";
 import AuthProvider from "./context/AuthContext";
 import StoreProvider from "./StoreProvider";
@@ -41,18 +41,8 @@ export default function RootLayout({
 
         <StoreProvider>
           <AuthProvider>
-            {/* 🔥 Running Banner ABOVE Header */}
-            <RunningBanner
-              messages={[
-                "🚚 Free Shipping on Orders Above ₹999",
-                "💳 Extra 10% OFF on First Order",
-                "🔥 Mega Sale Live Now",
-              ]}
-            />
-
             <Header />
             <div className="page-wrapper">{children}</div>
-
             <Footer />
           </AuthProvider>
         </StoreProvider>

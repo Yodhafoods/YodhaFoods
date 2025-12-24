@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { FaUser, FaWhatsapp } from "react-icons/fa";
 import { Menu, Search } from "lucide-react";
 import Image from "next/image";
@@ -13,6 +13,7 @@ import MobileMenuDrawer from "./MobileMenuDrawer";
 import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
 import { fetchCartItems } from "@/lib/store/features/cart/cartSlice";
 import SearchModal from "./SearchModal";
+import RunningBanner from "./RunningBanner";
 import { useTypewriter } from "./header/useTypewriter";
 import { searchPhrases } from "./header/constants";
 import DesktopStories from "./header/DesktopStories";
@@ -27,6 +28,7 @@ export default function Header() {
   const [openDrawer, setOpenDrawer] = useState(false);
   const [openCart, setOpenCart] = useState(false);
   const [openSearch, setOpenSearch] = useState(false);
+  const [showBanner, setShowBanner] = useState(true);
   const cartItems = useAppSelector((state) => state.cart.items);
   const dispatch = useAppDispatch();
 
@@ -40,8 +42,18 @@ export default function Header() {
   }, [dispatch]);
 
   useEffect(() => {
-    dispatch(fetchCartItems());
-  }, [dispatch]);
+    const handleScroll = () => {
+      // Hide banner if scrolled more than 10px to account for bounce
+      if (window.scrollY > 0) {
+        setShowBanner(false);
+      } else {
+        setShowBanner(true);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
@@ -53,8 +65,35 @@ export default function Header() {
   return (
     <>
       {/* HEADER */}
-      {/* HEADER */}
-      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-gray-200">
+      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-gray-200 transition-all duration-300">
+        <AnimatePresence>
+          {showBanner && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="overflow-hidden"
+            >
+              <RunningBanner
+                messages={[
+                  {
+                    text: "🚚 Free Shipping on Orders Above ₹599 | Shop Now",
+                    link: "/shop",
+                  },
+                  {
+                    text: "💳 Big Saving Alert! Extra 10% OFF on First Order",
+                    link: "/shop",
+                  },
+                  {
+                    text: "🔥 Become a Member of YodhaFam | Get Exclusive Benefits",
+                    link: "/membership",
+                  },
+                ]}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <div className="max-w-[1440px] mx-auto px-4 py-3 flex items-center justify-between">
           {/* LOGO */}
           <div className="text-3xl font-black text-orange-600 tracking-tight">

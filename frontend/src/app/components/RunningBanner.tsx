@@ -1,7 +1,14 @@
 "use client";
 
+import Link from "next/link";
+
+type BannerMessage = {
+  text: string;
+  link: string;
+};
+
 type RunningBannerProps = {
-  messages: string[];
+  messages: BannerMessage[];
 };
 
 export default function RunningBanner({ messages }: RunningBannerProps) {
@@ -9,9 +16,9 @@ export default function RunningBanner({ messages }: RunningBannerProps) {
     <div className="banner-wrapper">
       <div className="banner-track">
         {[...messages, ...messages].map((msg, index) => (
-          <span key={index} className="banner-item">
-            {msg}
-          </span>
+          <Link key={index} href={msg.link} className="banner-item">
+            {msg.text}
+          </Link>
         ))}
       </div>
     </div>
