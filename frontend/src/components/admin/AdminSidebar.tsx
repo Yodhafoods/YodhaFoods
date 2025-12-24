@@ -7,7 +7,8 @@ import {
     ShoppingBag,
     TicketPercent,
     BarChart3,
-    LogOut
+    LogOut,
+    UtensilsCrossed
 } from "lucide-react";
 import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
@@ -26,6 +27,7 @@ export default function AdminSidebar({ activeTab, setActiveTab }: AdminSidebarPr
         { id: "products", label: "Products", icon: Package },
         { id: "categories", label: "Categories", icon: Tags },
         { id: "orders", label: "Orders", icon: ShoppingBag },
+        { id: "kitchen", label: "Kitchen", icon: UtensilsCrossed },
         { id: "coupons", label: "Coupons", icon: TicketPercent },
         { id: "analytics", label: "Analytics", icon: BarChart3 },
     ];

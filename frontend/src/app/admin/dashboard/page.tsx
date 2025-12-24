@@ -9,6 +9,7 @@ import ProductsView from '@/components/admin/ProductsView';
 import CategoriesView from '@/components/admin/CategoriesView';
 import OrdersView from '@/components/admin/OrdersView';
 import CouponsView from '@/components/admin/CouponsView';
+import KitchenView from '@/components/admin/KitchenView';
 
 export default function AdminDashboard() {
     const { user, loading } = useAuth();
@@ -37,14 +38,16 @@ export default function AdminDashboard() {
         switch (activeTab) {
             case 'dashboard':
                 return <DashboardOverview />;
-            case 'products':
-                return <ProductsView />;
             case 'categories':
                 return <CategoriesView />;
+            case 'products':
+                return <ProductsView />;
             case 'orders':
                 return <OrdersView />;
             case 'coupons':
                 return <CouponsView />;
+            case 'kitchen':
+                return <KitchenView />;
             default:
                 return <DashboardOverview />;
         }

@@ -1,44 +1,19 @@
-"use client";
+import { getKitchenVideos } from "../../services/kitchen.services";
+import KitchenVideoCarousel from "../components/kitchen/KitchenVideoCarousel";
+import { Video } from "@/types/video.types";
 
-import { useEffect, useState } from "react";
-import KitchenVideoReel from "../components/KitchenVideoCard";
+export default async function KitchenPage() {
+  let videos: Video[] = [];
 
-export default function KitchenPage() {
-  const [videos, setVideos] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchVideos = async () => {
-      try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/videos/kitchen`,
-          { cache: "no-store" }
-        );
-        const data = await res.json();
-        const text = await res.text();
-        console.log(text);
-        setVideos(data.videos || []);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchVideos();
-  }, []);
-
-  /* 1️⃣ LOADING STATE */
-  if (loading) {
-    return (
-      <div className="h-screen flex items-center justify-center">
-        <p className="text-gray-500">Loading kitchen videos...</p>
-      </div>
-    );
+  try {
+    const data = await getKitchenVideos();
+    videos = data.videos || [];
+  } catch (error) {
+    console.error("Failed to fetch kitchen videos:", error);
   }
 
-  /* 2️⃣ EMPTY STATE (NO VIDEOS) */
-  if (videos.length === 0) {
+  /* EMPTY STATE */
+  if (!videos.length) {
     return (
       <div className="h-screen flex flex-col items-center justify-center text-center px-4">
         <h1 className="text-2xl font-semibold mb-2">Yodha Kitchen 🍳</h1>
@@ -53,12 +28,10 @@ export default function KitchenPage() {
     );
   }
 
-  /* 3️⃣ NORMAL VIDEO FEED */
   return (
-    <div className="h-screen overflow-y-scroll snap-y snap-mandatory">
-      {videos.map((video) => (
-        <KitchenVideoReel key={video._id} video={video} />
-      ))}
+    <div className="">
+      <h1 className="text-2xl font-semibold mb-2">Welcome to Yodha Kitchen 🍳</h1>
+      <KitchenVideoCarousel videos={videos} />
     </div>
   );
 }
