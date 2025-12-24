@@ -105,11 +105,7 @@ export default function ProductCard({ product, className }: ProductCardProps) {
                 />
             </div>
 
-            {/* Title + Price + Add to Cart */}
-            {/* Title + Price + Add to Cart */}
-            {/* Title + Price + Add to Cart */}
-            {/* Title + Price + Add to Cart */}
-            {/* Title + Price + Add to Cart */}
+
             {/* Title + Price + Add to Cart */}
             <div className="mt-3 flex items-center justify-between gap-2">
                 <div className="flex flex-col gap-0.5 flex-1 min-w-0">
@@ -141,7 +137,7 @@ export default function ProductCard({ product, className }: ProductCardProps) {
                             onClick={handleAddToCart}
                             className="bg-black text-white px-3 py-1.5 rounded-full font-bold group-hover:bg-orange-600 transition-colors text-xs cursor-pointer whitespace-nowrap"
                         >
-                            <span>Add </span>
+                            <span>Add to Cart</span>
                         </button>
                     )}
                 </div>

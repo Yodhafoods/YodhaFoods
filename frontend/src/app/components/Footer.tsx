@@ -45,7 +45,7 @@ const Footer = () => {
                         <div className="flex items-center gap-3 justify-start">
                             <Mail size={18} className="shrink-0 text-gray-900" />
                             <a href="mailto:support@yodhafoods.com" className="hover:text-orange-700 transition font-bold">
-                                Namaste@yodhafoods.com
+                                namaste@yodhafoods.com
                             </a>
                         </div>
                         <div className="flex items-center gap-3 justify-start">
@@ -59,7 +59,7 @@ const Footer = () => {
 
                 {/* CENTER SECTION: Newsletter, Socials, Legal */}
                 <div className="md:col-span-6 flex flex-col items-center text-center">
-                    <div className="max-w-md w-full flex flex-col items-center p-8 bg-gray-100 rounded-2xl border border-gray-100">
+                    <div className="max-w-md w-full flex flex-col items-center p-8 bg-gray-50 rounded-2xl border border-gray-100">
                         <h3 className="text-2xl font-black text-gray-900 mb-2">
                             The Yodha Way of Life
                         </h3>
@@ -67,10 +67,10 @@ const Footer = () => {
                             Join our community for exclusive recipes, offers, and ancient wisdom.
                         </p>
 
-                        <form className="flex items-center bg-white border border-gray-300 rounded-full px-4 py-2 w-full shadow-sm focus-within:ring-2 focus-within:ring-orange-200 focus-within:border-orange-500 transition-all mb-8">
+                        <form className="flex items-center bg-white border border-gray-50 rounded-full px-4 py-2 w-full shadow-sm focus-within:ring-2 focus-within:ring-orange-200 focus-within:border-orange-500 transition-all mb-8">
                             <input
                                 type="email"
-                                placeholder="Enter your email address"
+                                placeholder="Your Email"
                                 className="bg-transparent outline-none flex-1 text-sm text-gray-900 font-medium placeholder-gray-500 w-full"
                                 required
                             />
