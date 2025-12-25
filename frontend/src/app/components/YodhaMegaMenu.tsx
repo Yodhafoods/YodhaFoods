@@ -67,7 +67,7 @@ const FollowSection = () => {
             <button
                 ref={buttonRef}
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center gap-2.5 rounded-lg px-5 py-1 text-[15px] bg-orange-500 cursor-pointer hover:bg-orange-600 font-medium text-white transition-all duration-300 hover:brightness-110"
+                className="flex items-center gap-2.5 rounded-lg px-5 py-1 text-[15px] bg-blue-500 hover:bg-blue-600 cursor-pointer font-medium text-white transition-all duration-300 hover:brightness-110"
             >
                 <FaUserPlus /> Follow
             </button>

@@ -28,9 +28,9 @@ router.post(
   "/",
   requireAuth,
   requireAdmin,
-  upload.single("video"),          // 1️⃣ file
-  validate(createVideoSchema),     // 2️⃣ metadata
-  createVideo                      // 3️⃣ controller
+  upload.single("video"),
+  validate(createVideoSchema),
+  createVideo
 );
 
 

@@ -20,6 +20,9 @@ import passport from "./config/passport.js";
 
 const app = express();
 
+// Trust proxy is required for secure cookies behind a reverse proxy (Heroku, Render, Vercel, etc.)
+app.set("trust proxy", 1);
+
 app.use(passport.initialize());
 
 /* ----------------------------------------------------
@@ -92,7 +95,7 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/addresses", addressRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
-app.use("/api/payments",paymentRoutes);
+app.use("/api/payments", paymentRoutes);
 app.use("/api/webhooks", webhookRoutes);
 app.use("/api/videos", videoRuotes);
 

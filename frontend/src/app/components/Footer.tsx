@@ -17,7 +17,7 @@ const Footer = () => {
       <div className="max-w-[1440px] mx-auto px-6 md:px-12 grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-8">
         {/* LEFT SECTION: Logo, Tagline, Address */}
         <div className="md:col-span-3 flex flex-col gap-6 text-left items-start">
-          <div className="flex flex-col gap-2 items-start">
+          <div className="flex flex-col gap-2 items-center justify-center">
             <div className="w-32">
               <Image
                 src="/assets/images/logo.png"
@@ -27,8 +27,8 @@ const Footer = () => {
                 className="object-contain"
               />
             </div>
-            <p className="text-sm font-bold text-orange-700 tracking-wide">
-              Rooted in Legacy, Guided by Tradition
+            <p className="text-sm font-bold text-amber-700 tracking-wide">
+              Rooted in Legacy | Guided by Tradition
             </p>
           </div>
 
@@ -184,7 +184,7 @@ const Footer = () => {
       {/* COPYRIGHT */}
       <div className="max-w-[1440px] mx-auto px-6 mt-12 pt-6 border-t border-gray-200 text-center text-xs font-semibold text-gray-500">
         <p>
-          &copy; {new Date().getFullYear()} Yodha Foods Private Limited. All
+          &copy; {new Date().getFullYear()} Yodha Foods . All
           rights reserved.
         </p>
       </div>
