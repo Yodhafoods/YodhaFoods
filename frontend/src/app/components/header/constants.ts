@@ -20,13 +20,13 @@ export const stories: StoryItem[] = [
         target: "/kitchen",
     },
     {
-        label: "YFBlogs",
-        img: "/assets/images/Story/journey.png",
+        label: "TruthLab",
+        img: "/assets/images/Story/truthlab.png",
         target: "/blogs",
     },
     {
         label: "Journey",
-        img: "/logo.png",
+        img: "/assets/images/Story/journey.png",
         target: "/about-us",
     },
 ];
