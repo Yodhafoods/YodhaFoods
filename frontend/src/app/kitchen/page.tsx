@@ -5,6 +5,8 @@ import Link from "next/link";
 import { ChefHat, BookOpen, ArrowRight } from "lucide-react";
 import { FaUtensils } from "react-icons/fa";
 
+export const dynamic = "force-dynamic";
+
 export default async function KitchenPage() {
   let videos: Video[] = [];
 
