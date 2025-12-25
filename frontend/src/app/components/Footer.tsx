@@ -116,22 +116,22 @@ const Footer = () => {
             <div className="flex gap-6 mb-6">
               <SocialLink
                 href="#"
-                icon={<FaInstagram size={20} />}
+                icon={<FaInstagram size={20} className="group-hover:text-orange-600 transition" />}
                 label="Instagram"
               />
               <SocialLink
                 href="#"
-                icon={<FaYoutube size={22} />}
+                icon={<FaYoutube size={22} className="group-hover:text-red-600 transition" />}
                 label="YouTube"
               />
               <SocialLink
                 href="#"
-                icon={<FaLinkedinIn size={18} />}
+                icon={<FaLinkedinIn size={18} className="group-hover:text-blue-700 transition" />}
                 label="LinkedIn"
               />
               <SocialLink
                 href="#"
-                icon={<FaFacebookF size={18} />}
+                icon={<FaFacebookF size={18} className="group-hover:text-blue-700 transition" />}
                 label="Facebook"
               />
             </div>
@@ -206,7 +206,7 @@ const SocialLink = ({
     aria-label={label}
     target="_blank"
     rel="noreferrer"
-    className="text-gray-600 hover:text-white cursor-pointer border border-gray-200 p-2 rounded-full hover:bg-orange-600 transition-all transform hover:scale-105"
+    className="text-gray-600 hover:text-white cursor-pointer border border-gray-200 p-2 rounded-full group hover:bg-gray-200 transition-all transform hover:scale-105"
   >
     {icon}
   </Link>

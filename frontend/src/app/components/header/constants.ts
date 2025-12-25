@@ -10,7 +10,7 @@ export const stories: StoryItem[] = [
     { label: "Shop", img: "/assets/images/Story/shop.png", target: "/shop" },
     {
         label: "Instant",
-        img: "/assets/images/Story/instant.jpg",
+        img: "/assets/images/Story/instant.png",
         target: "/instant",
         highlight: true,
     },
