@@ -20,9 +20,9 @@ export const stories: StoryItem[] = [
         target: "/kitchen",
     },
     {
-        label: "MagicBox",
+        label: "YFBlogs",
         img: "/assets/images/Story/journey.png",
-        target: "/about-us",
+        target: "/blogs",
     },
     {
         label: "Journey",

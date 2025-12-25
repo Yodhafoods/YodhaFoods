@@ -64,7 +64,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
               <h2 className="text-xl font-semibold">Your Cart</h2>
               <button
                 onClick={onClose}
-                className="bg-green-800 text-white hover:bg-green-900 rounded-sm  cursor-pointer"
+                className="bg-gray-600 text-white hover:bg-gray-700 rounded-sm  cursor-pointer"
               >
                 <X size={24} />
               </button>
@@ -72,19 +72,19 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
 
             {/* Cart Items */}
             <div className="flex-1 overflow-y-auto space-y-4">
-              <p className="text-green-800">Products</p>
+              <p className="text-orange-600">Products</p>
               {items.length === 0 ? (
                 <div className="mt-10 flex flex-col gap-2 justify-center items-center">
                   <p className="text-gray-500 text-center">Your cart is empty.</p>
                   <Link href="/shop">
-                    <button className="px-4 py-2 bg-green-800 text-white hover:bg-green-900 rounded-sm  cursor-pointer">Continue Shopping </button>
+                    <button className="px-4 py-2 bg-orange-600 text-white hover:bg-orange-700 rounded-sm  cursor-pointer">Continue Shopping </button>
                   </Link>
                 </div>
               ) : (
                 items.map((item) => (
                   <div
                     key={item.id}
-                    className="flex gap-4 shadow-2xs shadow-green-100 pb-3"
+                    className="flex gap-4 shadow-2xs shadow-orange-100 pb-3"
                   >
                     <Image
                       src={item.image}
@@ -97,7 +97,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                     <div className="flex flex-col flex-1">
                       <div className="flex justify-between items-start">
                         <span className="font-medium">{item.name}</span>
-                        <span className="text-green-700 font-semibold">
+                        <span className="text-orange-600 font-semibold">
                           ₹{item.price * item.qty}
                         </span>
                       </div>
@@ -136,17 +136,17 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
 
             {/* Footer */}
             {items.length > 0 && (
-              <div className="border-t pt-4 mt-2 mb-safe">
+              <div className="border-t border-gray-400 pt-4 mt-2 mb-safe">
                 <div className="flex justify-between items-center mb-4">
                   <span className="font-bold text-lg">Total</span>
-                  <span className="font-bold text-xl text-green-700">
+                  <span className="font-bold text-xl text-orange-600">
                     ₹{totalAmount}
                   </span>
                 </div>
                 <Link href="/checkout"
                   onClick={onClose}
                 >
-                  <button className="group w-full flex items-center justify-center gap-2 cursor-pointer bg-green-600 text-white py-3 font-semibold rounded-lg hover:bg-green-700 transition">
+                  <button className="group w-full flex items-center justify-center gap-2 cursor-pointer bg-orange-600 text-white py-3 font-semibold rounded-lg hover:bg-orange-700 transition">
                     Proceed to Checkout <ArrowRight size={22} className="group-hover:translate-x-1 transition" />
                   </button>
                 </Link>

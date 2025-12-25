@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Dialog } from "@headlessui/react";
 import { Video } from "@/types/video.types";
 import { X, ChevronLeft, ChevronRight, ShoppingBag } from "lucide-react";
@@ -32,25 +32,25 @@ export default function KitchenVideoModal({
     const router = useRouter();
     const dispatch = useAppDispatch();
 
-    // Touch Handling for Mobile Swipe
-    const [touchStart, setTouchStart] = useState<number | null>(null);
-    const [touchEnd, setTouchEnd] = useState<number | null>(null);
+    // Touch Handling for Mobile Swipe (using useRef for better performance/reliability)
+    const touchStart = useRef<number | null>(null);
+    const touchEnd = useRef<number | null>(null);
 
     const minSwipeDistance = 50;
 
     const onTouchStart = (e: React.TouchEvent) => {
-        setTouchEnd(null); // Reset
-        setTouchStart(e.targetTouches[0].clientY);
+        touchEnd.current = null; // Reset
+        touchStart.current = e.targetTouches[0].clientY;
     };
 
     const onTouchMove = (e: React.TouchEvent) => {
-        setTouchEnd(e.targetTouches[0].clientY);
+        touchEnd.current = e.targetTouches[0].clientY;
     };
 
     const onTouchEnd = () => {
-        if (!touchStart || !touchEnd) return;
+        if (!touchStart.current || !touchEnd.current) return;
 
-        const distance = touchStart - touchEnd;
+        const distance = touchStart.current - touchEnd.current;
         const isSwipeUp = distance > minSwipeDistance;
         const isSwipeDown = distance < -minSwipeDistance;
 
@@ -220,6 +220,7 @@ export default function KitchenVideoModal({
                     <div
                         className="md:hidden fixed inset-0 z-40 bg-black flex flex-col"
                         onTouchStart={handleTouchStart}
+                        onTouchMove={onTouchMove}
                         onTouchEnd={handleTouchEnd}
                     >
                         {/* 1. Full Screen Video */}

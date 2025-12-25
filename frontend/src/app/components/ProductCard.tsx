@@ -106,18 +106,20 @@ export default function ProductCard({ product, className }: ProductCardProps) {
             </div>
 
 
-            {/* Title + Price + Add to Cart */}
-            <div className="mt-3 flex items-center justify-between gap-2">
-                <div className="flex flex-col gap-0.5 flex-1 min-w-0">
-                    <p className="font-bold text-xs sm:text-sm line-clamp-2 leading-tight text-gray-800" title={product.name}>
-                        {product.name}
-                    </p>
-                    <p className="text-gray-900 font-bold text-xs sm:text-sm">₹{product.price}</p>
-                </div>
+            {/* Title */}
+            <div className="mt-3">
+                <p className="font-bold text-xs sm:text-sm line-clamp-2 leading-tight text-gray-800" title={product.name}>
+                    {product.name}
+                </p>
+            </div>
+
+            {/* Price + Add to Cart */}
+            <div className="mt-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-2">
+                <p className="text-gray-900 font-bold text-xs sm:text-sm">₹{product.price}</p>
 
                 <div className="shrink-0">
                     {cartItem ? (
-                        <div className="group-hover:bg-orange-600 flex items-center justify-between bg-black text-white px-2 py-1.5 rounded-full font-bold gap-2 transition-colors min-w-[80px]">
+                        <div className="group-hover:bg-orange-600 flex items-center justify-between bg-black text-white px-1.5 sm:px-2 py-1.5 rounded-full font-bold gap-1 sm:gap-2 transition-colors min-w-[60px] sm:min-w-[80px]">
                             <button
                                 onClick={handleDecrement}
                                 className="text-white hover:bg-gray-800 p-0.5 rounded-full cursor-pointer transition-colors shrink-0 flex items-center justify-center"
@@ -137,7 +139,8 @@ export default function ProductCard({ product, className }: ProductCardProps) {
                             onClick={handleAddToCart}
                             className="bg-black text-white px-3 py-1.5 rounded-full font-bold group-hover:bg-orange-600 transition-colors text-xs cursor-pointer whitespace-nowrap"
                         >
-                            <span>Add to Cart</span>
+                            <span className="sm:hidden">Add</span>
+                            <span className="hidden sm:inline">Add to Cart</span>
                         </button>
                     )}
                 </div>

@@ -62,5 +62,8 @@ export const getKitchenVideos = async (_req: Request, res: Response) => {
     .populate("productId")
     .sort({ createdAt: -1 });
 
-  res.json({ videos });
+  // Filter out videos where product might have been deleted (productId is null)
+  const validVideos = videos.filter((video) => video.productId);
+
+  res.json({ videos: validVideos });
 };
