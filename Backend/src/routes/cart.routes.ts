@@ -10,10 +10,10 @@ import {
 
 const router = Router();
 
-router.post("/add", requireAuth, addToCart);
-router.get("/", requireAuth, getCart);
-router.put("/update", requireAuth, updateCartItem);
-router.delete("/remove/:productId", requireAuth, removeFromCart);
-router.delete("/clear", requireAuth, clearCart);
+router.post("/add", addToCart);
+router.get("/", getCart);
+router.put("/update", updateCartItem);
+router.delete("/remove/:productId", removeFromCart);
+router.delete("/clear", clearCart);
 
 export default router;
