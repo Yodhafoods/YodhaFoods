@@ -64,7 +64,7 @@ export const registerUser = async (
   res: Response
 ) => {
   try {
-    const { name, email, password } = req.body;
+    const { first_name, email,contact_number, password } = req.body;
 
     const existing = await User.findOne({ email });
     if (existing) {
@@ -74,8 +74,9 @@ export const registerUser = async (
     const hash = await bcrypt.hash(password, 12);
 
     const user = await User.create({
-      name,
+      first_name,
       email,
+      Contact_number:contact_number,
       password: hash,
       verified: false,
     });
@@ -90,7 +91,7 @@ export const registerUser = async (
       user.email,
       "Verify your Yodha Foods account",
       `
-        <h2>Welcome to Yodha Foods, ${user.name}!</h2>
+        <h2>Welcome to Yodha Foods, ${user.first_name}!</h2>
         <p>Please verify your email by clicking the button below:</p>
 
         <a href="${verifyUrl}"

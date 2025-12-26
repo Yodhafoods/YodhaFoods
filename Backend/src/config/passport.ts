@@ -12,7 +12,7 @@ passport.use(
         async (accessToken, refreshToken, profile, done) => {
             try {
                 const email = profile.emails?.[0].value;
-                const name = profile.displayName;
+                const first_name = profile.displayName;
                 const googleId = profile.id;
 
                 if (!email) return done(new Error("No email from Google"));
@@ -22,7 +22,7 @@ passport.use(
                 if (!user) {
                     // Create new user
                     user = await User.create({
-                        name,
+                        first_name,
                         email,
                         verified: true, // Google verified
                         googleId,
