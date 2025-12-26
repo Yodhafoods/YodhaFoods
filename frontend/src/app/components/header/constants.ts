@@ -22,7 +22,7 @@ export const stories: StoryItem[] = [
     {
         label: "TruthLab",
         img: "/assets/images/Story/truthlab.png",
-        target: "/blogs",
+        target: "/truth-lab",
     },
     {
         label: "Journey",

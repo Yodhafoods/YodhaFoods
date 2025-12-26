@@ -1,5 +1,18 @@
 @import "tailwindcss";
 
+@theme {
+  --color-dark-green: #0f2f2b;
+  --color-mid-green: #173e3a;
+  --color-soft-overlay-green: #1e4a45;
+  --color-base-gold: #c79a2d;
+  --color-light-gold: #e6c36b;
+  --color-shadow-gold: #b88a24;
+  --color-soft-cream: #faf6ec;
+  --color-heading-light: #f6f1e7;
+  --color-section-shadow: rgba(0, 0, 0, 0.08);
+  --color-body-text: #6e6e6e;
+}
+
 /* @import url("https://fonts.googleapis.com/css2?family=Fraunces:wght@300;600;900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@300;500;700;800&display=swap"); */
 
