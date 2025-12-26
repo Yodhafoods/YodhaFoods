@@ -13,7 +13,7 @@ const router = Router();
 // Multer setup for video uploads
 const upload = multer({
   limits: { fileSize: 20 * 1024 * 1024 },
-  fileFilter: (_req, file, cb) => {
+  fileFilter: (_req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
     if (!file.mimetype.startsWith("video/")) {
       return cb(new Error("Only video files allowed"));
     }
