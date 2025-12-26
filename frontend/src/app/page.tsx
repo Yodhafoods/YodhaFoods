@@ -3,6 +3,7 @@ import JourneySection from "./components/sections/Journey";
 import YodhaInstant from "./components/sections/YodhaInstant";
 import Candy from "./components/sections/Candy";
 import CategoriesSection from "./components/sections/CategoriesSection";
+import WatchAndShop from "./components/sections/WatchAndShop";
 
 export default function Home() {
   return (
@@ -19,6 +20,11 @@ export default function Home() {
         <div id="shop" className="">
           <Candy />
         </div>
+
+        {/* Watch and Shop Section */}
+        <WatchAndShop />
+
+
 
         {/* Example sections — add your content later */}
         <section className="py-16 px-6 text-center">

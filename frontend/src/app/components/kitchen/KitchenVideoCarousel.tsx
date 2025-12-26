@@ -7,11 +7,12 @@ import { Video } from "@/types/video.types";
 
 interface KitchenVideoCarouselProps {
     videos: Video[];
+    hideHeader?: boolean;
 }
 
 import KitchenVideoModal from "./KitchenVideoModal";
 
-export default function KitchenVideoCarousel({ videos }: KitchenVideoCarouselProps) {
+export default function KitchenVideoCarousel({ videos, hideHeader = false }: KitchenVideoCarouselProps) {
     const [startIndex, setStartIndex] = useState(0);
     const [activeVideoIndex, setActiveVideoIndex] = useState(0);
     const [itemsToShow, setItemsToShow] = useState(7);
@@ -98,36 +99,38 @@ export default function KitchenVideoCarousel({ videos }: KitchenVideoCarouselPro
     };
 
     return (
-        <div className="relative w-full group p-10">
+        <div className="relative w-full group px-8 py-6 md:p-10">
             {/* Header */}
-            <div className="flex items-center justify-between mb-4 px-1">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                    Yodha Kitchen
-                </h2>
-            </div>
+            {!hideHeader && (
+                <div className="flex items-center justify-between mb-4 px-1">
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                        Yodha Kitchen
+                    </h2>
+                </div>
+            )}
 
             {/* Navigation Buttons (Center Left/Right) */}
             <button
                 onClick={prev}
                 disabled={isAtStart}
-                className={`absolute left-0 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full border bg-white shadow-md transition-all duration-200 ${isAtStart
-                    ? "border-gray-200 text-gray-300 cursor-not-allowed"
+                className={`absolute left-0 top-1/2 -translate-y-1/2 z-20 p-1.5 md:p-2 rounded-full border bg-white shadow-md transition-all duration-200 ${isAtStart
+                    ? "border-gray-200 text-gray-300 cursor-not-allowed hidden md:block"
                     : "border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-zinc-800 dark:bg-zinc-900"
                     }`}
                 aria-label="Previous videos"
             >
-                <ChevronLeft size={24} />
+                <ChevronLeft size={24} className="w-5 h-5 md:w-6 md:h-6" />
             </button>
             <button
                 onClick={next}
                 disabled={isAtEnd}
-                className={`absolute right-0 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full border bg-white shadow-md transition-all duration-200 ${isAtEnd
-                    ? "border-gray-200 text-gray-300 cursor-not-allowed"
+                className={`absolute right-0 top-1/2 -translate-y-1/2 z-20 p-1.5 md:p-2 rounded-full border bg-white shadow-md transition-all duration-200 ${isAtEnd
+                    ? "border-gray-200 text-gray-300 cursor-not-allowed hidden md:block"
                     : "border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-zinc-800 dark:bg-zinc-900"
                     }`}
                 aria-label="Next videos"
             >
-                <ChevronRight size={24} />
+                <ChevronRight size={24} className="w-5 h-5 md:w-6 md:h-6" />
             </button>
 
             {/* Carousel Container */}

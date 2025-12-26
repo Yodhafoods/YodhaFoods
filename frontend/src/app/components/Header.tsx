@@ -103,7 +103,7 @@ export default function Header() {
                 alt="Logo"
                 width={100}
                 height={100}
-                className="rounded-full w-16 h-16 md:w-[100px] md:h-[100px]"
+                className="w-16 h-16 md:w-[100px] md:h-[100px]"
               />
             </Link>
           </div>
