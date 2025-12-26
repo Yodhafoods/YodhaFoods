@@ -39,7 +39,12 @@ app.use(
 ---------------------------------------------------- */
 app.use(
   cors({
-    origin: [process.env.FRONTEND_ORIGIN || "http://localhost:3000", "http://localhost:3000"],
+    origin: [
+      process.env.FRONTEND_ORIGIN || "http://localhost:3000",
+      "http://localhost:3000",
+      "https://www.yodhafoods.com",
+      "https://yodhafoods.com"
+    ],
     credentials: true, // allow cookies
     methods: ["GET", "POST", "PUT", "DELETE"],
   })

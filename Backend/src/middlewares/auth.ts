@@ -28,7 +28,9 @@ export const requireAuth = (
   next: NextFunction
 ) => {
   const token = req.cookies?.at; // access token cookie name: "at"
+
   if (!token) {
+    console.error("[Auth] No token found. Cookies:", Object.keys(req.cookies || {}));
     return res.status(401).json({ message: "Not authenticated" });
   }
 
@@ -36,7 +38,8 @@ export const requireAuth = (
     const decoded = jwt.verify(token, ACCESS_SECRET) as DecodedToken;
     req.user = { id: decoded.sub, role: decoded.role };
     next();
-  } catch {
+  } catch (err) {
+    console.error("[Auth] Token verification failed:", err);
     return res.status(401).json({ message: "Invalid or expired token" });
   }
 };
