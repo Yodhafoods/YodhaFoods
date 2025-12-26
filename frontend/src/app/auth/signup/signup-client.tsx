@@ -9,7 +9,13 @@ import GoogleButton from "../../components/GoogleButton";
 export default function SignupClient() {
   const { signup } = useAuthActions();
 
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [form, setForm] = useState({
+    first_name: "",
+    last_name: "",
+    contact_number: "",
+    email: "",
+    password: "",
+  });
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -63,20 +69,47 @@ export default function SignupClient() {
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-4">
+              <div className="flex gap-4">
+                <div className="w-1/2">
+                  <input
+                    type="text"
+                    placeholder="First Name *"
+                    value={form.first_name}
+                    onChange={(e) => setForm({ ...form, first_name: e.target.value })}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#FF7426] focus:border-transparent outline-none transition-all"
+                    required
+                  />
+                </div>
+                <div className="w-1/2">
+                  <input
+                    type="text"
+                    placeholder="Last Name"
+                    value={form.last_name}
+                    onChange={(e) => setForm({ ...form, last_name: e.target.value })}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#FF7426] focus:border-transparent outline-none transition-all"
+                  />
+                </div>
+              </div>
               <div>
                 <input
-                  type="text"
-                  placeholder="Full Name"
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  type="text" // using text to prevent spinner but validate as number
+                  inputMode="numeric"
+                  placeholder="Mobile Number (10 digits) *"
+                  value={form.contact_number}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, "").slice(0, 10);
+                    setForm({ ...form, contact_number: val });
+                  }}
                   className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#FF7426] focus:border-transparent outline-none transition-all"
                   required
+                  pattern="\d{10}"
+                  title="Please enter a valid 10-digit mobile number"
                 />
               </div>
               <div>
                 <input
                   type="email"
-                  placeholder="Email address"
+                  placeholder="Email address *"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#FF7426] focus:border-transparent outline-none transition-all"
@@ -86,11 +119,12 @@ export default function SignupClient() {
               <div>
                 <input
                   type="password"
-                  placeholder="Password"
+                  placeholder="Password *"
                   value={form.password}
                   onChange={(e) => setForm({ ...form, password: e.target.value })}
                   className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#FF7426] focus:border-transparent outline-none transition-all"
                   required
+                  minLength={6}
                 />
               </div>
             </div>

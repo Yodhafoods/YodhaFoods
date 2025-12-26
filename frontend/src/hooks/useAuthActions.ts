@@ -7,7 +7,9 @@ import { api, FetchError } from "@/app/lib/api";
 
 // ---------- Types ----------
 interface SignupForm {
-    name: string;
+    first_name: string;
+    last_name?: string;
+    contact_number: string;
     email: string;
     password: string;
 }
