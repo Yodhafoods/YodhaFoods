@@ -15,7 +15,7 @@ interface SignupForm {
 }
 
 interface SigninForm {
-    email: string;
+    identifier: string; // email or mobile
     password: string;
 }
 

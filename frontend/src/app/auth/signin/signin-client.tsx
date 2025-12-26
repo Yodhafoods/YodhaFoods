@@ -9,7 +9,7 @@ import GoogleButton from "../../components/GoogleButton";
 export default function SigninClient() {
   const { signin } = useAuthActions();
 
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({ identifier: "", password: "" });
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -68,10 +68,10 @@ export default function SigninClient() {
             <div className="space-y-4">
               <div>
                 <input
-                  type="email"
-                  placeholder="Email address"
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  type="text"
+                  placeholder="Email or Mobile No. (10-digits)"
+                  value={form.identifier}
+                  onChange={(e) => setForm({ ...form, identifier: e.target.value })}
                   className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#FF7426] focus:border-transparent outline-none transition-all"
                   required
                 />

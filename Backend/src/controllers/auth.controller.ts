@@ -129,35 +129,66 @@ export const loginUser = async (
   res: Response
 ) => {
   try {
-    const { email, password } = req.body;
+    const { identifier, password } = req.body;
 
-    const user = await User.findOne({ email });
-    if (!user) return res.status(401).json({ message: "Invalid credentials" });
+    if (!identifier || !password) {
+      return res.status(400).json({ message: "Missing credentials" });
+    }
 
+    // Detect whether identifier is email or mobile
+    const isEmail = identifier.includes("@");
+
+    let query = {};
+    if (isEmail) {
+      query = { email: identifier.toLowerCase() };
+    } else {
+      // If mobile, strip non-numeric characters to match database format
+      const mobileNumber = identifier.replace(/\D/g, "");
+      if (!mobileNumber) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+      query = { Contact_number: mobileNumber };
+    }
+
+    const user = await User.findOne(query);
+
+    if (!user) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    // Block if email not verified
     if (!user.verified) {
       return res.status(403).json({
         message: "Please verify your email before logging in.",
       });
     }
-    if (!user.password) return res.status(401).json({ message: "Invalid credentials" });
 
+    // Block password login for Google-only accounts
     if (!user.password) {
-      return res.status(400).json({ message: "Please login with Google" });
+      return res.status(400).json({
+        message: "This account uses Google Sign-In. Please continue with Google.",
+      });
     }
 
-    const valid = await bcrypt.compare(password, user.password);
-    if (!valid) return res.status(401).json({ message: "Invalid credentials" });
+    // Verify password
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    if (!isValidPassword) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
 
+    // Create tokens
     const accessToken = createAccessToken(user._id.toString(), user.role);
     const refreshToken = createRefreshToken(user._id.toString());
 
     await saveRefreshToken(user._id.toString(), refreshToken);
 
+    // Set cookies
     setAuthCookies(res, accessToken, refreshToken);
 
+    // Remove password before sending user
     const { password: _, ...safeUser } = user.toObject();
 
-    // expiry = now + 15m
+    // Access token expiry (15 minutes)
     const accessTokenExpiry = Date.now() + 15 * 60 * 1000;
 
     return res.json({
