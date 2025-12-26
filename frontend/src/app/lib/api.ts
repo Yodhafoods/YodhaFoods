@@ -1,7 +1,8 @@
-// lib/api.ts
+
 // Centralized API helpers with strict typing (no `any`)
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+  console.log("API_BASE_URL", process.env.NEXT_PUBLIC_API_URL);
 
 /**
  * Helper to build absolute URL
