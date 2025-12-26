@@ -1,9 +1,9 @@
 import Hero from "./components/sections/Hero";
 import JourneySection from "./components/sections/Journey";
 import YodhaInstant from "./components/sections/YodhaInstant";
-import Candy from "./components/sections/Candy";
 import CategoriesSection from "./components/sections/CategoriesSection";
 import WatchAndShop from "./components/sections/WatchAndShop";
+import BestsellingProducts from "./components/sections/BestsellingProducts";
 
 export default function Home() {
   return (
@@ -16,10 +16,8 @@ export default function Home() {
         {/* Categories Section */}
         <CategoriesSection />
 
-        {/* Nature’s Candy */}
-        <div id="shop" className="">
-          <Candy />
-        </div>
+        {/* Bestselling Products */}
+        <BestsellingProducts />
 
         {/* Watch and Shop Section */}
         <WatchAndShop />

@@ -1,37 +1,37 @@
 import React from "react";
-import CategoriesList from "./CategoriesList";
-import { ArrowRight, ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { Category } from "@/types";
+import { ArrowRight, ChevronRight } from "lucide-react";
+import BestsellingProductsList from "./BestsellingProductsList";
+import { Product } from "@/types";
 
-async function getCategories() {
+async function getProducts() {
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/categories`, {
-            cache: "no-store", // Ensure fresh data or use revalidate as needed
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products`, {
+            cache: "no-store",
         });
         if (!res.ok) {
             return [];
         }
         const data = await res.json();
-        return (data.categories || data) as Category[];
+        return (data.products || data) as Product[];
     } catch (error) {
-        console.error("Failed to fetch categories:", error);
+        console.error("Failed to fetch products:", error);
         return [];
     }
 }
 
-export default async function CategoriesSection() {
-    const categories = await getCategories();
+export default async function BestsellingProducts() {
+    const products = await getProducts();
 
-    if (!categories || categories.length === 0) {
-        return null; // Or return a skeleton/empty state if preferred, but existing logic returned null on error
+    if (!products || products.length === 0) {
+        return null;
     }
 
     return (
-        <section className="mb-2 mt-12 relative group/section">
+        <section className="mb-10 mt-12 relative group/section">
             <div className="flex justify-between items-baseline mb-6 px-1">
                 <h2 className="flex group items-center gap-1 text-lg md:text-xl font-bold text-gray-900 tracking-tight cursor-pointer">
-                    Top Categories
+                    Best Selling Products
                     <ChevronRight
                         size={24}
                         strokeWidth={3}
@@ -40,7 +40,7 @@ export default async function CategoriesSection() {
                 </h2>
                 <Link
                     href="/shop"
-                    className="text-sm group font-bold text-orange-600 hover:text-orange-700 flex items-center gap-1 transition-colors"
+                    className=" hidden text-sm group font-bold text-orange-600 hover:text-orange-700 md:flex items-center gap-1 transition-colors"
                 >
                     View All{" "}
                     <ArrowRight
@@ -50,7 +50,7 @@ export default async function CategoriesSection() {
                 </Link>
             </div>
 
-            <CategoriesList categories={categories} />
+            <BestsellingProductsList products={products} />
         </section>
     );
 }

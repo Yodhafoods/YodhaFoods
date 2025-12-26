@@ -1,11 +1,16 @@
-"use client"
+"use client";
+
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
-import { addItemToCart, updateCartItemQty, removeItemFromCart } from "@/lib/store/features/cart/cartSlice";
+import {
+    addItemToCart,
+    updateCartItemQty,
+    removeItemFromCart,
+} from "@/lib/store/features/cart/cartSlice";
 import { toast } from "sonner";
 import { RiAddFill, RiSubtractFill } from "react-icons/ri";
-import { IoAdd } from "react-icons/io5";
 
 export interface Product {
     id: number | string;
@@ -18,10 +23,10 @@ export interface Product {
 
 interface ProductCardProps {
     product: Product;
-    className?: string; // Correctly added className prop
+    className?: string;
 }
 
-export default function ProductCard({ product, className }: ProductCardProps) {
+export default function ProductCardHome({ product, className }: ProductCardProps) {
     const dispatch = useAppDispatch();
     const cart = useAppSelector((state) => state.cart.items);
     const cartItem = cart.find((item) => item.id === String(product.id));
@@ -83,7 +88,7 @@ export default function ProductCard({ product, className }: ProductCardProps) {
             className={`
         bg-gray-50 rounded-2xl p-2.5 sm:p-4 shadow-sm cursor-pointer overflow-hidden
         transition-all duration-300 hover:-translate-y-2 hover:shadow-sm 
-        relative group min-w-[75%] sm:min-w-[45%] lg:min-w-0 snap-start
+        relative group w-full snap-start
         flex flex-col h-full border border-gray-200
         ${className || ""}
       `}
@@ -96,15 +101,15 @@ export default function ProductCard({ product, className }: ProductCardProps) {
             )}
 
             {/* Image Box */}
-            <div className="h-32 sm:h-40 md:h-48 lg:h-52 rounded-xl overflow-hidden bg-gray-100 relative w-full">
+            {/* Mobile: aspect-3/4 to match CategoryCard. Desktop: Fixed heights to match original ProductCard. */}
+            <div className="aspect-3/4 sm:aspect-auto w-full sm:h-40 md:h-48 lg:h-52 rounded-xl overflow-hidden bg-gray-100 relative">
                 <Image
                     src={product.img}
                     alt={product.name}
                     fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105 "
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
             </div>
-
 
             {/* Title */}
             <div className="mt-3">
