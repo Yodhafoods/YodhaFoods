@@ -29,11 +29,14 @@ const setAuthCookies = (
   const domain = process.env.COOKIE_DOMAIN; // e.g. ".yodhafoods.com"
 
   // Base options for cross-site usage (Backend on Render, Frontend on Custom Domain)
+  const isProduction = process.env.NODE_ENV === "production";
+
   const baseOptions: any = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    secure: isProduction, // Must be true for SameSite=None
+    sameSite: isProduction ? "none" : "lax", // Must be 'none' for cross-site
     maxAge: 15 * 60 * 1000,
+    partitioned: isProduction, // CHIPS support for future-proofing
   };
 
   // Only set domain if explicitly provided (e.g. for custom subdomains)
@@ -238,10 +241,13 @@ export const logoutController = async (req: Request, res: Response) => {
     if (token) await revokeRefreshToken(token);
 
     const domain = process.env.COOKIE_DOMAIN;
+    const isProduction = process.env.NODE_ENV === "production";
+
     const clearOptions: any = {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+      partitioned: isProduction,
     };
     if (domain) clearOptions.domain = domain;
 
