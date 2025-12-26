@@ -28,22 +28,28 @@ const setAuthCookies = (
 ) => {
   const domain = process.env.COOKIE_DOMAIN; // e.g. ".yodhafoods.com"
 
-  res.cookie("at", accessToken, {
+  // Base options for cross-site usage (Backend on Render, Frontend on Custom Domain)
+  const baseOptions: any = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    domain,
     maxAge: 15 * 60 * 1000,
-  });
+  };
+
+  // Only set domain if explicitly provided (e.g. for custom subdomains)
+  // If backend is on yodhafoods.onrender.com, this should be undefined.
+  if (domain) {
+    baseOptions.domain = domain;
+  }
+
+  res.cookie("at", accessToken, baseOptions);
 
   if (refreshToken) {
-    res.cookie("rt", refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      domain,
+    const refreshOptions = {
+      ...baseOptions,
       maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    };
+    res.cookie("rt", refreshToken, refreshOptions);
   }
 };
 
@@ -232,19 +238,15 @@ export const logoutController = async (req: Request, res: Response) => {
     if (token) await revokeRefreshToken(token);
 
     const domain = process.env.COOKIE_DOMAIN;
+    const clearOptions: any = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    };
+    if (domain) clearOptions.domain = domain;
 
-    res.clearCookie("at", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      domain,
-    });
-    res.clearCookie("rt", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      domain,
-    });
+    res.clearCookie("at", clearOptions);
+    res.clearCookie("rt", clearOptions);
 
     return res.json({ message: "Logged out" });
   } catch (err) {
