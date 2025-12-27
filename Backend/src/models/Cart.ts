@@ -7,7 +7,6 @@ export interface ICartItem {
 
 export interface ICart extends Document {
   userId?: Types.ObjectId | null;
-  guestId?: string | null;
   items: ICartItem[];
   createdAt: Date;
   updatedAt: Date;
@@ -18,12 +17,6 @@ const CartSchema = new Schema<ICart>(
     userId: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      default: null,
-      index: true,
-    },
-
-    guestId: {
-      type: String,
       default: null,
       index: true,
     },
@@ -52,16 +45,10 @@ const CartSchema = new Schema<ICart>(
 /**
  * Ensure:
  * - one cart per user
- * - one cart per guest
  */
 CartSchema.index(
   { userId: 1 },
   { unique: true, partialFilterExpression: { userId: { $ne: null } } }
-);
-
-CartSchema.index(
-  { guestId: 1 },
-  { unique: true, partialFilterExpression: { guestId: { $ne: null } } }
 );
 
 const Cart =

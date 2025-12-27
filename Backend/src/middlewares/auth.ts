@@ -30,7 +30,8 @@ export const requireAuth = (
   const token = req.cookies?.at; // access token cookie name: "at"
 
   if (!token) {
-    console.error("[Auth] No token found. Cookies:", Object.keys(req.cookies || {}));
+    console.error("[Auth] No token found. Cookies present:", Object.keys(req.cookies || {}));
+    // console.debug("[Auth] Full Cookies:", req.cookies); // Uncomment for deep debug
     return res.status(401).json({ message: "Not authenticated" });
   }
 

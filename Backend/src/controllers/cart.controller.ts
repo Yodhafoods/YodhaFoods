@@ -3,16 +3,17 @@ import Cart from "../models/Cart.js";
 import Product from "../models/Product.js";
 
 type CartRequest = Request & {
-  guestId?: string;
+  // additional properties if needed
 };
 
 /**
  * Utility: resolve cart owner
  */
 const getCartQuery = (req: CartRequest) => {
-  return req.user
-    ? { userId: req.user.id }
-    : { guestId: req.guestId };
+  // @ts-ignore
+  if (!req.user) return null;
+  // @ts-ignore
+  return { userId: req.user.id };
 };
 
 /**
@@ -36,6 +37,9 @@ export const addToCart = async (req: CartRequest, res: Response) => {
     }
 
     const cartQuery = getCartQuery(req);
+    if (!cartQuery) {
+      return res.status(401).json({ message: "Please login to add items to cart" });
+    }
     let cart = await Cart.findOne(cartQuery);
 
     if (!cart) {
@@ -73,6 +77,10 @@ export const getCart = async (req: CartRequest, res: Response) => {
   try {
     const cartQuery = getCartQuery(req);
 
+    if (!cartQuery) {
+      return res.json({ items: [] });
+    }
+
     const cart = await Cart.findOne(cartQuery).populate(
       "items.productId",
       "name price discountPrice images stock isActive"
@@ -101,6 +109,9 @@ export const updateCartItem = async (req: CartRequest, res: Response) => {
     }
 
     const cartQuery = getCartQuery(req);
+    if (!cartQuery) {
+      return res.status(401).json({ message: "Login required" });
+    }
     const cart = await Cart.findOne(cartQuery);
 
     if (!cart) {
@@ -145,6 +156,9 @@ export const removeFromCart = async (req: CartRequest, res: Response) => {
   try {
     const { productId } = req.params;
     const cartQuery = getCartQuery(req);
+    if (!cartQuery) {
+      return res.status(401).json({ message: "Login required" });
+    }
 
     const cart = await Cart.findOne(cartQuery);
     if (!cart) {
@@ -169,6 +183,9 @@ export const removeFromCart = async (req: CartRequest, res: Response) => {
 export const clearCart = async (req: CartRequest, res: Response) => {
   try {
     const cartQuery = getCartQuery(req);
+    if (!cartQuery) {
+      return res.status(401).json({ message: "Login required" });
+    }
     await Cart.deleteOne(cartQuery);
     return res.json({ message: "Cart cleared" });
   } catch (err) {
