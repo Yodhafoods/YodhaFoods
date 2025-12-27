@@ -1,24 +1,14 @@
-import mongoose, { Schema, Document, Types } from "mongoose";
-
-export interface ICartItem {
-  productId: Types.ObjectId;
-  quantity: number;
-}
-
-export interface ICart extends Document {
-  userId?: Types.ObjectId | null;
-  items: ICartItem[];
-  createdAt: Date;
-  updatedAt: Date;
-}
+import mongoose, { Schema } from "mongoose";
+import { ICart, ICartItem } from "../schemas/cart.schema.js";
 
 const CartSchema = new Schema<ICart>(
   {
     userId: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      default: null,
+      required: true,
       index: true,
+      unique: true,
     },
 
     items: [
@@ -36,22 +26,8 @@ const CartSchema = new Schema<ICart>(
       },
     ],
   },
-  {
-    timestamps: true,
-    versionKey: false,
-  }
+  { timestamps: true, versionKey: false }
 );
 
-/**
- * Ensure:
- * - one cart per user
- */
-CartSchema.index(
-  { userId: 1 },
-  { unique: true, partialFilterExpression: { userId: { $ne: null } } }
-);
-
-const Cart =
-  mongoose.models.Cart || mongoose.model<ICart>("Cart", CartSchema);
-
+const Cart = mongoose.models.Cart || mongoose.model<ICart>("Cart", CartSchema);
 export default Cart;
