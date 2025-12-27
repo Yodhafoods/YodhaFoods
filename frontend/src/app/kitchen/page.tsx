@@ -2,6 +2,7 @@ import { getKitchenVideos } from "../../services/kitchen.services";
 import KitchenVideoCarousel from "../components/kitchen/KitchenVideoCarousel";
 import { Video } from "@/types/video.types";
 import KitchenClient from "./KitchenClient";
+import KitchenBanner from "../components/kitchen/KitchenBanner";
 
 export const dynamic = "force-dynamic";
 
@@ -41,6 +42,8 @@ export default async function KitchenPage() {
 
         <KitchenVideoCarousel videos={videos} />
       </div>
+
+      <KitchenBanner />
     </div>
   );
 }
