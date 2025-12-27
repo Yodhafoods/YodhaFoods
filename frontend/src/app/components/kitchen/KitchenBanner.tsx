@@ -3,7 +3,9 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
+import { Target } from "lucide-react";
 import Link from "next/link";
+import { TbTargetArrow } from "react-icons/tb";
 
 const KitchenBanner = () => {
     const [step, setStep] = useState<1 | 2 | 3>(1);
@@ -63,65 +65,56 @@ const KitchenBanner = () => {
 
     return (
         <motion.div
-            initial={{ y: 0 }}
-            whileHover={{
-                y: -5,
-                transition: {
-                    duration: 2,
-                    repeat: Infinity,
-                    repeatType: "reverse",
-                    ease: "easeInOut"
-                }
-            }}
-            className="fixed bottom-[25px] left-1/2 -translate-x-1/2 w-[90%] max-w-[780px] h-[64px] bg-[#051a0e]/98 backdrop-blur-[50px] border border-white/[0.08] rounded-[100px] shadow-[0_25px_50px_rgba(0,0,0,0.5)] z-[10000] flex items-center gap-[15px] px-6 py-2 overflow-hidden transition-all duration-500"
+            initial={{ y: 0, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            className="fixed bottom-[20px] left-1/2 -translate-x-1/2 w-[95%] md:w-[90%] max-w-[720px] min-h-[60px] bg-green-950/90 backdrop-blur-[20px]
+             border border-green-900/50 rounded-[100px] shadow-[0_10px_40px_rgba(0,0,0,0.4)] z-100
+              flex items-center px-4 md:px-6 py-2 transition-all duration-500"
         >
-            {/* Mascot Avatar */}
-            <motion.div
-                className="w-[58px] h-[58px] shrink-0 bg-contain bg-no-repeat rounded-full"
-                style={{
-                    backgroundColor: 'rgba(255,255,255,0.1)'
-                }}
-                animate={{ scale: step === 2 ? 1.08 : 1 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
-            />
-
             {/* Content Flow */}
-            <div className="flex-1 h-full relative">
+            <div className="w-full h-full relative flex items-center justify-center">
                 <AnimatePresence mode="wait">
                     {step === 1 && (
                         <motion.div
                             key="step1"
-                            initial={{ opacity: 0, y: 5 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -5 }}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: 10 }}
                             transition={{ duration: 0.3 }}
-                            className="w-full h-full flex items-center justify-between"
+                            className="w-full flex items-center justify-between gap-4"
                         >
-                            <div className="flex flex-col mr-[15px]">
-                                <span className="text-white text-[14px] font-semibold tracking-tight whitespace-nowrap">
-                                    Select your focus
-                                </span>
-                                <span className="text-white text-[11px] opacity-50 whitespace-nowrap">
-                                    we will help you
-                                </span>
+                            <div className="hidden md:flex items-center gap-3 shrink-0">
+                                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shadow-inner ring-1 ring-white/10">
+                                    <TbTargetArrow className="w-5 h-5 text-green-400" />
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-white text-[14px] font-semibold tracking-tight whitespace-nowrap">
+                                        Select your focus
+                                    </span>
+                                    <span className="text-white text-[11px] opacity-60 whitespace-nowrap">
+                                        we will help you
+                                    </span>
+                                </div>
                             </div>
 
-                            <div className="flex flex-1 justify-between items-center max-w-[450px]">
+                            <div className="flex flex-1 items-center justify-between md:justify-end gap-2 md:gap-4 overflow-x-auto no-scrollbar scroll-smooth">
                                 {goals.map((g) => (
-                                    <div
+                                    <motion.div
                                         key={g.id}
                                         onClick={() => handleGoalSelect(g)}
-                                        className="group flex items-center gap-2 cursor-pointer px-3 py-1.5 rounded-[30px] transition-all duration-300"
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        className="group flex flex-col md:flex-row items-center gap-1.5 md:gap-2 cursor-pointer px-2 py-1 rounded-[30px] transition-all duration-300 shrink-0"
                                     >
                                         <div
-                                            className={`w-[30px] h-[30px] rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[15px] transition-all duration-300 ${g.hoverClass} group-hover:border-transparent`}
+                                            className={`w-[32px] h-[32px] md:w-[30px] md:h-[30px] rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-[16px] md:text-[15px] transition-all duration-300 ${g.hoverClass} group-hover:border-transparent`}
                                         >
                                             {g.icon}
                                         </div>
-                                        <span className="text-white text-[12px] font-medium opacity-50 group-hover:opacity-100 transition-opacity duration-300">
+                                        <span className="text-white text-[10px] md:text-[12px] font-medium opacity-70 group-hover:opacity-100 transition-opacity duration-300">
                                             {g.label}
                                         </span>
-                                    </div>
+                                    </motion.div>
                                 ))}
                             </div>
                         </motion.div>
@@ -130,23 +123,23 @@ const KitchenBanner = () => {
                     {step === 2 && goal && (
                         <motion.div
                             key="step2"
-                            initial={{ opacity: 0, y: 5 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -5 }}
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 1.05 }}
                             transition={{ duration: 0.3 }}
-                            className="w-full h-full flex items-center justify-between"
+                            className="w-full flex items-center justify-between gap-3 text-center md:text-left"
                         >
-                            <div className="text-white text-[12.5px] leading-[1.4] flex-1 pr-5">
-                                Get <span style={{ color: "#32d74b", fontWeight: 700 }}>FREE {goal.name} recipes</span> and track your goals effortlessly with Yodha WhatsApp Assist.
+                            <div className="text-white text-[12px] md:text-[13px] leading-[1.4] flex-1">
+                                Get <span style={{ color: "#32d74b", fontWeight: 700 }}>FREE {goal.name} recipes</span> on WhatsApp.
                             </div>
                             <a
                                 href="https://wa.me/YOUR_PHONE_NUMBER"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 onClick={handleJoinClick}
-                                className="bg-white text-black border-none px-[22px] py-[10px] rounded-[40px] font-bold text-[13px] whitespace-nowrap cursor-pointer hover:scale-105 hover:bg-[#32d74b] transition-all duration-300 no-underline"
+                                className="bg-[#32d74b] text-black border-none px-5 py-2.5 rounded-full font-bold text-[13px] whitespace-nowrap cursor-pointer hover:bg-[#28b83e] hover:shadow-lg transition-all duration-300 transform hover:scale-105 no-underline shrink-0"
                             >
-                                Join for Free
+                                Join Free
                             </a>
                         </motion.div>
                     )}
@@ -154,19 +147,18 @@ const KitchenBanner = () => {
                     {step === 3 && (
                         <motion.div
                             key="step3"
-                            initial={{ opacity: 0, y: 5 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -5 }}
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 1.05 }}
                             transition={{ duration: 0.3 }}
-                            className="w-full h-full flex items-center justify-between"
+                            className="w-full flex items-center justify-between gap-4"
                         >
-                            <div className="text-white text-[12.5px] leading-[1.4] flex-1 pr-5">
-                                Guide sent! Check your WhatsApp. Ready to start your Yodha journey?
+                            <div className="text-white text-[13px] leading-[1.4] flex-1">
+                                Guide sent! Check WhatsApp.
                             </div>
                             <Link
-                                href="https://yodhafoods.com/shop"
-                                className="text-black border-none px-[22px] py-[10px] rounded-[40px] font-bold text-[13px] whitespace-nowrap cursor-pointer hover:scale-105 transition-all duration-300 no-underline"
-                                style={{ background: "#32d74b" }}
+                                href="/shop"
+                                className="bg-white text-black px-6 py-2.5 rounded-full font-bold text-[13px] whitespace-nowrap cursor-pointer hover:bg-gray-100 hover:shadow-lg transition-all duration-300 transform hover:scale-105 no-underline shrink-0"
                             >
                                 Enter Shop
                             </Link>
