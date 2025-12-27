@@ -2,9 +2,9 @@
 
 import React from 'react';
 import { useParams } from 'next/navigation';
-import { useProducts } from '@/hooks/useProducts';
+import { useProducts } from "@/features/products/hooks/useProducts";
 import { useCategories } from '@/hooks/useCategories'; // Fetching to get current category details
-import ProductCard from '@/app/components/ProductCard';
+import ProductCardHome from "@/features/products/components/ProductCardHome";
 import Link from 'next/link';
 
 export default function CategoryProductsPage() {
@@ -79,7 +79,7 @@ export default function CategoryProductsPage() {
                 ) : (
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
                         {displayProducts.map((product) => (
-                            <ProductCard key={product.id} product={product} className="min-w-0" />
+                            <ProductCardHome key={product.id} product={product} className="min-w-0" />
                         ))}
                     </div>
                 )}

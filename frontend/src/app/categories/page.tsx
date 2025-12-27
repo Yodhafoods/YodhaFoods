@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useCategories } from '@/hooks/useCategories';
-import CategoryCard from '@/components/CategoryCard';
+import CategoryCard from "@/components/ui/CategoryCard";
 import Link from 'next/link';
 
 export default function CategoriesPage() {
