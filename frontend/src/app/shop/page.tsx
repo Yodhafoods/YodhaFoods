@@ -2,12 +2,12 @@
 
 import React, { useState } from "react";
 import { useCategories } from "@/hooks/useCategories";
-import { useProducts } from "@/hooks/useProducts";
-import ProductCard from "@/app/components/ProductCard";
+import { useProducts } from "@/features/products/hooks/useProducts";
+import ProductCard from "@/features/products/components/ProductCardHome";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
-import ShopSidebar from "@/app/components/ShopSidebar";
-import DesktopCategoryBar from "@/app/components/DesktopCategoryBar";
+import ShopSidebar from "@/features/products/components/ShopSidebar";
+import DesktopCategoryBar from "@/components/layout/DesktopCategoryBar";
 
 export default function ShopPage() {
   const { categories, loading: categoriesLoading } = useCategories();

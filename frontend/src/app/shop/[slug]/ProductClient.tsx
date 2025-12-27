@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useAppSelector, useAppDispatch } from "@/lib/store/hooks"; // Added useAppDispatch
-import { addItemToCart, updateCartItemQty } from "@/lib/store/features/cart/cartSlice"; // Updated imports
+import { addItemToCart, updateCartItemQty } from "@/features/cart/store/cartSlice"; // Updated imports
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion } from "framer-motion";

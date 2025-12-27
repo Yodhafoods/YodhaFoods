@@ -1,10 +1,10 @@
 "use client";
 
-import AddressSection from "../components/checkout/AddressSection";
-import CouponSection from "../components/checkout/CouponSection";
-import OrderItemsReview from "../components/checkout/OrderItemsReview";
-import PriceSummary from "../components/checkout/PriceSummary";
-
+import AddressSection from "@/features/checkout/components/AddressSection";
+import CouponSection from "@/features/checkout/components/CouponSection";
+import OrderItemsReview from "@/features/checkout/components/OrderItemsReview";
+import PriceSummary from "@/features/checkout/components/PriceSummary";
+import PlaceOrderButton from "@/features/checkout/components/PlaceOrderButton";
 
 
 export default function CheckoutPage() {

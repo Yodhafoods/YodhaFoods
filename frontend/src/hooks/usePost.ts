@@ -1,8 +1,8 @@
 
 
+import { api } from '@/lib/api';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { api } from '../app/lib/api';
 
 interface UsePostState<T> {
     isLoading: boolean;

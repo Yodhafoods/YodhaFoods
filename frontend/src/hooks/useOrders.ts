@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Order } from "@/types/order";
-import { api, FetchError } from "@/app/lib/api";
+import { api, FetchError } from "@/lib/api";
 
 export function useOrders() {
     const [orders, setOrders] = useState<Order[]>([]);

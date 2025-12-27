@@ -2,17 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import ProductCard from "@/app/components/ProductCard";
-
-interface Product {
-    _id: string;
-    name: string;
-    slug: string;
-    price: number;
-    images: { url: string }[];
-    category?: { name: string };
-    stock: number;
-}
+import ProductCardHome from "@/features/products/components/ProductCardHome";
+import { Product } from "@/types";
 
 interface RelatedProductsProps {
     categoryId: string;
@@ -57,7 +48,7 @@ export default function RelatedProducts({ categoryId, currentProductId }: Relate
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
                     {products.map((product) => (
-                        <ProductCard
+                        <ProductCardHome
                             key={product._id}
                             product={{
                                 id: product._id,
@@ -65,6 +56,7 @@ export default function RelatedProducts({ categoryId, currentProductId }: Relate
                                 price: product.price,
                                 img: product.images[0]?.url || "/placeholder.png",
                                 slug: product.slug,
+                                badge: product.isFeatured ? 'Featured' : undefined
                             }}
                             className="min-w-0"
                         />

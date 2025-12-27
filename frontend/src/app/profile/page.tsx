@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "../context/AuthContext";
-import Sidebar from "../components/profile/Sidebar";
-import OrdersList from "../components/profile/OrdersList";
-import AddressList from "../components/profile/AddressList";
-import AccountDetails from "../components/profile/AccountDetails";
+import { useAuth } from "@/features/auth/context/AuthContext";
+import Sidebar from "@/features/profile/components/Sidebar";
+import OrdersList from "@/features/profile/components/OrdersList";
+import AddressList from "@/features/profile/components/AddressList";
+import AccountDetails from "@/features/profile/components/AccountDetails";
 
 export default function ProfilePage() {
   const { user, loading } = useAuth();

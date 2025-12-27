@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { Address } from "@/types/address";
-import { api } from "@/app/lib/api";
-import { useAuth } from "@/app/context/AuthContext";
+import { api } from "@/lib/api";
+import { useAuth } from "@/features/auth/context/AuthContext";
 
 export function useAddresses() {
     const [addresses, setAddresses] = useState<Address[]>([]);

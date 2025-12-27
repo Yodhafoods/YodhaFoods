@@ -1,8 +1,8 @@
-import { getKitchenVideos } from "../../services/kitchen.services";
-import KitchenVideoCarousel from "../components/kitchen/KitchenVideoCarousel";
+import { getKitchenVideos } from "@/features/kitchen/services/kitchen.service";
+import KitchenVideoCarousel from "@/features/kitchen/components/KitchenVideoCarousel";
 import { Video } from "@/types/video.types";
 import KitchenClient from "./KitchenClient";
-import KitchenBanner from "../components/kitchen/KitchenBanner";
+import KitchenBanner from "@/features/kitchen/components/KitchenBanner";
 
 export const dynamic = "force-dynamic";
 

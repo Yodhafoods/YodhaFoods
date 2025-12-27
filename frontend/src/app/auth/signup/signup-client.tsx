@@ -3,8 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useAuthActions } from "@/hooks/useAuthActions";
-import GoogleButton from "../../components/GoogleButton";
+import { useAuthActions } from "@/features/auth/hooks/useAuthActions";
+import GoogleButton from "@/features/auth/components/GoogleButton";
 
 export default function SignupClient() {
   const { signup } = useAuthActions();

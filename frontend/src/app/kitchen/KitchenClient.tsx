@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import KitchenFilters from "../components/kitchen/KitchenFilters";
-import RecipeCard from "../components/kitchen/RecipeCard"; // Reuse existing card for now, will verify if updates needed
+import KitchenHero from "@/features/kitchen/components/KitchenHero";
+import KitchenFilters from "@/features/kitchen/components/KitchenFilters";
+import RecipeCard from "@/features/kitchen/components/RecipeCard";
+import RecipeModal from "@/features/kitchen/components/RecipeModal";
 
 // --- MOCK DATA ---
 const RECIPES = [

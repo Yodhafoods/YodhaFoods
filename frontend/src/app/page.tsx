@@ -1,9 +1,9 @@
-import Hero from "./components/sections/Hero";
-import JourneySection from "./components/sections/Journey";
-import YodhaInstant from "./components/sections/YodhaInstant";
-import CategoriesSection from "./components/sections/CategoriesSection";
-import WatchAndShop from "./components/sections/WatchAndShop";
-import BestsellingProducts from "./components/sections/BestsellingProducts";
+import Hero from "./(home)/_components/Hero";
+import JourneySection from "./(home)/_components/Journey";
+import YodhaInstant from "./(home)/_components/YodhaInstant";
+import CategoriesSection from "./(home)/_components/CategoriesSection";
+import WatchAndShop from "./(home)/_components/WatchAndShop";
+import BestsellingProducts from "@/features/products/components/BestsellingProducts";
 
 export default function Home() {
   return (

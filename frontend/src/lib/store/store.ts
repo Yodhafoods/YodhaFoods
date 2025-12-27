@@ -1,6 +1,6 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
-import cartReducer from "./features/cart/cartSlice";
-import checkoutReducer from "./features/checkout/checkoutSlice";
+import cartReducer from "@/features/cart/store/cartSlice";
+import checkoutReducer from "@/features/checkout/store/checkoutSlice";
 
 import {
     persistReducer,

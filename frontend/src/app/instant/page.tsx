@@ -1,4 +1,4 @@
-import YodhaInstant from "../components/sections/YodhaInstant";
+import YodhaInstant from "@/app/(home)/_components/YodhaInstant";
 
 
 export default function InstantPage() {

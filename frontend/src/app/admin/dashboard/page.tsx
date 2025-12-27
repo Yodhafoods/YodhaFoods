@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/app/context/AuthContext';
-import AdminSidebar from '@/components/admin/AdminSidebar';
-import DashboardOverview from '@/components/admin/DashboardOverview';
-import ProductsView from '@/components/admin/ProductsView';
-import CategoriesView from '@/components/admin/CategoriesView';
-import OrdersView from '@/components/admin/OrdersView';
-import CouponsView from '@/components/admin/CouponsView';
-import KitchenView from '@/components/admin/KitchenView';
+import { useAuth } from "@/features/auth/context/AuthContext";
+import AdminSidebar from "@/features/admin/components/AdminSidebar";
+import DashboardOverview from "@/features/admin/components/DashboardOverview";
+import ProductsView from "@/features/admin/components/ProductsView";
+import CategoriesView from "@/features/admin/components/CategoriesView";
+import OrdersView from "@/features/admin/components/OrdersView";
+import CouponsView from "@/features/admin/components/CouponsView";
+import KitchenView from "@/features/admin/components/KitchenView";
 
 export default function AdminDashboard() {
     const { user, loading } = useAuth();

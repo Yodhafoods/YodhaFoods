@@ -2,7 +2,7 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { api } from "../../lib/api";
+import { api } from "@/lib/api";
 
 function VerifyEmailContent() {
   const search = useSearchParams();
