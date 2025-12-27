@@ -1,5 +1,6 @@
 'use client';
 import { useState, useMemo } from 'react';
+import { motion } from 'framer-motion';
 
 export default function TruthLab() {
     const [sliderValue, setSliderValue] = useState(500);
@@ -29,21 +30,107 @@ export default function TruthLab() {
     };
 
     return (
-        <div className="bg-soft-cream text-dark-green font-sans min-h-screen">
-            {/* Hero Section */}
-            <header className="bg-gradient-to-b from-dark-green to-mid-green text-heading-light text-center pt-20 pb-[140px] px-5 relative [clip-path:ellipse(150%_100%_at_50%_0%)]">
-                <h1 className="font-serif text-[clamp(2.5rem,5vw,4.5rem)] m-0 tracking-[2px] uppercase">
+        <div className="bg-soft-cream text-dark-green font-sans min-h-screen flex flex-col items-center">
+            {/* New Header */}
+            <header className="py-6 lg:py-10 px-5 flex justify-center">
+                <div className="bg-dark-green text-white py-[12px] px-[40px] lg:py-[15px] lg:px-[70px] rounded-full font-serif text-[1.1rem] sm:text-[1.5rem] lg:text-[2rem] uppercase tracking-[1px] lg:tracking-[2px] shadow-md text-center">
                     Truth Laboratory
-                </h1>
-                <p className="text-light-gold text-[0.9rem] tracking-[3px] mt-[15px] font-light">
-                    Where ancient ingredient wisdom is verified by modern molecular science.
-                </p>
-                <div className="absolute bottom-0 w-[80%] h-1 bg-base-gold left-[10%] rounded-full shadow-[0_4px_15px_var(--color-shadow-gold)]"></div>
+                </div>
             </header>
 
-            <main className="max-w-[1100px] mx-auto px-5">
+            {/* New Hero Section */}
+            <div className="w-full max-w-[1800px] h-auto lg:h-[800px] flex justify-center items-center p-5 md:p-10">
+                <section
+                    className="w-full h-full grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] rounded-[40px] lg:rounded-[80px] overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.35)] lg:shadow-[0_60px_120px_rgba(0,0,0,0.35)] relative border border-[rgba(199,154,45,0.3)]"
+                    style={{
+                        background: `radial-gradient(at 0% 0%, var(--color-mid-green) 0%, transparent 55%),
+                                    radial-gradient(at 100% 0%, var(--color-base-gold) 0%, transparent 50%),
+                                    radial-gradient(at 100% 100%, var(--color-dark-green) 0%, transparent 60%),
+                                    var(--color-dark-green)`
+                    }}
+                >
+                    <div className="order-2 lg:order-1 px-5 py-10 lg:px-[100px] flex flex-col justify-center text-white z-[5]">
+                        <span className="text-light-gold font-extrabold tracking-[6px] text-xs lg:text-sm mb-[20px] lg:mb-[30px] opacity-80 uppercase text-center lg:text-left">
+                            Know Your Truth
+                        </span>
+                        <h1 className="font-serif text-[2.8rem] sm:text-[3.5rem] lg:text-[6.5rem] leading-[1.1] lg:leading-[1] mb-[30px] lg:mb-[40px] drop-shadow-[0_15px_30px_rgba(0,0,0,0.4)] text-center lg:text-left">
+                            Stop paying<br />for water.
+                        </h1>
+
+                        <div className="bg-white-glass backdrop-blur-[20px] border-l-[3px] border-base-gold p-[20px] lg:p-[35px] rounded-r-[30px] mb-[40px] lg:mb-[50px] max-w-[750px]">
+                            <span className="text-light-gold font-extrabold text-[0.8rem] lg:text-[1rem] uppercase tracking-[4px] block mb-[10px] lg:mb-[15px]">
+                                Market Reality
+                            </span>
+                            <p className="text-[1rem] sm:text-[1.1rem] lg:text-[1.4rem] leading-[1.6] font-light text-[rgba(255,255,255,0.95)]">
+                                90% of fresh produce you buy is just water weight. <br />
+                                <span className="text-light-gold font-semibold border-b border-[rgba(230,195,107,0.4)]">
+                                    Experience the 4.2x Nutrient Concentration that fresh food cannot provide.
+                                </span>
+                            </p>
+                        </div>
+
+                        <div className="text-center lg:text-left">
+                            <a
+                                href="#calculator"
+                                className="inline-block bg-base-gold text-white py-[18px] px-[30px] lg:py-[25px] lg:px-[60px] rounded-[100px] font-extrabold text-[0.85rem] lg:text-[1rem] uppercase tracking-[3px] shadow-[0_25px_50px_rgba(0,0,0,0.4)] transition-all duration-400 hover:-translate-y-2 hover:bg-light-gold hover:shadow-[0_30px_60px_rgba(199,154,45,0.5)] w-full sm:w-auto"
+                            >
+                                Calculate Your Savings
+                            </a>
+                        </div>
+                    </div>
+
+                    <div className="order-1 lg:order-2 bg-[rgba(0,0,0,0.25)] flex flex-col items-center justify-center relative p-10 lg:p-0 min-h-[400px]">
+                        <div className="relative w-[300px] h-[300px] lg:w-[450px] lg:h-[450px] flex items-center justify-center scale-90 lg:scale-100">
+                            <motion.div
+                                className="absolute w-[180px] h-[180px] lg:w-[280px] lg:h-[280px] rounded-full"
+                                style={{
+                                    background: 'radial-gradient(circle, rgba(199, 154, 45, 0.15) 0%, transparent 75%)'
+                                }}
+                                animate={{
+                                    scale: [0.95, 1.1, 0.95],
+                                    opacity: [0.3, 0.8, 0.3]
+                                }}
+                                transition={{
+                                    duration: 4,
+                                    ease: "easeInOut",
+                                    repeat: Infinity
+                                }}
+                            />
+                            <div className="absolute w-[250px] h-[250px] lg:w-[380px] lg:h-[380px] border border-dashed border-[rgba(199,154,45,0.4)] rounded-full"></div>
+                            <motion.div
+                                className="absolute w-full h-full rounded-full border-[3px] border-transparent border-t-base-gold"
+                                animate={{ rotate: 360 }}
+                                transition={{
+                                    duration: 1.2,
+                                    ease: "linear",
+                                    repeat: Infinity
+                                }}
+                            />
+                            <div className="relative z-10 font-serif text-[5rem] lg:text-[8.5rem] text-light-gold drop-shadow-[0_0_40px_rgba(199,154,45,0.6)]">
+                                4.2x
+                            </div>
+                        </div>
+
+                        <div className="mt-5 lg:mt-10 text-center flex flex-col gap-3 items-center">
+                            <div className="text-white text-[0.7rem] lg:text-[0.8rem] tracking-[5px] font-extrabold opacity-50 uppercase">
+                                Molecular Density Index
+                            </div>
+                            <motion.div
+                                className="bg-[rgba(199,154,45,0.1)] border border-[rgba(199,154,45,0.2)] py-2 px-6 rounded-[50px] text-light-gold text-[0.85rem] lg:text-[0.95rem] font-normal tracking-[2px] backdrop-blur-[10px]"
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 2, ease: "easeOut" }}
+                            >
+                                Start investing in cellular health.
+                            </motion.div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <main className="max-w-[1100px] mx-auto px-5 w-full">
                 {/* Savings Calculator */}
-                <div className="grid grid-cols-1 md:grid-cols-[1.1fr_0.9fr] gap-10 -mt-20 mb-20">
+                <div id="calculator" className="grid grid-cols-1 md:grid-cols-[1.1fr_0.9fr] gap-10 mt-10 mb-20 scroll-mt-32">
                     <div className="bg-mid-green rounded-[30px] p-[45px] text-white shadow-[0_30px_60px_var(--color-section-shadow)]">
                         <h2 className="text-[0.8rem] tracking-[2px] text-base-gold text-center mb-[30px] font-bold">THE PURITY SAVINGS ENGINE</h2>
 
