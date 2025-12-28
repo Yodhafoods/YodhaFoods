@@ -31,12 +31,7 @@ export default function TruthLab() {
 
     return (
         <div className="bg-soft-cream text-dark-green font-sans min-h-screen flex flex-col items-center">
-            {/* New Header */}
-            <header className="py-6 lg:py-10 px-5 flex justify-center">
-                <div className="bg-dark-green text-white py-[12px] px-[40px] lg:py-[15px] lg:px-[70px] rounded-full font-serif text-[1.1rem] sm:text-[1.5rem] lg:text-[2rem] uppercase tracking-[1px] lg:tracking-[2px] shadow-md text-center">
-                    Truth Laboratory
-                </div>
-            </header>
+
 
             {/* New Hero Section */}
             <div className="w-full max-w-[1800px] h-auto lg:h-[800px] flex justify-center items-center p-5 md:p-10">

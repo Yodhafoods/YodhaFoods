@@ -27,7 +27,7 @@ const Footer = () => {
                 className="object-contain"
               />
             </div>
-            <p className="text-sm font-bold text-amber-700 tracking-wide">
+            <p className="text-sm font-bold text-gray-800 tracking-wide">
               Rooted in Legacy | Guided by Tradition
             </p>
           </div>
@@ -137,14 +137,30 @@ const Footer = () => {
             </div>
 
             {/* Legal Links */}
-            <div className="flex gap-4 text-xs text-gray-500 font-bold flex-wrap justify-center uppercase tracking-wide">
-              <Link href="#" className="hover:text-orange-700 transition">
-                Terms & Conditions
-              </Link>
-              <span className="hidden sm:inline text-gray-300">•</span>
-              <Link href="#" className="hover:text-orange-700 transition">
-                Privacy Policy
-              </Link>
+            {/* Legal Links */}
+            <div className="flex flex-col gap-3 items-center mt-2">
+              <div className="flex gap-4 text-xs text-gray-500 font-bold flex-wrap justify-center uppercase tracking-wide">
+                <Link href="/terms-and-conditions" className="hover:text-orange-600 transition">
+                  Terms & Conditions
+                </Link>
+                <span className="hidden sm:inline text-gray-300">•</span>
+                <Link href="/privacy-policy" className="hover:text-orange-600 transition">
+                  Privacy Policy
+                </Link>
+              </div>
+              <div className="flex gap-4 text-xs text-gray-500 font-bold flex-wrap justify-center uppercase tracking-wide">
+                <Link href="/shipping-policy" className="hover:text-orange-600 transition">
+                  Shipping Policy
+                </Link>
+                <span className="hidden sm:inline text-gray-300">•</span>
+                <Link href="/refund-policy" className="hover:text-orange-600 transition">
+                  Refund Policy
+                </Link>
+                <span className="hidden sm:inline text-gray-300">•</span>
+                <Link href="/contact" className="hover:text-orange-600 transition">
+                  Contact Us
+                </Link>
+              </div>
             </div>
           </div>
         </div>
