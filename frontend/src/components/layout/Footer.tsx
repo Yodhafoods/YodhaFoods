@@ -115,28 +115,26 @@ const Footer = () => {
             {/* Social Icons */}
             <div className="flex gap-6 mb-6">
               <SocialLink
-                href="#"
+                href="https://www.instagram.com/yodhafoods"
                 icon={<FaInstagram size={20} className="group-hover:text-orange-600 transition" />}
                 label="Instagram"
               />
               <SocialLink
-                href="#"
+                href="https://www.youtube.com/@yodhafoods"
                 icon={<FaYoutube size={22} className="group-hover:text-red-600 transition" />}
                 label="YouTube"
               />
               <SocialLink
-                href="#"
+                href="https://www.linkedin.com/company/109542573"
                 icon={<FaLinkedinIn size={18} className="group-hover:text-blue-700 transition" />}
                 label="LinkedIn"
               />
               <SocialLink
-                href="#"
+                href="https://www.facebook.com/profile.php?id=61577380191620"
                 icon={<FaFacebookF size={18} className="group-hover:text-blue-700 transition" />}
                 label="Facebook"
               />
             </div>
-
-            {/* Legal Links */}
             {/* Legal Links */}
             <div className="flex flex-col gap-3 items-center mt-2">
               <div className="flex gap-4 text-xs text-gray-500 font-bold flex-wrap justify-center uppercase tracking-wide">
@@ -176,7 +174,7 @@ const Footer = () => {
             <div className="flex flex-col gap-3 text-sm font-semibold items-start">
               <FooterLink href="/shop">Shop All</FooterLink>
               <FooterLink href="/kitchen">Yodha Kitchen</FooterLink>
-              <FooterLink href="/combos">Make Your Box</FooterLink>
+              <FooterLink href="/concern">Shop by Concern</FooterLink>
               <FooterLink href="/instant">Yodha Instant</FooterLink>
             </div>
           </div>
@@ -188,10 +186,10 @@ const Footer = () => {
               <span className="h-0.5 bg-orange-200 flex-1 hidden md:block"></span>
             </h4>
             <div className="flex flex-col gap-3 text-sm font-semibold items-start">
-              <FooterLink href="#">Sprouted Ragi Powder</FooterLink>
-              <FooterLink href="#">Nuts & Dates Powder</FooterLink>
-              <FooterLink href="#">Banana Powder</FooterLink>
-              <FooterLink href="#">Almond Drink Mix</FooterLink>
+              <FooterLink href="/shop">Sprouted Ragi Powder</FooterLink>
+              <FooterLink href="/shop">Nuts & Dates Powder</FooterLink>
+              <FooterLink href="/shop">Banana Powder</FooterLink>
+              <FooterLink href="/shop">Almond Drink Mix</FooterLink>
             </div>
           </div>
         </div>
