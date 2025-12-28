@@ -1,16 +1,17 @@
-import Hero from "./(home)/_components/Hero";
 import JourneySection from "./(home)/_components/Journey";
 import YodhaInstant from "./(home)/_components/YodhaInstant";
 import CategoriesSection from "./(home)/_components/CategoriesSection";
 import WatchAndShop from "./(home)/_components/WatchAndShop";
 import BestsellingProducts from "@/features/products/components/BestsellingProducts";
+import HeroCarousel from "./(home)/_components/HeroCarousel";
+
 
 export default function Home() {
   return (
     <div className="">
       <main className="max-w-[1440px] mx-auto px-6">
         <div className="">
-          <Hero />
+          <HeroCarousel />
         </div>
 
         {/* Categories Section */}
