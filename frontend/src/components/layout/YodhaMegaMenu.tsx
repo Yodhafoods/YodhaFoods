@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { FaUsers, FaUtensils, FaUserPlus, FaInstagram, FaYoutube, FaFacebook, FaTimes } from "react-icons/fa";
+import { FaUsers, FaUtensils, FaUserPlus, FaInstagram, FaYoutube, FaFacebook, FaTimes, FaLinkedin } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6"; // Ensure you have react-icons v5+ for this
 import { ShiftingTabs, TabItem } from "./mega-menu/ShiftingTabs";
 import { ShopByCategory, ShopByConcern, FarmsAndSourcing } from "./mega-menu/MenuSections";
@@ -87,7 +87,7 @@ const FollowSection = () => {
                     <FaTimes />
                 </div>
 
-                <a href="#" className="group flex flex-col items-center gap-2 decoration-0 transition-transform duration-300 hover:scale-115">
+                <Link href="https://www.instagram.com/yodhafoods/" target="_blank" className="group flex flex-col items-center gap-2 decoration-0 transition-transform duration-300 hover:scale-115">
                     {/* Instagram Gradient Text Hack using background clip */}
                     <div className="text-[42px]">
                         <svg width="42" height="42" viewBox="0 0 448 512" fill="none" xmlns="http://www.w3.org/2000/svg" className="block">
@@ -104,22 +104,22 @@ const FollowSection = () => {
                         </svg>
                     </div>
                     <span className="mt-2 text-[11px] font-bold uppercase tracking-wider text-[#333]">Instagram</span>
-                </a>
+                </Link>
 
-                <a href="#" className="group flex flex-col items-center gap-2 decoration-0 transition-transform duration-300 hover:scale-115">
+                <Link href="https://www.youtube.com/@yodhafoods" target="_blank" className="group flex flex-col items-center gap-2 decoration-0 transition-transform duration-300 hover:scale-115">
                     <FaYoutube className="text-[42px] text-[#FF0000]" />
                     <span className="mt-2 text-[11px] font-bold uppercase tracking-wider text-[#333]">YouTube</span>
-                </a>
+                </Link>
 
-                <a href="#" className="group flex flex-col items-center gap-2 decoration-0 transition-transform duration-300 hover:scale-115">
+                <Link href="https://www.facebook.com/yodhafoods" target="_blank" className="group flex flex-col items-center gap-2 decoration-0 transition-transform duration-300 hover:scale-115">
                     <FaFacebook className="text-[42px] text-[#1877F2]" />
                     <span className="mt-2 text-[11px] font-bold uppercase tracking-wider text-[#333]">Facebook</span>
-                </a>
+                </Link>
 
-                <a href="#" className="group flex flex-col items-center gap-2 decoration-0 transition-transform duration-300 hover:scale-115">
-                    <FaXTwitter className="text-[42px] text-black" />
-                    <span className="mt-2 text-[11px] font-bold uppercase tracking-wider text-[#333]">Twitter</span>
-                </a>
+                <Link href="https://www.linkedin.com/company/yodhafoods/" target="_blank" className="group flex flex-col items-center gap-2 decoration-0 transition-transform duration-300 hover:scale-115">
+                    <FaLinkedin className="text-[42px] text-black" />
+                    <span className="mt-2 text-[11px] font-bold uppercase tracking-wider text-[#333]">LinkedIn</span>
+                </Link>
             </div>
         </div>
     );

@@ -56,10 +56,10 @@ export const ShopByCategory = () => {
 
 export const ShopByConcern = () => {
     const concerns = [
-        { label: "Diabetes Care", href: "/concern", icon: <FaHeartbeat className="text-red-500" /> },
-        { label: "Gut Health", href: "/concern", icon: <FaAppleAlt className="text-green-500" /> },
-        { label: "Weight Management", href: "/concern", icon: <FaWeight className="text-blue-500" /> },
-        { label: "Immunity", href: "/concern", icon: <TbRibbonHealth className="text-orange-500" /> },
+        { label: "Diabetes Care", href: "/shop-by-concern", icon: <FaHeartbeat className="text-red-500" /> },
+        { label: "Gut Health", href: "/shop-by-concern", icon: <FaAppleAlt className="text-green-500" /> },
+        { label: "Weight Management", href: "/shop-by-concern", icon: <FaWeight className="text-blue-500" /> },
+        { label: "Immunity", href: "/shop-by-concern", icon: <TbRibbonHealth className="text-orange-500" /> },
     ];
 
     return (
@@ -84,7 +84,7 @@ export const ShopByConcern = () => {
 export const FarmsAndSourcing = () => {
     return (
         <div className="flex flex-col gap-3">
-            <Link href="/farms" className="flex items-start gap-3 p-2 hover:bg-green-100 rounded-lg transition-colors">
+            <Link href="/farms-and-sourcing" className="flex items-start gap-3 p-2 hover:bg-green-100 rounded-lg transition-colors">
                 <div className="mt-1 bg-green-100 p-2 rounded-full text-green-600">
                     <FaTractor />
                 </div>
@@ -93,7 +93,7 @@ export const FarmsAndSourcing = () => {
                     <p className="text-xs text-gray-500">Meet the farmers behind the food.</p>
                 </div>
             </Link>
-            <Link href="/sourcing" className="flex items-start gap-3 p-2 hover:bg-orange-100 rounded-lg transition-colors">
+            <Link href="/farms-and-sourcing" className="flex items-start gap-3 p-2 hover:bg-orange-100 rounded-lg transition-colors">
                 <div className="mt-1 bg-orange-100 p-2 rounded-full text-orange-600">
                     <FaLeaf />
                 </div>
