@@ -8,7 +8,7 @@ import HeroBannerTwo from "./HeroBannerTwo";
 import HeroBannerThree from "./HeroBannerThree";
 import HeroBannerFour from "./HeroBannerFour";
 
-const SLIDE_DURATION = 9000;
+const SLIDE_DURATION = 5000;
 const SWIPE_THRESHOLD = 80;
 const TOTAL_SLIDES = 4;
 
