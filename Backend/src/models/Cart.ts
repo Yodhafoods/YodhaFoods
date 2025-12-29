@@ -18,12 +18,12 @@ const CartSchema = new Schema<ICart>(
     userId: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      default: null,
+      required: false,
     },
 
     guestId: {
       type: String,
-      default: null,
+      required: false,
     },
 
     items: [
