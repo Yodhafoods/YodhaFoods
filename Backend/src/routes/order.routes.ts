@@ -9,6 +9,7 @@ import {
 import { requireAuth, requireAdmin } from "../middlewares/auth.js";
 import { validate } from "../middlewares/validate.js";
 import { createOrderSchema } from "../schemas/order.schema.js";
+import { requireCheckoutAuth } from "../middlewares/requireCheckoutAuth.middleware.js";
 
 const router = Router();
 
@@ -20,7 +21,7 @@ const router = Router();
  * POST /api/orders
  * Create new order
  */
-router.post("/", requireAuth, validate(createOrderSchema), createOrder);
+router.post("/", requireCheckoutAuth, requireAuth, validate(createOrderSchema), createOrder);
 
 /**
  * GET /api/orders

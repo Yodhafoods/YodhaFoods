@@ -3,19 +3,56 @@ import Cart from "../models/Cart.js";
 import Product from "../models/Product.js";
 import Order from "../models/Order.js";
 import Address from "../models/Address.js";
-
+import { GuestRequest } from "../middlewares/guest.middleware.js";
 /**
  * POST /api/orders
  * Create order from cart + address snapshot
  * (NO PAYMENT HERE)
  */
-export const createOrder = async (req: Request, res: Response) => {
+export const createOrder = async (req: GuestRequest, res: Response) => {
   try {
     const userId = req.user!.id;
     const { addressId } = req.body;
 
     if (!addressId) {
       return res.status(400).json({ message: "Address is required" });
+    }
+
+    /**
+     * 🔹 0️⃣ MERGE GUEST CART → USER CART (NEW)
+     */
+    if (req.guestId) {
+      const guestCart = await Cart.findOne({ guestId: req.guestId });
+      const userCart = await Cart.findOne({ userId });
+
+      if (guestCart) {
+        if (!userCart) {
+          // Assign guest cart to user
+          guestCart.userId = userId;
+          guestCart.guestId = null;
+          await guestCart.save();
+        } else {
+          // Merge items
+          guestCart.items.forEach((gItem: any) => {
+            const uItem = userCart.items.find(
+              (i: any) =>
+                i.productId.toString() === gItem.productId.toString()
+            );
+
+            if (uItem) {
+              uItem.quantity += gItem.quantity;
+            } else {
+              userCart.items.push(gItem);
+            }
+          });
+
+          await userCart.save();
+          await Cart.deleteOne({ guestId: req.guestId });
+        }
+
+        // Clear guestId cookie after merge
+        res.clearCookie("guestId");
+      }
     }
 
     /**
@@ -27,7 +64,7 @@ export const createOrder = async (req: Request, res: Response) => {
     }
 
     /**
-     * 2️⃣ Fetch cart
+     * 2️⃣ Fetch USER cart ONLY
      */
     const cart = await Cart.findOne({ userId }).populate("items.productId");
     if (!cart || cart.items.length === 0) {
@@ -72,7 +109,7 @@ export const createOrder = async (req: Request, res: Response) => {
     }
 
     /**
-     * 4️⃣ Create order (PLACED + PAYMENT PENDING)
+     * 4️⃣ Create order
      */
     const order = await Order.create({
       userId,
@@ -95,7 +132,7 @@ export const createOrder = async (req: Request, res: Response) => {
     });
 
     /**
-     * 5️⃣ Clear cart after order creation
+     * 5️⃣ Clear USER cart after order creation
      */
     await Cart.deleteOne({ userId });
 
@@ -108,6 +145,7 @@ export const createOrder = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
+
 
 /**
  * GET /api/orders
