@@ -6,8 +6,15 @@ import {
   removeFromCart,
   clearCart,
 } from "../controllers/cart.controller.js";
+import { guestMiddleware } from "../middlewares/guest.middleware.js";
 
 const router = Router();
+
+/**
+ * Enable guest carts
+ */
+router.use(guestMiddleware);
+
 router.post("/add", addToCart);
 router.get("/", getCart);
 router.put("/update", updateCartItem);

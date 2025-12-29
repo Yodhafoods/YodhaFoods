@@ -1,25 +1,25 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import Cart from "../models/Cart.js";
 import Product from "../models/Product.js";
-
-type CartRequest = Request & {
-  // additional properties if needed
-};
+import { GuestRequest } from "../middlewares/guest.middleware.js";
 
 /**
- * Utility: resolve cart owner
+ * Resolve cart owner (user OR guest)
  */
-const getCartQuery = (req: CartRequest) => {
-  // @ts-ignore
-  if (!req.user) return null;
-  // @ts-ignore
-  return { userId: req.user.id };
+const getCartQuery = (req: GuestRequest) => {
+  if (req.user) {
+    return { userId: req.user.id };
+  }
+  if (req.guestId) {
+    return { guestId: req.guestId };
+  }
+  return null;
 };
 
 /**
  * POST /api/cart/add
  */
-export const addToCart = async (req: CartRequest, res: Response) => {
+export const addToCart = async (req: GuestRequest, res: Response) => {
   try {
     const { productId, quantity } = req.body;
 
@@ -38,8 +38,9 @@ export const addToCart = async (req: CartRequest, res: Response) => {
 
     const cartQuery = getCartQuery(req);
     if (!cartQuery) {
-      return res.status(401).json({ message: "Please login to add items to cart" });
+      return res.status(400).json({ message: "Cart owner not resolved" });
     }
+
     let cart = await Cart.findOne(cartQuery);
 
     if (!cart) {
@@ -73,10 +74,9 @@ export const addToCart = async (req: CartRequest, res: Response) => {
 /**
  * GET /api/cart
  */
-export const getCart = async (req: CartRequest, res: Response) => {
+export const getCart = async (req: GuestRequest, res: Response) => {
   try {
     const cartQuery = getCartQuery(req);
-
     if (!cartQuery) {
       return res.json({ items: [] });
     }
@@ -100,7 +100,7 @@ export const getCart = async (req: CartRequest, res: Response) => {
 /**
  * PUT /api/cart/update
  */
-export const updateCartItem = async (req: CartRequest, res: Response) => {
+export const updateCartItem = async (req: GuestRequest, res: Response) => {
   try {
     const { productId, quantity } = req.body;
 
@@ -110,10 +110,10 @@ export const updateCartItem = async (req: CartRequest, res: Response) => {
 
     const cartQuery = getCartQuery(req);
     if (!cartQuery) {
-      return res.status(401).json({ message: "Login required" });
+      return res.status(400).json({ message: "Cart owner not resolved" });
     }
-    const cart = await Cart.findOne(cartQuery);
 
+    const cart = await Cart.findOne(cartQuery);
     if (!cart) {
       return res.status(404).json({ message: "Cart not found" });
     }
@@ -152,12 +152,13 @@ export const updateCartItem = async (req: CartRequest, res: Response) => {
 /**
  * DELETE /api/cart/remove/:productId
  */
-export const removeFromCart = async (req: CartRequest, res: Response) => {
+export const removeFromCart = async (req: GuestRequest, res: Response) => {
   try {
     const { productId } = req.params;
+
     const cartQuery = getCartQuery(req);
     if (!cartQuery) {
-      return res.status(401).json({ message: "Login required" });
+      return res.status(400).json({ message: "Cart owner not resolved" });
     }
 
     const cart = await Cart.findOne(cartQuery);
@@ -180,12 +181,13 @@ export const removeFromCart = async (req: CartRequest, res: Response) => {
 /**
  * DELETE /api/cart/clear
  */
-export const clearCart = async (req: CartRequest, res: Response) => {
+export const clearCart = async (req: GuestRequest, res: Response) => {
   try {
     const cartQuery = getCartQuery(req);
     if (!cartQuery) {
-      return res.status(401).json({ message: "Login required" });
+      return res.status(400).json({ message: "Cart owner not resolved" });
     }
+
     await Cart.deleteOne(cartQuery);
     return res.json({ message: "Cart cleared" });
   } catch (err) {
