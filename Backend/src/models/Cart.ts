@@ -18,12 +18,12 @@ const CartSchema = new Schema<ICart>(
     userId: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: false,
+      default: null,
     },
 
     guestId: {
       type: String,
-      required: false,
+      default: null,
     },
 
     items: [
@@ -48,21 +48,26 @@ const CartSchema = new Schema<ICart>(
 );
 
 /**
- * Ensure:
- * - one cart per logged-in user
- * - one cart per guest user
+ * One cart per user
  */
 CartSchema.index(
   { userId: 1 },
-  { unique: true, partialFilterExpression: { userId: { $ne: null } } }
+  {
+    unique: true,
+    partialFilterExpression: { userId: { $exists: true, $ne: null } },
+  }
 );
 
+/**
+ * One cart per guest
+ */
 CartSchema.index(
   { guestId: 1 },
-  { unique: true, partialFilterExpression: { guestId: { $ne: null } } }
+  {
+    unique: true,
+    partialFilterExpression: { guestId: { $exists: true, $ne: null } },
+  }
 );
 
-const Cart =
-  mongoose.models.Cart || mongoose.model<ICart>("Cart", CartSchema);
-
+const Cart = mongoose.models.Cart || mongoose.model<ICart>("Cart", CartSchema);
 export default Cart;

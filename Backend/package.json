@@ -9,7 +9,8 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "test": "echo \"No tests yet\" && exit 0",
-    "test-email": "node --loader ts-node/esm src/utils/test-email.ts"
+    "test-email": "node --loader ts-node/esm src/utils/test-email.ts",
+    "cleanup-carts": "tsx src/scripts/cleanup-duplicate-carts.ts"
   },
   "keywords": [],
   "author": "",

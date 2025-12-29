@@ -6,13 +6,9 @@ import { GuestRequest } from "../middlewares/guest.middleware.js";
 /**
  * Resolve cart owner (user OR guest)
  */
-const getCartQuery = (req: GuestRequest) => {
-  if (req.user) {
-    return { userId: req.user.id };
-  }
-  if (req.guestId) {
-    return { guestId: req.guestId };
-  }
+const resolveCartFilter = (req: GuestRequest) => {
+  if (req.user) return { userId: req.user.id };
+  if (req.guestId) return { guestId: req.guestId };
   return null;
 };
 
@@ -27,46 +23,54 @@ export const addToCart = async (req: GuestRequest, res: Response) => {
       return res.status(400).json({ message: "Invalid product or quantity" });
     }
 
+    const cartFilter = resolveCartFilter(req);
+    if (!cartFilter) {
+      return res.status(400).json({ message: "Cart owner not resolved" });
+    }
+
     const product = await Product.findById(productId);
     if (!product || !product.isActive) {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    if (product.stock < quantity) {
-      return res.status(400).json({ message: "Insufficient stock" });
-    }
+    const cart = await Cart.findOne(cartFilter);
 
-    const cartQuery = getCartQuery(req);
-    if (!cartQuery) {
-      return res.status(400).json({ message: "Cart owner not resolved" });
-    }
-
-    let cart = await Cart.findOne(cartQuery);
-
+    // Case 1: Cart does not exist → create
     if (!cart) {
-      cart = await Cart.create({
-        ...cartQuery,
+      if (product.stock < quantity) {
+        return res.status(400).json({ message: "Insufficient stock" });
+      }
+
+      const newCart = await Cart.create({
+        ...cartFilter,
         items: [{ productId, quantity }],
       });
-    } else {
-      const item = cart.items.find(
-        (i: any) => i.productId.toString() === productId
-      );
 
-      if (item) {
-        if (product.stock < item.quantity + quantity) {
-          return res.status(400).json({ message: "Insufficient stock" });
-        }
-        item.quantity += quantity;
-      } else {
-        cart.items.push({ productId, quantity });
-      }
-      await cart.save();
+      return res.json({ message: "Added to cart", cart: newCart });
     }
 
+    // Case 2: Cart exists → update item
+    const item = cart.items.find(
+      (item :any) => item.productId.toString() === productId
+    );
+
+    if (item) {
+      if (product.stock < item.quantity + quantity) {
+        return res.status(400).json({ message: "Insufficient stock" });
+      }
+      item.quantity += quantity;
+    } else {
+      if (product.stock < quantity) {
+        return res.status(400).json({ message: "Insufficient stock" });
+      }
+      cart.items.push({ productId, quantity });
+    }
+
+    await cart.save();
     return res.json({ message: "Added to cart", cart });
-  } catch (err) {
-    console.error("Add to cart error:", err);
+
+  } catch (error) {
+    console.error("Add to cart error:", error);
     return res.status(500).json({ message: "Server error" });
   }
 };
@@ -76,23 +80,17 @@ export const addToCart = async (req: GuestRequest, res: Response) => {
  */
 export const getCart = async (req: GuestRequest, res: Response) => {
   try {
-    const cartQuery = getCartQuery(req);
-    if (!cartQuery) {
-      return res.json({ items: [] });
-    }
+    const cartFilter = resolveCartFilter(req);
+    if (!cartFilter) return res.json({ items: [] });
 
-    const cart = await Cart.findOne(cartQuery).populate(
+    const cart = await Cart.findOne(cartFilter).populate(
       "items.productId",
       "name price discountPrice images stock isActive"
     );
 
-    if (!cart) {
-      return res.json({ items: [] });
-    }
-
-    return res.json(cart);
-  } catch (err) {
-    console.error("Get cart error:", err);
+    return res.json(cart ?? { items: [] });
+  } catch (error) {
+    console.error("Get cart error:", error);
     return res.status(500).json({ message: "Server error" });
   }
 };
@@ -108,18 +106,18 @@ export const updateCartItem = async (req: GuestRequest, res: Response) => {
       return res.status(400).json({ message: "Invalid input" });
     }
 
-    const cartQuery = getCartQuery(req);
-    if (!cartQuery) {
+    const cartFilter = resolveCartFilter(req);
+    if (!cartFilter) {
       return res.status(400).json({ message: "Cart owner not resolved" });
     }
 
-    const cart = await Cart.findOne(cartQuery);
+    const cart = await Cart.findOne(cartFilter);
     if (!cart) {
       return res.status(404).json({ message: "Cart not found" });
     }
 
     const index = cart.items.findIndex(
-      (i: any) => i.productId.toString() === productId
+      (item: any) => item.productId.toString() === productId
     );
 
     if (index === -1) {
@@ -133,18 +131,17 @@ export const updateCartItem = async (req: GuestRequest, res: Response) => {
       if (!product || !product.isActive) {
         return res.status(404).json({ message: "Product not found" });
       }
-
       if (product.stock < quantity) {
         return res.status(400).json({ message: "Insufficient stock" });
       }
-
       cart.items[index].quantity = quantity;
     }
 
     await cart.save();
     return res.json({ message: "Cart updated", cart });
-  } catch (err) {
-    console.error("Update cart error:", err);
+
+  } catch (error) {
+    console.error("Update cart error:", error);
     return res.status(500).json({ message: "Server error" });
   }
 };
@@ -156,12 +153,12 @@ export const removeFromCart = async (req: GuestRequest, res: Response) => {
   try {
     const { productId } = req.params;
 
-    const cartQuery = getCartQuery(req);
-    if (!cartQuery) {
+    const cartFilter = resolveCartFilter(req);
+    if (!cartFilter) {
       return res.status(400).json({ message: "Cart owner not resolved" });
     }
 
-    const cart = await Cart.findOne(cartQuery);
+    const cart = await Cart.findOne(cartFilter);
     if (!cart) {
       return res.status(404).json({ message: "Cart not found" });
     }
@@ -172,8 +169,9 @@ export const removeFromCart = async (req: GuestRequest, res: Response) => {
 
     await cart.save();
     return res.json({ message: "Item removed", cart });
-  } catch (err) {
-    console.error("Remove cart error:", err);
+
+  } catch (error) {
+    console.error("Remove cart error:", error);
     return res.status(500).json({ message: "Server error" });
   }
 };
@@ -183,15 +181,16 @@ export const removeFromCart = async (req: GuestRequest, res: Response) => {
  */
 export const clearCart = async (req: GuestRequest, res: Response) => {
   try {
-    const cartQuery = getCartQuery(req);
-    if (!cartQuery) {
+    const cartFilter = resolveCartFilter(req);
+    if (!cartFilter) {
       return res.status(400).json({ message: "Cart owner not resolved" });
     }
 
-    await Cart.deleteOne(cartQuery);
+    await Cart.deleteOne(cartFilter);
     return res.json({ message: "Cart cleared" });
-  } catch (err) {
-    console.error("Clear cart error:", err);
+
+  } catch (error) {
+    console.error("Clear cart error:", error);
     return res.status(500).json({ message: "Server error" });
   }
 };
