@@ -10,10 +10,8 @@ export const guestMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
-  // If user is logged in, do NOT use guestId
-  if (req.user) {
-    return next();
-  }
+  // Logged-in users don't need guestId
+  if (req.user) return next();
 
   let guestId = req.cookies?.guestId;
 
@@ -23,9 +21,9 @@ export const guestMiddleware = (
     res.cookie("guestId", guestId, {
       httpOnly: true,
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      sameSite: "lax",                // ⭐ REQUIRED
-      secure: process.env.NODE_ENV === "production", // ⭐ REQUIRED
-      path: "/",                      // ⭐ REQUIRED
+      sameSite: "none",               // ⭐ REQUIRED for cross-site
+      secure: true,                   // ⭐ REQUIRED on HTTPS
+      path: "/",                      
     });
   }
 

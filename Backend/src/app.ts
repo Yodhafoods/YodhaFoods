@@ -20,6 +20,7 @@ import passport from "./config/passport.js";
 
 const app = express();
 
+
 // Trust proxy is required for secure cookies behind a reverse proxy (Heroku, Render, Vercel, etc.)
 app.set("trust proxy", 1);
 
