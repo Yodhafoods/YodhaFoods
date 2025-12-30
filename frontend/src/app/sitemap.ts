@@ -1,5 +1,7 @@
 import { MetadataRoute } from 'next';
 
+export const dynamic = 'force-dynamic';
+
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://www.yodhafoods.com';
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://yodhafoods-api.onrender.com';
 

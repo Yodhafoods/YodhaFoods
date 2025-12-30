@@ -158,6 +158,9 @@ const Footer = () => {
                 <Link href="/contact" className="hover:text-orange-600 transition">
                   Contact Us
                 </Link>
+                <Link href="/sitemap.xml" className="hover:text-orange-600 transition">
+                  Sitemap
+                </Link>
               </div>
             </div>
           </div>
@@ -174,7 +177,7 @@ const Footer = () => {
             <div className="flex flex-col gap-3 text-sm font-semibold items-start">
               <FooterLink href="/shop">Shop All</FooterLink>
               <FooterLink href="/kitchen">Yodha Kitchen</FooterLink>
-              <FooterLink href="/concern">Shop by Concern</FooterLink>
+              <FooterLink href="/shop-by-concern">Shop by Concern</FooterLink>
               <FooterLink href="/instant">Yodha Instant</FooterLink>
             </div>
           </div>

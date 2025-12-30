@@ -1,210 +1,186 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
-import { Playfair_Display, Plus_Jakarta_Sans } from "next/font/google";
+import React, { useRef, MouseEvent } from "react";
+import {
+    motion,
+    useMotionValue,
+    useSpring,
+} from "framer-motion";
+import { Plus_Jakarta_Sans, Playfair_Display } from "next/font/google";
+import {
+    FaGlobe,
+    FaTruckLoading,
+    FaCheckCircle,
+    FaWhatsapp,
+} from "react-icons/fa";
+import { useRouter } from "next/navigation";
 
-const playfair = Playfair_Display({ subsets: ["latin"], weight: ["700"] });
+/* ---------------- Fonts ---------------- */
 const jakarta = Plus_Jakarta_Sans({
     subsets: ["latin"],
     weight: ["300", "400", "600", "800"],
 });
 
-interface HeroBannerFourProps {
-    onExpire?: () => void;
-    onUserInteracted?: () => void;
-}
+const playfair = Playfair_Display({
+    subsets: ["latin"],
+    weight: ["700"],
+});
 
-const PRODUCTS = [
-    { name: "Beetroot Powder", cat: "Vegetable" },
-    { name: "Spinach Powder", cat: "Vegetable" },
-    { name: "Carrot Powder", cat: "Vegetable" },
-    { name: "Moringa Powder", cat: "Vegetable" },
-    { name: "Mango Powder", cat: "Fruit" },
-    { name: "Ginger Powder", cat: "Spice" },
-    { name: "Turmeric Powder", cat: "Spice" },
-];
+export default function HeroBannerFour() {
+    const containerRef = useRef<HTMLDivElement>(null);
+    const router = useRouter();
 
-const CATEGORIES = ["All", "Vegetable", "Fruit", "Spice"];
+    /* ---------- Glow ---------- */
+    const mouseX = useMotionValue(0);
+    const mouseY = useMotionValue(0);
+    const springX = useSpring(mouseX, { stiffness: 80, damping: 20 });
+    const springY = useSpring(mouseY, { stiffness: 80, damping: 20 });
 
-export default function HeroBannerFour({
-    onExpire,
-    onUserInteracted,
-}: HeroBannerFourProps) {
-    const [view, setView] = useState<"intro" | "builder">("intro");
-    const [category, setCategory] = useState("All");
-    const [query, setQuery] = useState("");
-    const [box, setBox] = useState<string[]>([]);
+    function handleMouseMove(e: MouseEvent<HTMLDivElement>) {
+        if (!containerRef.current) return;
+        const rect = containerRef.current.getBoundingClientRect();
+        mouseX.set(e.clientX - rect.left - 250);
+        mouseY.set(e.clientY - rect.top - 250);
+    }
 
-    const [timerStarted, setTimerStarted] = useState(false);
-    const [timeLeft, setTimeLeft] = useState(180);
-    const [hasExpired, setHasExpired] = useState(false);
-
-    const filteredProducts = useMemo(() => {
-        return PRODUCTS.filter(
-            (p) =>
-                (category === "All" || p.cat === category) &&
-                p.name.toLowerCase().includes(query.toLowerCase())
-        );
-    }, [category, query]);
-
-    useEffect(() => {
-        if (!timerStarted) return;
-        const id = setInterval(() => {
-            setTimeLeft((t) => Math.max(t - 1, 0));
-        }, 1000);
-        return () => clearInterval(id);
-    }, [timerStarted]);
-
-    useEffect(() => {
-        if (timeLeft === 0 && !hasExpired) {
-            setHasExpired(true);
-            onExpire?.();
-        }
-    }, [timeLeft, hasExpired, onExpire]);
-
-    const startTimerOnce = () => {
-        if (!timerStarted) {
-            setTimerStarted(true);
-            onUserInteracted?.();
-        }
-    };
-
-    const formatTime = (s: number) =>
-        `${Math.floor(s / 60).toString().padStart(2, "0")}:${(s % 60)
-            .toString()
-            .padStart(2, "0")}`;
-
-    const toggleProduct = (name: string) => {
-        startTimerOnce();
-        setBox((prev) =>
-            prev.includes(name)
-                ? prev.filter((p) => p !== name)
-                : prev.length < 6
-                    ? [...prev, name]
-                    : prev
-        );
-    };
-
-    const removeFromBox = (i: number) => {
-        startTimerOnce();
-        setBox((prev) => prev.filter((_, idx) => idx !== i));
+    /* ---------- Handlers ---------- */
+    const handleRedirect = () => {
+        router.push("/shop");
     };
 
     return (
         <section className={`w-full flex justify-center ${jakarta.className}`}>
             <div className="max-w-[1440px] w-full px-2 md:px-12 mt-6">
-                {/* 🔒 HEIGHT LOCKED FOR MOBILE + DESKTOP */}
-                <div className="relative h-[650px] rounded-[40px] overflow-hidden bg-gradient-to-br from-[#f3d9c1] to-[#d97e5a] shadow-xl">
+                <div
+                    ref={containerRef}
+                    onMouseMove={handleMouseMove}
+                    className="relative h-[650px] rounded-[40px] overflow-hidden bg-gradient-to-br from-[#0a0a1f] to-[#050514] border border-white/10 text-white"
+                >
+                    {/* Glow */}
+                    <motion.div
+                        className="absolute w-[500px] h-[500px] rounded-full pointer-events-none"
+                        style={{
+                            background:
+                                "radial-gradient(circle, rgba(253,224,71,0.08) 0%, transparent 70%)",
+                            x: springX,
+                            y: springY,
+                        }}
+                    />
 
-                    {/* TIMER */}
-                    {timerStarted && (
-                        <div className="absolute top-4 right-4 z-30 px-4 py-2 rounded-full bg-black/60 backdrop-blur text-yellow-300 text-xs font-extrabold tracking-widest">
-                            {formatTime(timeLeft)}
-                        </div>
-                    )}
+                    <div className="relative z-10 grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] h-full">
+                        {/* LEFT */}
+                        <div className="p-8 pb-28 lg:pb-12 lg:p-12 flex flex-col justify-center">
+                            <span className="mb-6 inline-flex px-4 py-1.5 rounded-full bg-emerald-400/10 border border-emerald-400 text-emerald-400 text-xs font-extrabold tracking-widest uppercase w-fit">
+                                Beyond the Catalog
+                            </span>
 
-                    {/* INTRO */}
-                    {view === "intro" && (
-                        <div className="h-full flex items-center px-6 md:px-20">
-                            <div>
-                                <span className="text-xs font-extrabold tracking-widest uppercase opacity-60">
-                                    Molecular Nutrition
-                                </span>
+                            <h1
+                                className={`${playfair.className} text-4xl lg:text-[3.5rem] mb-5`}
+                            >
+                                Your Wish Is <br />
+                                <span className="text-yellow-300">Yodha’s Wish.</span>
+                            </h1>
 
-                                <h1 className={`${playfair.className} text-4xl md:text-6xl lg:text-7xl mt-4`}>
-                                    The Molecular <br /> Ritual
-                                </h1>
+                            <p className="opacity-80 max-w-[520px] mb-8">
+                                Can't find the product? Tell us what you need and our global
+                                sourcing team will take care of it.
+                            </p>
 
-                                <p className="max-w-lg mt-6 text-lg opacity-80">
-                                    Ditch the water weight. Build your 6-item ritual and unlock
-                                    clinically backed savings.
-                                </p>
-
-                                <button
-                                    onClick={() => {
-                                        startTimerOnce();
-                                        setView("builder");
-                                    }}
-                                    className="mt-8 px-10 py-4 rounded-full bg-[#0f2f2b] text-white font-extrabold uppercase tracking-widest"
-                                >
-                                    Start Your Ritual
-                                </button>
+                            <div className="grid grid-cols-2 gap-4 max-w-[520px]">
+                                <Benefit icon={<FaGlobe />} title="Global Sourcing" />
+                                <Benefit icon={<FaTruckLoading />} title="Direct Delivery" />
+                                <div className="col-span-2">
+                                    <Benefit icon={<FaCheckCircle />} title="Purity Standards" />
+                                </div>
                             </div>
                         </div>
-                    )}
 
-                    {/* BUILDER */}
-                    {view === "builder" && (
-                        <div className="h-full grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] overflow-hidden">
-                            {/* LEFT — scrolls internally */}
-                            <div className="p-4 md:p-10 bg-white/30 overflow-y-auto">
-                                <input
-                                    value={query}
-                                    onChange={(e) => {
-                                        startTimerOnce();
-                                        setQuery(e.target.value);
-                                    }}
-                                    placeholder="Search product"
-                                    className="w-full mb-3 px-6 py-3 rounded-full bg-white"
+                        {/* RIGHT (DESKTOP FORM) - All interactions redirect */}
+                        <div
+                            onClick={handleRedirect}
+                            className="hidden lg:flex relative bg-black/25 p-10 flex-col justify-center border-l border-white/5 cursor-pointer hover:bg-black/30 transition-colors"
+                        >
+                            <div className="space-y-5 pointer-events-none">
+                                <Field
+                                    label="What are you looking for?"
+                                    id="productReq"
+                                    isTextArea
+                                    value=""
+                                    onChange={() => { }}
+                                />
+                                <Field
+                                    label="Name"
+                                    id="userName"
+                                    value=""
+                                    onChange={() => { }}
+                                />
+                                <Field
+                                    label="WhatsApp Contact"
+                                    id="userPhone"
+                                    value=""
+                                    onChange={() => { }}
                                 />
 
-                                <div className="flex gap-2 mb-3 overflow-x-auto">
-                                    {CATEGORIES.map((cat) => (
-                                        <button
-                                            key={cat}
-                                            onClick={() => {
-                                                startTimerOnce();
-                                                setCategory(cat);
-                                            }}
-                                            className={`px-4 py-2 rounded-full text-sm ${category === cat
-                                                    ? "bg-[#0f2f2b] text-white"
-                                                    : "bg-white"
-                                                }`}
-                                        >
-                                            {cat}
-                                        </button>
-                                    ))}
-                                </div>
-
-                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                    {filteredProducts.map((p) => (
-                                        <button
-                                            key={p.name}
-                                            onClick={() => toggleProduct(p.name)}
-                                            className={`p-3 rounded-xl ${box.includes(p.name)
-                                                    ? "bg-[#27ae60] text-white scale-95"
-                                                    : "bg-white"
-                                                }`}
-                                        >
-                                            <strong className="text-sm">{p.name}</strong>
-                                            <div className="text-[10px] opacity-60">{p.cat}</div>
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* RIGHT — scroll-safe */}
-                            <div className="p-4 md:p-10 bg-[#0f2f2b] text-white flex flex-col items-center overflow-y-auto">
-                                <h2 className="text-lg font-bold mb-3">Your Ritual Box</h2>
-
-                                <div className="grid grid-cols-2 gap-3 w-full max-w-sm mb-4">
-                                    {Array.from({ length: 6 }).map((_, i) => (
-                                        <button
-                                            key={i}
-                                            onClick={() => removeFromBox(i)}
-                                            className={`h-20 md:h-24 rounded-xl ${box[i] ? "bg-white/40" : "bg-white/10"
-                                                }`}
-                                        >
-                                            {box[i] || i + 1}
-                                        </button>
-                                    ))}
+                                <div
+                                    className="w-full mt-4 bg-gradient-to-br from-yellow-300 to-amber-500 text-[#020617] py-4 rounded-full font-extrabold uppercase tracking-widest text-sm flex items-center justify-center gap-2"
+                                >
+                                    Submit Request <FaWhatsapp />
                                 </div>
                             </div>
                         </div>
-                    )}
+                    </div>
 
+                    {/* 📱 MOBILE SUBMIT BUTTON (HEIGHT SAFE) */}
+                    <div className="lg:hidden absolute bottom-4 left-4 right-4 z-30">
+                        <button
+                            onClick={handleRedirect}
+                            className="w-full bg-gradient-to-br from-yellow-300 to-amber-500 text-[#020617]
+                         py-4 rounded-full font-extrabold uppercase tracking-widest text-sm
+                         flex items-center justify-center gap-2 shadow-lg"
+                        >
+                            Submit Your Request <FaWhatsapp />
+                        </button>
+                    </div>
                 </div>
             </div>
         </section>
+    );
+}
+
+/* ---------------- Small ---------------- */
+function Benefit({ icon, title }: any) {
+    return (
+        <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
+            <div className="text-cyan-400 text-lg mb-2">{icon}</div>
+            <h4 className="text-xs uppercase tracking-widest font-extrabold">
+                {title}
+            </h4>
+        </div>
+    );
+}
+
+function Field({ label, id, value, onChange, isTextArea }: any) {
+    return (
+        <div className="space-y-2">
+            <label className="text-yellow-300 text-xs font-extrabold tracking-widest uppercase">
+                {label}
+            </label>
+            {isTextArea ? (
+                <textarea
+                    id={id}
+                    rows={3}
+                    value={value}
+                    readOnly
+                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 resize-none pointer-events-none"
+                />
+            ) : (
+                <input
+                    id={id}
+                    value={value}
+                    readOnly
+                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 pointer-events-none"
+                />
+            )}
+        </div>
     );
 }

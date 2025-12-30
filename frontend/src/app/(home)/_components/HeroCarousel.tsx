@@ -1,180 +1,191 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
-import { motion, PanInfo, useReducedMotion } from "framer-motion";
+import React, { useRef } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Navigation } from "swiper/modules";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import type { Swiper as SwiperType } from "swiper";
 
+// Import Swiper styles
+import "swiper/css";
+import "swiper/css/navigation";
+
+// Import your Banner components
 import HeroBannerOne from "./HeroBannerOne";
 import HeroBannerTwo from "./HeroBannerTwo";
 import HeroBannerThree from "./HeroBannerThree";
 import HeroBannerFour from "./HeroBannerFour";
 
-const SLIDE_DURATION = 5000;
-const SWIPE_THRESHOLD = 80;
-const TOTAL_SLIDES = 4;
-
 export default function HeroCarousel() {
-    const [index, setIndex] = useState(0);
-    const [progressKey, setProgressKey] = useState(0);
-    const [bannerTwoLocked, setBannerTwoLocked] = useState(false);
+    const prevRef = useRef<HTMLButtonElement>(null);
+    const nextRef = useRef<HTMLButtonElement>(null);
+    const swiperRef = useRef<SwiperType | null>(null);
+    const progressCircle = useRef<SVGCircleElement>(null);
+    const [isMounted, setIsMounted] = React.useState(false);
+    const [activeIndex, setActiveIndex] = React.useState(0);
 
-    const intervalRef = useRef<NodeJS.Timeout | null>(null);
-    const containerRef = useRef<HTMLElement | null>(null);
-
-    const prefersReducedMotion = useReducedMotion();
-
-    /* ---------------- Helpers ---------------- */
-    const restartProgress = useCallback(() => {
-        setProgressKey((k) => k + 1);
+    React.useEffect(() => {
+        setIsMounted(true);
     }, []);
 
-    const stopAutoSlide = useCallback(() => {
-        if (intervalRef.current) {
-            clearInterval(intervalRef.current);
-            intervalRef.current = null;
+    const onAutoplayTimeLeft = (s: SwiperType, time: number, progress: number) => {
+        if (progressCircle.current) {
+            // radius is roughly 8px -> circum ~ 50.
+            // We'll set pathLength in CSS or attribute if possible, but let's use 100 for simplicity and dasharray.
+            // Actually, let's just set CSS variable --progress
+            progressCircle.current.style.setProperty('--progress', `${1 - progress}`);
         }
-    }, []);
+    };
 
-    const startAutoSlide = useCallback(() => {
-        if (prefersReducedMotion) return;
+    if (!isMounted) {
+        return (
+            <section className="w-full relative group flex justify-center h-[650px] bg-gray-100 rounded-[40px] animate-pulse">
+                {/* Placeholder for SSR / Loading state */}
+            </section>
+        );
+    }
 
-        // ⛔ BannerTwo controls its own timing AFTER user interaction
-        // if (index === 1 && bannerTwoLocked) return;
-        if ((index === 2 || index === 3) && bannerTwoLocked) return;
-
-
-        stopAutoSlide();
-        intervalRef.current = setInterval(() => {
-            setIndex((prev) => (prev + 1) % TOTAL_SLIDES);
-            restartProgress();
-        }, SLIDE_DURATION);
-    }, [
-        index,
-        bannerTwoLocked,
-        prefersReducedMotion,
-        restartProgress,
-        stopAutoSlide,
-    ]);
-
-    /* ---------------- Lifecycle ---------------- */
-    useEffect(() => {
-        startAutoSlide();
-        return stopAutoSlide;
-    }, [startAutoSlide, stopAutoSlide]);
-
-    // Reset BannerTwo lock when leaving it
-    useEffect(() => {
-        if (index !== 2 && index !== 3) {
-            setBannerTwoLocked(false);
-        }
-
-    }, [index]);
-
-    /* ---------------- Swipe ---------------- */
-    const handleDragEnd = useCallback(
-        (_: MouseEvent | TouchEvent, info: PanInfo) => {
-            if (prefersReducedMotion) return;
-
-            if (info.offset.x < -SWIPE_THRESHOLD) {
-                setIndex((i) => (i + 1) % TOTAL_SLIDES);
-            } else if (info.offset.x > SWIPE_THRESHOLD) {
-                setIndex((i) => (i - 1 + TOTAL_SLIDES) % TOTAL_SLIDES);
-            }
-
-            restartProgress();
-            startAutoSlide();
-        },
-        [prefersReducedMotion, restartProgress, startAutoSlide]
-    );
+    // Helper to handle dot click
+    const handleDotClick = (index: number) => {
+        swiperRef.current?.slideToLoop(index);
+    };
 
     return (
-        <section
-            ref={containerRef}
-            className="relative w-full overflow-hidden isolate touch-pan-y"
-            onMouseEnter={stopAutoSlide}
-            onMouseLeave={startAutoSlide}
-        >
-            {/* SLIDES TRACK */}
-            <motion.div
-                className="flex w-full"
-                drag={prefersReducedMotion ? false : "x"}
-                dragConstraints={{ left: 0, right: 0 }}
-                dragElastic={0.08}
-                onDragStart={stopAutoSlide}
-                onDragEnd={handleDragEnd}
-                animate={{ x: `-${index * 100}%` }}
-                transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.9 }}
-            >
-                <div className="w-full flex-shrink-0">
-                    <HeroBannerThree />
-                </div>
-                <div className="w-full flex-shrink-0">
-                    <HeroBannerOne />
-                </div>
-                <div className="w-full flex-shrink-0">
-                    <HeroBannerFour
-                        onUserInteracted={() => {
-                            setBannerTwoLocked(true);
-                            stopAutoSlide();
-                        }}
-                        onExpire={() => {
-                            setBannerTwoLocked(false);
-                            setIndex((i) => (i + 1) % TOTAL_SLIDES);
-                            restartProgress();
-                        }}
-                    />
-                </div>
-                <div className="w-full flex-shrink-0">
-                    <HeroBannerTwo
-                        onUserInteracted={() => {
-                            setBannerTwoLocked(true);
-                            stopAutoSlide(); // 🔥 immediately stop auto-slide
-                        }}
-                        onExpire={() => {
-                            setBannerTwoLocked(false);
-                            setIndex((i) => (i + 1) % TOTAL_SLIDES);
-                            restartProgress();
-                        }}
-                    />
-                </div>
-            </motion.div>
+        <section className="w-full relative group flex justify-center">
+            {/* 
+         WRAPPER: 
+         Matches the layout of banners (max-w-[1440px]) but is purely for 
+         positioning the navigation buttons perfectly inside the design boundaries.
+         pointer-events-none allows clicks to pass through to the slider/banner content,
+         except for the buttons themselves.
+      */}
+            <div className="absolute inset-0 z-20 flex justify-center pointer-events-none">
+                <div className="max-w-[1440px] w-full px-2 md:px-12 mt-6 relative flex flex-col justify-between">
 
-            {/* DOTS + PROGRESS */}
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3 z-30">
-                {Array.from({ length: TOTAL_SLIDES }).map((_, i) => {
-                    const active = i === index;
-
-                    // ❗ Hide progress ONLY for BannerTwo when timer is active
-                    const showProgress = active && !(i === 1 && bannerTwoLocked);
-
-                    return (
+                    {/* NAVIGATION ARROWS ROW */}
+                    <div className="flex items-center justify-between w-full h-full absolute inset-0 px-2 md:px-12">
+                        {/* Custom PREV Button */}
                         <button
-                            key={i}
-                            onClick={() => {
-                                setIndex(i);
-                                restartProgress();
-                                startAutoSlide();
-                            }}
-                            className={`relative h-2 rounded-full overflow-hidden transition-all ${active ? "w-10 bg-white/30" : "w-2 bg-white/40"
-                                }`}
-                            aria-label={`Go to banner ${i + 1}`}
+                            ref={prevRef}
+                            onClick={() => swiperRef.current?.slidePrev()}
+                            className="
+              pointer-events-auto
+              ml-4
+              w-12 h-12 md:w-14 md:h-14
+              rounded-full
+              bg-white/10 backdrop-blur-md
+              border border-white/20
+              text-white
+              flex items-center justify-center
+              hover:bg-white/20 hover:scale-110
+              transition-all duration-300
+              shadow-lg
+              group-hover:opacity-100 opacity-0
+            "
+                            aria-label="Previous Slide"
                         >
-                            {showProgress && !prefersReducedMotion && (
-                                <motion.span
-                                    key={progressKey}
-                                    className="absolute inset-0 bg-white"
-                                    initial={{ scaleX: 0 }}
-                                    animate={{ scaleX: 1 }}
-                                    style={{ transformOrigin: "left" }}
-                                    transition={{
-                                        duration: SLIDE_DURATION / 1000,
-                                        ease: "linear",
-                                    }}
-                                />
-                            )}
+                            <FaChevronLeft className="text-xl md:text-2xl" />
                         </button>
-                    );
-                })}
+
+                        {/* Custom NEXT Button */}
+                        <button
+                            ref={nextRef}
+                            onClick={() => swiperRef.current?.slideNext()}
+                            className="
+              pointer-events-auto
+              mr-4
+              w-12 h-12 md:w-14 md:h-14
+              rounded-full
+              bg-white/10 backdrop-blur-md
+              border border-white/20
+              text-white
+              flex items-center justify-center
+              hover:bg-white/20 hover:scale-110
+              transition-all duration-300
+              shadow-lg
+              group-hover:opacity-100 opacity-0
+            "
+                            aria-label="Next Slide"
+                        >
+                            <FaChevronRight className="text-xl md:text-2xl" />
+                        </button>
+                    </div>
+
+                    {/* PROGRESS DOTS (Bottom Center) */}
+                    <div className="absolute bottom-8 left-0 right-0 flex justify-center gap-4 pointer-events-auto z-30">
+                        {[0, 1, 2, 3].map((index) => (
+                            <div
+                                key={index}
+                                onClick={() => handleDotClick(index)}
+                                className="relative cursor-pointer flex items-center justify-center w-6 h-6"
+                            >
+                                {/* Background Dot */}
+                                <div className={`w-2 h-2 rounded-full transition-colors duration-300 ${index === activeIndex ? 'bg-transparent' : 'bg-white/40 hover:bg-white/80'}`} />
+
+                                {/* Active Progress Ring */}
+                                {index === activeIndex && (
+                                    <svg className="absolute inset-0 w-full h-full -rotate-90">
+                                        {/* Track */}
+                                        <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.2)" strokeWidth="2" fill="none" />
+                                        {/* Progress */}
+                                        <circle
+                                            ref={progressCircle}
+                                            cx="12" cy="12" r="10"
+                                            stroke="#fbbf24" // amber-400
+                                            strokeWidth="2"
+                                            fill="none"
+                                            strokeDasharray="62.83" // 2 * pi * 10
+                                            strokeDashoffset="calc(62.83 * (1 - var(--progress, 0)))"
+                                            strokeLinecap="round"
+                                        />
+                                        {/* Inner solid dot for active state */}
+                                        <circle cx="12" cy="12" r="3" fill="#fbbf24" />
+                                    </svg>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+
+                </div>
             </div>
+
+            <Swiper
+                onSwiper={(swiper) => {
+                    swiperRef.current = swiper;
+                }}
+                onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
+                onAutoplayTimeLeft={onAutoplayTimeLeft}
+                modules={[Autoplay, Navigation]}
+                spaceBetween={0}
+                slidesPerView={1}
+                loop={true}
+                speed={1000}
+                autoplay={{
+                    delay: 5000,
+                    disableOnInteraction: false,
+                }}
+                // We use custom buttons calling API, but we can also link them via params
+                // navigation={{
+                //   prevEl: prevRef.current,
+                //   nextEl: nextRef.current,
+                // }}
+                // However, since refs are null on first render, stick to instance methods or state-based refs.
+                allowTouchMove={true}
+                className="hero-swiper w-full"
+            >
+                <SwiperSlide>
+                    <HeroBannerOne />
+                </SwiperSlide>
+                <SwiperSlide>
+                    <HeroBannerTwo />
+                </SwiperSlide>
+                <SwiperSlide>
+                    <HeroBannerThree />
+                </SwiperSlide>
+                <SwiperSlide>
+                    <HeroBannerFour />
+                </SwiperSlide>
+            </Swiper>
         </section>
     );
 }

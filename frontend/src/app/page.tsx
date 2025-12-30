@@ -1,4 +1,6 @@
 import JourneySection from "./(home)/_components/Journey";
+
+export const dynamic = 'force-dynamic';
 import YodhaInstant from "./(home)/_components/YodhaInstant";
 import CategoriesSection from "./(home)/_components/CategoriesSection";
 import WatchAndShop from "./(home)/_components/WatchAndShop";

@@ -2,6 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import { Plus_Jakarta_Sans, Playfair_Display } from "next/font/google";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/lib/store/store";
+import { openDrawer, closeDrawer } from "@/features/ui/store/uiSlice";
 
 // Font configurations
 const jakarta = Plus_Jakarta_Sans({
@@ -31,7 +34,8 @@ const PRODUCTS = [
 ];
 
 export default function BundleBoxDrawer() {
-    const [isOpen, setIsOpen] = useState(false);
+    const dispatch = useDispatch();
+    const isOpen = useSelector((state: RootState) => state.ui.isDrawerOpen);
     const [viewState, setViewState] = useState<"banner" | "bundler" | "report">("banner");
 
     // Logic State
@@ -75,7 +79,11 @@ export default function BundleBoxDrawer() {
     // -- Handlers --
 
     const toggleDrawer = () => {
-        setIsOpen(!isOpen);
+        if (isOpen) {
+            dispatch(closeDrawer());
+        } else {
+            dispatch(openDrawer());
+        }
         if (!isOpen && !timerActive) {
             // Logic for opening
         }
@@ -153,7 +161,7 @@ export default function BundleBoxDrawer() {
             {!isOpen && (
                 <div className="fixed bottom-8 right-8 z-[9999]">
                     <button
-                        onClick={() => setIsOpen(true)}
+                        onClick={() => dispatch(openDrawer())}
                         className="w-[60px] h-[60px] rounded-full bg-[#0f2f2b] text-[#d4af37] border border-[#d4af37] flex items-center justify-center cursor-pointer shadow-lg hover:scale-110 transition-all duration-300"
                     >
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -179,7 +187,7 @@ export default function BundleBoxDrawer() {
 
                         {/* Close Button & HUD (Absolute) */}
                         <button
-                            onClick={() => setIsOpen(false)}
+                            onClick={() => dispatch(closeDrawer())}
                             className="absolute top-4 right-4 z-50 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center text-[#0f2f2b] hover:scale-110 transition-transform shadow-md"
                         >
                             ✕
