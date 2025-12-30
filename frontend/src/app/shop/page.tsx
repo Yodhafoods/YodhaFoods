@@ -40,7 +40,7 @@ export default function ShopPage() {
 
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto p-1 md:p-1 md:[&::-webkit-scrollbar]:hidden md:[-ms-overflow-style:none] md:[scrollbar-width:none]">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto mb-10">
           {/* Desktop Category Bar - Desktop Only */}
           <DesktopCategoryBar
             categories={categories}

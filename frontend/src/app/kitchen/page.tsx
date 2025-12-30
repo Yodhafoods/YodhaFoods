@@ -17,14 +17,14 @@ export default async function KitchenPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-10">
+    <div className="max-w-7xl mx-auto px-4 py-4">
       {/* HERO */}
       <div className="text-center mb-8">
-        <h1 className="text-3xl md:text-5xl font-extrabold text-[#2d4a22] tracking-tight">
+        <h1 className="text-3xl md:text-4xl font-extrabold text-[#2d4a22] tracking-tight">
           Yodha Kitchen
         </h1>
-        <p className="text-gray-600 mt-3 text-lg">
-          Modern Rituals. Ancient Ingredients.
+        <p className="text-gray-600 mt-1 text-lg">
+          Ultra-fast recipes for the Modern lifestyle
         </p>
       </div>
 

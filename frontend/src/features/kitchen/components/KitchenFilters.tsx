@@ -41,7 +41,7 @@ export default function KitchenFilters({
     setStyle,
 }: KitchenFiltersProps) {
     return (
-        <div className="flex flex-col items-center gap-6 w-full max-w-4xl mx-auto mb-14">
+        <div className="flex flex-col items-center gap-2 w-full max-w-4xl mx-auto mb-6">
             {/* TIME (Row 1 - Pills) */}
             <div className="text-center">
                 <span className="block text-xs font-extrabold tracking-widest text-[#c5a059] uppercase mb-4">
