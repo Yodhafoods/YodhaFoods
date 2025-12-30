@@ -1,29 +1,13 @@
+"use client";
+
 import React from "react";
 import CategoriesList from "./CategoriesList";
 import { ArrowRight, ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { Category } from "@/types";
-import { api } from "@/lib/api";
+import { useCategories } from "@/hooks/useCategories";
 
-import { cookies } from "next/headers";
-
-async function getCategories() {
-    try {
-        const cookieStore = await cookies();
-        const data: any = await api.get('/api/categories', {
-            headers: {
-                Cookie: cookieStore.toString(),
-            },
-        });
-        return (data.categories || data) as Category[];
-    } catch (error) {
-        console.error("Failed to fetch categories:", error);
-        return [];
-    }
-}
-
-export default async function CategoriesSection() {
-    const categories = await getCategories();
+export default function CategoriesSection() {
+    const { categories } = useCategories();
 
     if (!categories || categories.length === 0) {
         return null; // Or return a skeleton/empty state if preferred, but existing logic returned null on error
