@@ -90,6 +90,14 @@ const authLimiter = rateLimit({
 
 app.use("/api/auth", authLimiter);
 
+// Health check API
+app.get("/", (req, res) => {
+  return res.status(202).json({
+    message: "API health is good"
+  });
+});
+
+
 /* ----------------------------------------------------
     7. Routes
 ---------------------------------------------------- */
