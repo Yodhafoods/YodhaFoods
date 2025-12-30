@@ -188,13 +188,14 @@ export const loginUser = async (
     // Remove password before sending user
     const { password: _, ...safeUser } = user.toObject();
 
-    // Access token expiry (15 minutes)
+    // Access token expiry (15 minutes) - Must match token utils
     const accessTokenExpiry = Date.now() + 15 * 60 * 1000;
 
     return res.json({
       message: "Login successful",
       user: safeUser,
       accessTokenExpiry,
+      refreshTokenExpiry: Date.now() + 7 * 24 * 60 * 60 * 1000,
     });
   } catch (err) {
     console.error("Login error:", err);

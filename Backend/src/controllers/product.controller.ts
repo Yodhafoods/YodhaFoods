@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
 import mongoose from "mongoose";
-import Product from "../models/Product.js";
+import Product, { IProduct } from "../models/Product.js";
 import Category from "../models/Category.js";
 import cloudinary from "../config/cloudinary.js";
 import { Readable } from "stream";
+import { createProductSchema, updateProductSchema } from "../schemas/product.schema.js";
 
 // Helper to upload to Cloudinary from buffer
 const uploadToCloudinary = (buffer: Buffer): Promise<{ secure_url: string; public_id: string }> => {
@@ -26,28 +27,23 @@ const uploadToCloudinary = (buffer: Buffer): Promise<{ secure_url: string; publi
  */
 export const createProduct = async (req: Request, res: Response) => {
   try {
-    const {
-      name, description, price, discountPrice, categoryId, stock,
-      isActive, isFeatured, tags, attributes, seo
-    } = req.body;
+    // 1. Validate body with Zod
+    // Note: Zod schema handles parsing JSON strings for complex fields via z.preprocess
+    const validatedData = createProductSchema.parse(req.body);
 
-    // Resolve category
+    // 2. Resolve category
     let resolvedCategoryId: mongoose.Types.ObjectId;
-
-    // Check if categoryId is a valid ObjectId
-    if (mongoose.isValidObjectId(categoryId)) {
-      const cat = await Category.findById(categoryId);
+    if (mongoose.isValidObjectId(validatedData.categoryId)) {
+      const cat = await Category.findById(validatedData.categoryId);
       if (!cat) return res.status(404).json({ message: "Category not found" });
       resolvedCategoryId = cat._id as mongoose.Types.ObjectId;
     } else {
-      // Try slug lookup
-      const cat = await Category.findOne({ slug: categoryId.toLowerCase() });
+      const cat = await Category.findOne({ slug: validatedData.categoryId.toLowerCase() });
       if (!cat) return res.status(404).json({ message: "Category not found" });
       resolvedCategoryId = cat._id as mongoose.Types.ObjectId;
     }
 
-    // Handle Image Uploads
-    // Handle Image Uploads
+    // 3. Handle Image Uploads
     let images: { url: string; public_id: string }[] = [];
     if (req.files && Array.isArray(req.files) && req.files.length > 0) {
       const uploadPromises = (req.files as Express.Multer.File[]).map(file =>
@@ -55,29 +51,14 @@ export const createProduct = async (req: Request, res: Response) => {
       );
       const results = await Promise.all(uploadPromises);
       results.forEach(res => images.push({ url: res.secure_url, public_id: res.public_id }));
-    } else if (req.body.images) {
-      // If images sent as JSON (e.g. from frontend direct upload)
-      if (Array.isArray(req.body.images)) {
-        images = req.body.images;
-      } else if (typeof req.body.images === 'string') {
-        // Fallback for single image string (optional, but good for robustness)
-        images.push({ url: req.body.images, public_id: 'external_' + Date.now() });
-      }
     }
 
+    // 4. Create Product
     const product = await Product.create({
-      name,
-      description,
-      price,
-      discountPrice,
+      ...validatedData,
       categoryId: resolvedCategoryId,
-      stock,
-      isActive,
-      isFeatured,
       images,
-      tags: tags || [],
-      attributes: attributes || {},
-      seo
+      // Default auto-slug handling is in Model
     });
 
     await product.populate("categoryId", "name slug");
@@ -87,6 +68,9 @@ export const createProduct = async (req: Request, res: Response) => {
       product,
     });
   } catch (err: any) {
+    if (err.name === 'ZodError') {
+      return res.status(400).json({ message: "Validation error", errors: err.errors });
+    }
     console.error("Create Product Error:", err);
     return res.status(500).json({ message: "Server error", error: err.message });
   }
@@ -99,29 +83,30 @@ export const createProduct = async (req: Request, res: Response) => {
 export const updateProduct = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const body = req.body;
+
+    // 1. Validate partial body
+    const validatedData = updateProductSchema.parse(req.body);
 
     const product = await Product.findById(id);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    // Resolve Category if provided
-    if (body.categoryId) {
-      if (mongoose.isValidObjectId(body.categoryId)) {
-        // Verify existence
-        const cat = await Category.findById(body.categoryId);
+    // 2. Resolve Category if provided
+    if (validatedData.categoryId) {
+      if (mongoose.isValidObjectId(validatedData.categoryId)) {
+        const cat = await Category.findById(validatedData.categoryId);
         if (!cat) return res.status(404).json({ message: "Category not found" });
         product.categoryId = cat._id as mongoose.Types.ObjectId;
       } else {
-        const cat = await Category.findOne({ slug: body.categoryId.toLowerCase() });
+        const cat = await Category.findOne({ slug: validatedData.categoryId.toLowerCase() });
         if (!cat) return res.status(404).json({ message: "Category not found by slug" });
         product.categoryId = cat._id as mongoose.Types.ObjectId;
       }
     }
 
-    // Handle New Image Uploads (Append to existing)
-    if (req.files && Array.isArray(req.files)) {
+    // 3. Handle New Image Uploads (Append)
+    if (req.files && Array.isArray(req.files) && req.files.length > 0) {
       const uploadPromises = (req.files as Express.Multer.File[]).map(file =>
         uploadToCloudinary(file.buffer)
       );
@@ -129,17 +114,29 @@ export const updateProduct = async (req: Request, res: Response) => {
       results.forEach(res => product.images.push({ url: res.secure_url, public_id: res.public_id }));
     }
 
-    // Update fields
-    if (body.name) product.name = body.name;
-    if (body.description !== undefined) product.description = body.description;
-    if (body.price !== undefined) product.price = body.price;
-    if (body.discountPrice !== undefined) product.discountPrice = body.discountPrice;
-    if (body.stock !== undefined) product.stock = body.stock;
-    if (body.isActive !== undefined) product.isActive = body.isActive;
-    if (body.isFeatured !== undefined) product.isFeatured = body.isFeatured;
-    if (body.tags) product.tags = body.tags;
-    if (body.attributes) product.attributes = body.attributes;
-    if (body.seo) product.seo = body.seo;
+    // 4. Update fields
+    // Explicitly update fields if they exist in validatedData
+
+    if (validatedData.name) product.name = validatedData.name;
+    if (validatedData.slug) product.slug = validatedData.slug; // Allow slug update if provided
+    if (validatedData.description !== undefined) product.description = validatedData.description;
+
+    // For complex objects, if provided, entirely replace the property
+    if (validatedData.packs) product.packs = validatedData.packs as any;
+    if (validatedData.ingredients) product.ingredients = validatedData.ingredients;
+    if (validatedData.shelfLifeMonths) product.shelfLifeMonths = validatedData.shelfLifeMonths;
+    if (validatedData.storageInstructions !== undefined) product.storageInstructions = validatedData.storageInstructions;
+    if (validatedData.howToUse !== undefined) product.howToUse = validatedData.howToUse;
+
+    // Type casting 'as any' for complex nested schemas compatible with Mongoose Document types
+    if (validatedData.nutritionTable) product.nutritionTable = validatedData.nutritionTable as any;
+    if (validatedData.highlights) product.highlights = validatedData.highlights;
+    if (validatedData.productInfo) product.productInfo = validatedData.productInfo;
+    if (validatedData.specifications) product.specifications = validatedData.specifications as any;
+    if (validatedData.seo) product.seo = validatedData.seo as any;
+
+    if (validatedData.isActive !== undefined) product.isActive = validatedData.isActive;
+    if (validatedData.isFeatured !== undefined) product.isFeatured = validatedData.isFeatured;
 
     await product.save();
     await product.populate("categoryId", "name slug");
@@ -149,6 +146,9 @@ export const updateProduct = async (req: Request, res: Response) => {
       product,
     });
   } catch (err: any) {
+    if (err.name === 'ZodError') {
+      return res.status(400).json({ message: "Validation error", errors: err.errors });
+    }
     console.error("Update Product Error:", err);
     return res.status(500).json({ message: "Server error", error: err.message });
   }
@@ -169,7 +169,7 @@ export const deleteProduct = async (req: Request, res: Response) => {
 
     // Remove product images from Cloudinary
     if (product.images && product.images.length > 0) {
-      const deletePromises = product.images.map(img => {
+      const deletePromises = product.images.map((img: { public_id: string }) => {
         if (img.public_id) return cloudinary.uploader.destroy(img.public_id);
         return Promise.resolve();
       });
@@ -210,6 +210,7 @@ export const getProducts = async (req: Request, res: Response) => {
       if (!mongoose.isValidObjectId(categoryQuery)) {
         const cat = await Category.findOne({ slug: categoryQuery.toLowerCase() });
         if (!cat) {
+          // If category slug not found, return empty list immediately
           return res.json({
             products: [],
             pagination: { total: 0, page, totalPages: 0 }
@@ -221,16 +222,18 @@ export const getProducts = async (req: Request, res: Response) => {
     }
 
     let sortOption: any = { createdAt: -1 };
-    if (sort === "price-asc") sortOption = { price: 1 };
-    if (sort === "price-desc") sortOption = { price: -1 };
+
+    if (sort === "price-asc") sortOption = { "packs.price": 1 };
+    if (sort === "price-desc") sortOption = { "packs.price": -1 };
 
     const [products, total] = await Promise.all([
       Product.find(filter)
         .skip((page - 1) * limit)
         .limit(limit)
         .sort(sortOption)
-        .select("-attributes -seo") // lightweight list
+        .select("-specifications -seo -productInfo") // lightweight list
         .populate("categoryId", "name slug"),
+
       Product.countDocuments(filter)
     ]);
 
@@ -249,7 +252,32 @@ export const getProducts = async (req: Request, res: Response) => {
 };
 
 /**
- * GET /api/products/:slug
+ * GET /api/products/:id
+ * Public: Get product by ID
+ */
+export const getProductById = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(400).json({ message: "Invalid product ID" });
+    }
+
+    const product = await Product.findById(id).populate("categoryId", "name slug");
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    return res.json(product);
+  } catch (err) {
+    console.error("Get Product By ID Error:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+/**
+ * GET /api/products/slug/:slug
  * Public: Get product by slug
  */
 export const getProductBySlug = async (req: Request, res: Response) => {
@@ -265,11 +293,10 @@ export const getProductBySlug = async (req: Request, res: Response) => {
 
     return res.json(product);
   } catch (err) {
-    console.error("Get Product Error:", err);
+    console.error("Get Product By Slug Error:", err);
     return res.status(500).json({ message: "Server error" });
   }
 };
-
 
 /**
  * GET /api/products/category/:slug

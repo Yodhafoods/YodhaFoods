@@ -1,51 +1,42 @@
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosError, InternalAxiosRequestConfig } from "axios";
 
-// Centralized API helpers with strict typing (no `any`)
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-// console.log("API_BASE_URL", process.env.NEXT_PUBLIC_API_URL);
 
-/**
- * Helper to build absolute URL
- */
-function buildUrl(path: string) {
-  // allow callers to pass either "/api/..." or full URL
-  if (/^https?:\/\//.test(path)) return path;
-  return `${API_BASE_URL.replace(/\/$/, "")}${path.startsWith("/") ? "" : "/"
-    }${path}`;
-}
+// Create axios instance
+const axiosInstance: AxiosInstance = axios.create({
+  baseURL: API_BASE_URL,
+  withCredentials: true,
+  // Let axios handle Content-Type based on data (JSON vs FormData)
+});
 
 /**
  * Track the current refresh promise to prevent concurrent refreshes
  */
-let refreshPromise: Promise<boolean> | null = null;
+let refreshPromise: Promise<{ success: boolean; expiry?: number }> | null = null;
 
 /**
  * Refresh the access token
- * Returns true if successful, false otherwise
+ * Returns object with success status and optional expiry
  */
-export async function refreshToken(): Promise<boolean> {
-  // If a refresh is already in progress, return that promise
+export async function refreshToken(): Promise<{ success: boolean; expiry?: number }> {
   if (refreshPromise) {
     return refreshPromise;
   }
 
-  // Create a new promise for the refresh
   refreshPromise = (async () => {
     try {
-      const res = await fetch(buildUrl("/api/auth/refresh"), {
-        method: "POST",
-        credentials: "include",
-      });
-      // If we got a new token, the backend also sent the new expiry
-      // Ideally we would capture it here, but `customFetch` or `AuthContext`
-      // usage complicates "global" state update from a pure lib file.
-      // For now, this ensures the cookie is updated.
-      return res.ok;
+      const res = await axios.post(`${API_BASE_URL}/api/auth/refresh`, {}, { withCredentials: true });
+      const expiry = res.data?.accessTokenExpiry;
+      return { success: true, expiry };
     } catch (err) {
+      // Don't log 401s, they are expected when session is invalid
+      if (axios.isAxiosError(err) && err.response?.status === 401) {
+        return { success: false };
+      }
       console.error("Failed to refresh token", err);
-      return false;
+      return { success: false };
     } finally {
-      // Clear the promise so next time we can try again
       refreshPromise = null;
     }
   })();
@@ -53,164 +44,22 @@ export async function refreshToken(): Promise<boolean> {
   return refreshPromise;
 }
 
-/**
- * Custom fetch wrapper that handles 401s by refreshing the token
- */
-async function customFetch(
-  url: string,
-  options: RequestInit = {}
-): Promise<Response> {
-  let res = await fetch(url, options);
+// Response interceptor for 401 handling
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error: AxiosError) => {
+    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-  // If 401 Unauthorized, try to refresh the token
-  if (res.status === 401) {
-    const refreshed = await refreshToken();
-    if (refreshed) {
-      // Retry the original request
-      res = await fetch(url, options);
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      const { success } = await refreshToken();
+      if (success) {
+        return axiosInstance(originalRequest);
+      }
     }
+    return Promise.reject(error);
   }
-
-  return res;
-}
-
-/**
- * Generic GET
- * @template T - expected response JSON shape
- */
-export async function get<T = unknown>(
-  path: string,
-  init?: RequestInit
-): Promise<T> {
-  const res = await customFetch(buildUrl(path), {
-    method: "GET",
-    credentials: "include",
-    ...init,
-  });
-
-  const text = await res.text();
-  // if response has no body return undefined casted to T
-  if (text === "") {
-    if (!res.ok) throw new FetchError(res.status, res.statusText, text);
-    return undefined as unknown as T;
-  }
-
-  let json: unknown;
-  try {
-    json = JSON.parse(text);
-  } catch {
-    // not JSON — return as text if caller expects string
-    if (!res.ok) throw new FetchError(res.status, res.statusText, text);
-    return text as unknown as T;
-  }
-
-  if (!res.ok) throw new FetchError(res.status, res.statusText, json);
-  return json as T;
-}
-
-/**
- * Generic POST
- * @template T - response JSON shape
- * @template B - body type
- */
-export async function post<T = unknown, B = unknown>(
-  path: string,
-  body?: B,
-  init?: RequestInit
-): Promise<T> {
-  const isFormData = body instanceof FormData;
-
-  const res = await customFetch(buildUrl(path), {
-    method: "POST",
-    credentials: "include",
-    headers: {
-      ...(isFormData ? {} : { "Content-Type": "application/json" }),
-      ...(init?.headers as Record<string, string> | undefined),
-    },
-    body: isFormData
-      ? (body as BodyInit)
-      : body === undefined
-        ? undefined
-        : JSON.stringify(body),
-    ...init,
-  });
-
-  const text = await res.text();
-  if (text === "") {
-    if (!res.ok) throw new FetchError(res.status, res.statusText, text);
-    return undefined as unknown as T;
-  }
-
-  let json: unknown;
-  try {
-    json = JSON.parse(text);
-  } catch {
-    if (!res.ok) throw new FetchError(res.status, res.statusText, text);
-    return text as unknown as T;
-  }
-
-  if (!res.ok) throw new FetchError(res.status, res.statusText, json);
-  return json as T;
-}
-
-/**
- * Generic PUT
- */
-export async function put<T = unknown, B = unknown>(
-  path: string,
-  body?: B,
-  init?: RequestInit
-): Promise<T> {
-  const isFormData = body instanceof FormData;
-
-  const res = await customFetch(buildUrl(path), {
-    method: "PUT",
-    credentials: "include",
-    headers: {
-      ...(isFormData ? {} : { "Content-Type": "application/json" }),
-      ...(init?.headers as Record<string, string> | undefined),
-    },
-    body: isFormData
-      ? (body as BodyInit)
-      : body === undefined
-        ? undefined
-        : JSON.stringify(body),
-    ...init,
-  });
-
-  const json = await res.json().catch(() => null);
-  if (!res.ok) throw new FetchError(res.status, res.statusText, json);
-  return json as T;
-}
-
-/**
- * Generic DELETE
- */
-export async function del<T = unknown>(
-  path: string,
-  init?: RequestInit
-): Promise<T> {
-  const res = await customFetch(buildUrl(path), {
-    method: "DELETE",
-    credentials: "include",
-    ...init,
-  });
-
-  const json = await res.json().catch(() => null);
-  if (!res.ok) throw new FetchError(res.status, res.statusText, json);
-  return json as T;
-}
-
-/**
- * Convenience object
- */
-export const api = {
-  get,
-  post,
-  put,
-  del,
-  refreshToken,
-};
+);
 
 /**
  * Custom error to preserve status and body
@@ -228,3 +77,87 @@ export class FetchError extends Error {
     this.body = body;
   }
 }
+
+function handleAxiosError(error: unknown): never {
+  if (axios.isAxiosError(error)) {
+    const status = error.response?.status || 0;
+    const statusText = error.response?.statusText || error.message;
+    const data = error.response?.data;
+    throw new FetchError(status, statusText, data);
+  }
+  throw error;
+}
+
+/**
+ * Generic GET
+ */
+export async function get<T = unknown>(
+  path: string,
+  config?: AxiosRequestConfig
+): Promise<T> {
+  try {
+    const response = await axiosInstance.get<T>(path, config);
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error);
+  }
+}
+
+/**
+ * Generic POST
+ */
+export async function post<T = unknown, B = unknown>(
+  path: string,
+  body?: B,
+  config?: AxiosRequestConfig
+): Promise<T> {
+  try {
+    const response = await axiosInstance.post<T>(path, body, config);
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error);
+  }
+}
+
+/**
+ * Generic PUT
+ */
+export async function put<T = unknown, B = unknown>(
+  path: string,
+  body?: B,
+  config?: AxiosRequestConfig
+): Promise<T> {
+  try {
+    const response = await axiosInstance.put<T>(path, body, config);
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error);
+  }
+}
+
+/**
+ * Generic DELETE
+ */
+export async function del<T = unknown>(
+  path: string,
+  config?: AxiosRequestConfig
+): Promise<T> {
+  try {
+    const response = await axiosInstance.delete<T>(path, config);
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error);
+  }
+}
+
+/**
+ * Convenience object
+ */
+export const api = {
+  get,
+  post,
+  put,
+  del,
+  refreshToken,
+  axios: axiosInstance,
+};

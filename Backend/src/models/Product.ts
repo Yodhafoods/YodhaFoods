@@ -1,5 +1,20 @@
 import mongoose, { Schema, Document, Types } from "mongoose";
 
+interface IPack {
+  label: string; // "100 g"
+  weightInGrams: number;
+  price: number;
+  discountPrice?: number;
+  stock: number;
+  sku?: string;
+  isDefault: boolean;
+}
+
+interface INutrition {
+  name: string;
+  value: string;
+}
+
 export interface IProduct extends Document {
   name: string;
   slug: string;
@@ -9,17 +24,37 @@ export interface IProduct extends Document {
 
   images: { url: string; public_id: string }[];
 
-  price: number;
-  discountPrice?: number; // optional: if discount exists
+  packs: IPack[];
 
-  stock: number;
-  isActive: boolean;
-  isFeatured: boolean;
+  ingredients: string;
+  shelfLifeMonths: number;
+  storageInstructions?: string;
+  howToUse?: string;
 
-  tags?: string[];
-  attributes?: Map<string, string>;
+  nutritionTable?: INutrition[];
+  highlights?: string[];
 
-  seo: {
+  productInfo: {
+    genericName?: string;
+    netQuantity?: string;
+    countryOfOrigin?: string;
+    manufacturer?: string;
+    marketedBy?: string;
+    fssaiLicense?: string;
+  };
+
+  specifications: {
+    brand: string;
+    form: string;
+    organic: boolean;
+    ayurvedic: boolean;
+    vegan: boolean;
+    allergens?: string;
+    containerType?: string;
+    servingSize?: string;
+  };
+
+  seo?: {
     title?: string;
     description?: string;
     keywords?: string[];
@@ -30,33 +65,32 @@ export interface IProduct extends Document {
     count: number;
   };
 
+  isActive: boolean;
+  isFeatured: boolean;
+
   createdAt: Date;
   updatedAt: Date;
 }
 
+const PackSchema = new Schema<IPack>(
+  {
+    label: { type: String, required: true },
+    weightInGrams: { type: Number, required: true },
+    price: { type: Number, required: true, min: 0 },
+    discountPrice: { type: Number, min: 0 },
+    stock: { type: Number, required: true, min: 0 },
+    sku: { type: String },
+    isDefault: { type: Boolean, default: false },
+  },
+  { _id: false }
+);
+
 const ProductSchema = new Schema<IProduct>(
   {
-    name: {
-      type: String,
-      required: true,
-      trim: true,
-      minlength: 2,
-      maxlength: 150,
-    },
+    name: { type: String, required: true, trim: true },
+    slug: { type: String, required: true, unique: true, index: true },
 
-    slug: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-      trim: true,
-      index: true,
-    },
-
-    description: {
-      type: String,
-      maxlength: 2000,
-    },
+    description: String,
 
     categoryId: {
       type: Schema.Types.ObjectId,
@@ -72,71 +106,75 @@ const ProductSchema = new Schema<IProduct>(
       },
     ],
 
-    price: {
-      type: Number,
-      required: true,
-      min: 0,
+    packs: {
+      type: [PackSchema],
+      validate: [
+        {
+          validator: (packs: IPack[]) =>
+            packs.some((p) => p.isDefault),
+          message: "At least one pack must be default",
+        },
+      ],
     },
 
-    discountPrice: {
-      type: Number,
-      min: 0,
+    ingredients: { type: String, required: true },
+    shelfLifeMonths: { type: Number, required: true },
+
+    storageInstructions: String,
+    howToUse: String,
+
+    nutritionTable: [
+      {
+        name: String,
+        value: String,
+      },
+    ],
+
+    highlights: [String],
+
+    productInfo: {
+      genericName: String,
+      netQuantity: String,
+      countryOfOrigin: String,
+      manufacturer: String,
+      marketedBy: String,
+      fssaiLicense: String,
     },
 
-    stock: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
-
-    isActive: {
-      type: Boolean,
-      default: true,
-      index: true,
-    },
-
-    isFeatured: {
-      type: Boolean,
-      default: false,
-    },
-
-    tags: [{ type: String }],
-
-    attributes: {
-      type: Map,
-      of: String,
-      default: {},
+    specifications: {
+      brand: { type: String, default: "Yodha Foods" },
+      form: String,
+      organic: Boolean,
+      ayurvedic: Boolean,
+      vegan: Boolean,
+      allergens: String,
+      containerType: String,
+      servingSize: String,
     },
 
     seo: {
-      title: { type: String, maxlength: 120 },
-      description: { type: String, maxlength: 200 },
-      keywords: [{ type: String }],
+      title: String,
+      description: String,
+      keywords: [String],
     },
 
     rating: {
       average: { type: Number, default: 0 },
       count: { type: Number, default: 0 },
     },
+
+    isActive: { type: Boolean, default: true },
+    isFeatured: { type: Boolean, default: false },
   },
-  {
-    timestamps: true,
-    versionKey: false,
-  }
+  { timestamps: true, versionKey: false }
 );
 
-// Auto-generate slug
-ProductSchema.pre("validate", async function () {
+// Auto slug
+ProductSchema.pre("validate", function () {
   if (!this.slug && this.name) {
-    this.slug = this.name
-      .toLowerCase()
-      .replace(/ /g, "-")
-      .replace(/[^\w-]+/g, "");
+    this.slug = this.name.toLowerCase().replace(/ /g, "-").replace(/[^\w-]+/g, "");
   }
 });
 
-const Product =
-  (mongoose.models.Product as mongoose.Model<IProduct>) ||
+export default mongoose.models.Product ||
   mongoose.model<IProduct>("Product", ProductSchema);
-
-export default Product;

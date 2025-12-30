@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Category } from '@/types';
+import { api } from '@/lib/api';
 
 interface UseCategoriesResult {
     categories: Category[];
@@ -9,29 +10,19 @@ interface UseCategoriesResult {
 }
 
 export const useCategories = (): UseCategoriesResult => {
-    const [categories, setCategories] = useState<Category[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
+    const { data, isLoading, error, refetch } = useQuery({
+        queryKey: ['categories'],
+        queryFn: async () => {
+            const res: any = await api.get('/api/categories');
+            return res.categories || res;
+        },
+        staleTime: 60 * 60 * 1000, // 1 hour
+    });
 
-    const fetchCategories = async () => {
-        try {
-            setLoading(true);
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/categories`);
-            if (!response.ok) {
-                throw new Error('Failed to fetch categories');
-            }
-            const data = await response.json();
-            setCategories(data.categories || data);
-        } catch (err: any) {
-            setError(err.message || 'An error occurred fetching categories');
-        } finally {
-            setLoading(false);
-        }
+    return {
+        categories: (data as Category[]) || [],
+        loading: isLoading,
+        error: error ? (error as Error).message : null,
+        refetch,
     };
-
-    useEffect(() => {
-        fetchCategories();
-    }, []);
-
-    return { categories, loading, error, refetch: fetchCategories };
 };

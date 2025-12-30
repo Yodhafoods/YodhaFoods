@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useAppDispatch } from "@/lib/store/hooks";
 import { addItemToCart } from "@/features/cart/store/cartSlice";
 import { toast } from "sonner";
+import { useProducts } from "@/features/products/hooks/useProducts";
 
 interface Product {
     _id: string;
@@ -17,18 +18,9 @@ interface Product {
 }
 
 export default function YodhaInstant() {
-    const [products, setProducts] = useState<Product[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { products, loading } = useProducts("yodha-instant");
     const dispatch = useAppDispatch();
-
-    useEffect(() => {
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/category/yodha-instant`)
-            .then((res) => res.json())
-            .then((data) => {
-                setProducts(data.products || []);
-            })
-            .finally(() => setLoading(false));
-    }, []);
+    // useEffect removed - handled by useProducts hooks
 
     const handleAddToCart = async (e: React.MouseEvent, product: Product) => {
         e.preventDefault();

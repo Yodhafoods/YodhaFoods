@@ -7,6 +7,7 @@ import Footer from "@/components/layout/Footer";
 import { Toaster } from "sonner";
 import AuthProvider from "@/features/auth/context/AuthContext";
 import StoreProvider from "./StoreProvider";
+import QueryProvider from "@/providers/QueryProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,13 +40,15 @@ export default function RootLayout({
       >
         <Toaster richColors position="top-center" />
 
-        <StoreProvider>
-          <AuthProvider>
-            <Header />
-            <div className="page-wrapper">{children}</div>
-            <Footer />
-          </AuthProvider>
-        </StoreProvider>
+        <QueryProvider>
+          <StoreProvider>
+            <AuthProvider>
+              <Header />
+              <div className="page-wrapper">{children}</div>
+              <Footer />
+            </AuthProvider>
+          </StoreProvider>
+        </QueryProvider>
       </body>
     </html>
   );

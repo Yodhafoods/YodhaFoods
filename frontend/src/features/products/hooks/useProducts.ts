@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Product } from '@/types';
+import { api } from '@/lib/api';
 
 interface UseProductsResult {
     products: Product[];
@@ -9,34 +10,23 @@ interface UseProductsResult {
 }
 
 export const useProducts = (categorySlug?: string): UseProductsResult => {
-    const [products, setProducts] = useState<Product[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
-
-    const fetchProducts = async () => {
-        try {
-            setLoading(true);
-            let url = `${process.env.NEXT_PUBLIC_API_URL}/api/products`;
+    const { data, isLoading, error, refetch } = useQuery({
+        queryKey: ['products', categorySlug],
+        queryFn: async () => {
+            let url = '/api/products';
             if (categorySlug) {
-                url = `${process.env.NEXT_PUBLIC_API_URL}/api/products/category/${categorySlug}`;
+                url = `/api/products/category/${categorySlug}`;
             }
+            const res: any = await api.get(url);
+            return res.products || res;
+        },
+        staleTime: 5 * 60 * 1000, // 5 minutes
+    });
 
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error('Failed to fetch products');
-            }
-            const data = await response.json();
-            setProducts(data.products || data);
-        } catch (err: any) {
-            setError(err.message || 'An error occurred fetching products');
-        } finally {
-            setLoading(false);
-        }
+    return {
+        products: (data as Product[]) || [],
+        loading: isLoading,
+        error: error ? (error as Error).message : null,
+        refetch,
     };
-
-    useEffect(() => {
-        fetchProducts();
-    }, [categorySlug]);
-
-    return { products, loading, error, refetch: fetchProducts };
 };

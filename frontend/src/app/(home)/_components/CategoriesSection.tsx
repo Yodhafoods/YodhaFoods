@@ -1,27 +1,13 @@
+"use client";
+
 import React from "react";
 import CategoriesList from "./CategoriesList";
 import { ArrowRight, ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { Category } from "@/types";
+import { useCategories } from "@/hooks/useCategories";
 
-async function getCategories() {
-    try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/categories`, {
-            next: { revalidate: 86400 }, // Cache for 24 hours
-        });
-        if (!res.ok) {
-            return [];
-        }
-        const data = await res.json();
-        return (data.categories || data) as Category[];
-    } catch (error) {
-        console.error("Failed to fetch categories:", error);
-        return [];
-    }
-}
-
-export default async function CategoriesSection() {
-    const categories = await getCategories();
+export default function CategoriesSection() {
+    const { categories } = useCategories();
 
     if (!categories || categories.length === 0) {
         return null; // Or return a skeleton/empty state if preferred, but existing logic returned null on error
