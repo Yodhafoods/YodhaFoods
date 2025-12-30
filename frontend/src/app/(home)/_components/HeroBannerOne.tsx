@@ -15,7 +15,7 @@ export default function HeroBannerThree() {
           {/* MAIN CARD */}
           <section
             className="
-              w-full min-h-[650px] lg:h-[650px]
+              w-full h-[490px]
               grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr]
               relative
               border border-[rgba(199,154,45,0.3)]
@@ -30,18 +30,18 @@ export default function HeroBannerThree() {
             }}
           >
             {/* LEFT SIDE */}
-            <div className="px-5 py-6 lg:px-[80px] lg:py-8 flex flex-col justify-center text-white h-full">
-              <span className="text-light-gold font-extrabold tracking-[6px] text-xs lg:text-sm mb-3 lg:mb-5 opacity-80 uppercase text-center lg:text-left">
+            <div className="px-4 py-2 lg:px-[60px] lg:py-0 flex flex-col justify-center text-white h-full relative z-10">
+              <span className="text-light-gold font-extrabold tracking-[6px] text-[0.6rem] lg:text-sm mb-2 lg:mb-4 opacity-80 uppercase text-center lg:text-left">
                 Know Your Truth
               </span>
 
-              <h1 className="font-serif text-[2.3rem] sm:text-[3.2rem] lg:text-[5rem] leading-[1.1] mb-4 lg:mb-8 drop-shadow-[0_15px_30px_rgba(0,0,0,0.4)] text-center lg:text-left">
+              <h1 className="font-serif text-[1.6rem] sm:text-[3.2rem] lg:text-[4.5rem] leading-[1] mb-2 lg:mb-6 drop-shadow-[0_15px_30px_rgba(0,0,0,0.4)] text-center lg:text-left">
                 Stop paying
                 <br />
                 for water.
               </h1>
 
-              <div className="bg-white-glass backdrop-blur-[20px] border-l-[3px] border-base-gold p-4 lg:p-6 rounded-r-[30px] mb-4 lg:mb-10 max-w-[700px]">
+              <div className="bg-white-glass backdrop-blur-[20px] border-l-[3px] border-base-gold p-2 lg:p-6 rounded-r-[30px] mb-2 lg:mb-10 max-w-[700px]">
                 <span className="text-light-gold font-extrabold text-[0.7rem] lg:text-[0.9rem] uppercase tracking-[4px] block mb-2">
                   Market Reality
                 </span>
@@ -85,19 +85,20 @@ export default function HeroBannerThree() {
               flex flex-col items-center justify-center
               relative
               p-2 lg:p-0
-              min-h-[170px] lg:min-h-[400px]
+              min-h-[120px] lg:min-h-[400px]
             ">
               <div className="
                 relative
-                w-[140px] h-[140px]
-                lg:w-[450px] lg:h-[450px]
+                w-[110px] h-[110px]
+                lg:w-[320px] lg:h-[320px]
                 flex items-center justify-center
+                shrink-0
               ">
                 <motion.div
                   className="
                     absolute
                     w-[90px] h-[90px]
-                    lg:w-[280px] lg:h-[280px]
+                    lg:w-[200px] lg:h-[200px]
                     rounded-full
                   "
                   style={{
@@ -111,7 +112,7 @@ export default function HeroBannerThree() {
                 <div className="
                   absolute
                   w-[120px] h-[120px]
-                  lg:w-[380px] lg:h-[380px]
+                  lg:w-[270px] lg:h-[270px]
                   border border-dashed border-[rgba(199,154,45,0.4)]
                   rounded-full
                 " />
@@ -125,7 +126,7 @@ export default function HeroBannerThree() {
                 <div className="
                   relative z-10
                   font-serif
-                  text-[2.6rem] lg:text-[8.5rem]
+                  text-[2.6rem] lg:text-[6rem]
                   text-light-gold
                   drop-shadow-[0_0_25px_rgba(199,154,45,0.6)]
                 ">
@@ -133,7 +134,7 @@ export default function HeroBannerThree() {
                 </div>
               </div>
 
-              <div className="mt-1 lg:mt-10 text-center flex flex-col gap-1 lg:gap-3 items-center">
+              <div className="mt-1 lg:mt-4 text-center flex flex-col gap-1 lg:gap-3 items-center">
                 <div className="text-white text-[0.55rem] lg:text-[0.8rem] tracking-[4px] font-extrabold opacity-50 uppercase">
                   Molecular Density Index
                 </div>

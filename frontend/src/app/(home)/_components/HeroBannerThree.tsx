@@ -17,7 +17,7 @@ export default function HeroBannerThree() {
         <section className={`w-full flex justify-center ${jakarta.className}`}>
             <div className="max-w-[1440px] w-full px-2 md:px-12 mt-6">
                 {/* 🔒 HEIGHT LOCKED FOR MOBILE + DESKTOP */}
-                <div className="relative h-[650px] rounded-[40px] overflow-hidden bg-gradient-to-br from-[#f3d9c1] to-[#d97e5a] shadow-xl">
+                <div className="relative h-[490px] rounded-[40px] overflow-hidden bg-gradient-to-br from-[#f3d9c1] to-[#d97e5a] shadow-xl">
 
                     {/* INTRO */}
                     <div className="h-full flex items-center px-6 md:px-20">

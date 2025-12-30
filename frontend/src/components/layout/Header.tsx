@@ -77,7 +77,7 @@ export default function Header() {
               <RunningBanner
                 messages={[
                   {
-                    text: "🚚 Free Shipping on Orders Above ₹599 | Shop Now",
+                    text: "🚚 Free Shipping on Orders Above ₹299 | Shop Now",
                     link: "/shop",
                   },
                   {

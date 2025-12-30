@@ -6,12 +6,16 @@ import CategoriesSection from "./(home)/_components/CategoriesSection";
 import WatchAndShop from "./(home)/_components/WatchAndShop";
 import BestsellingProducts from "@/features/products/components/BestsellingProducts";
 import HeroCarousel from "./(home)/_components/HeroCarousel";
+import QuickActionCards from "./(home)/_components/QuickActionCards";
 
 
 export default function Home() {
   return (
     <div className="">
       <main className="max-w-[1440px] mx-auto px-6">
+        <div className="">
+          <QuickActionCards />
+        </div>
         <div className="">
           <HeroCarousel />
         </div>

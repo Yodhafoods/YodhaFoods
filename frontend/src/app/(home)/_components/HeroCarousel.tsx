@@ -60,7 +60,7 @@ export default function HeroCarousel() {
          except for the buttons themselves.
       */}
             <div className="absolute inset-0 z-20 flex justify-center pointer-events-none">
-                <div className="max-w-[1440px] w-full px-2 md:px-12 mt-6 relative flex flex-col justify-between">
+                <div className="max-w-[1440px] w-full px-2 md:px-12 mt-2 relative flex flex-col justify-between">
 
                     {/* NAVIGATION ARROWS ROW */}
                     <div className="flex items-center justify-between w-full h-full absolute inset-0 px-2 md:px-12">

@@ -54,7 +54,7 @@ export default function HeroBannerFour() {
                 <div
                     ref={containerRef}
                     onMouseMove={handleMouseMove}
-                    className="relative h-[650px] rounded-[40px] overflow-hidden bg-gradient-to-br from-[#0a0a1f] to-[#050514] border border-white/10 text-white"
+                    className="relative h-[490px] rounded-[40px] overflow-hidden bg-gradient-to-br from-[#0a0a1f] to-[#050514] border border-white/10 text-white"
                 >
                     {/* Glow */}
                     <motion.div
@@ -69,19 +69,19 @@ export default function HeroBannerFour() {
 
                     <div className="relative z-10 grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] h-full">
                         {/* LEFT */}
-                        <div className="p-8 pb-28 lg:pb-12 lg:p-12 flex flex-col justify-center">
-                            <span className="mb-6 inline-flex px-4 py-1.5 rounded-full bg-emerald-400/10 border border-emerald-400 text-emerald-400 text-xs font-extrabold tracking-widest uppercase w-fit">
+                        <div className="p-4 lg:p-6 flex flex-col justify-between lg:justify-center h-full">
+                            <span className="mb-3 lg:mb-6 inline-flex px-3 py-1 lg:px-4 lg:py-1.5 rounded-full bg-emerald-400/10 border border-emerald-400 text-emerald-400 text-[0.6rem] lg:text-xs font-extrabold tracking-widest uppercase w-fit">
                                 Beyond the Catalog
                             </span>
 
                             <h1
-                                className={`${playfair.className} text-4xl lg:text-[3.5rem] mb-5`}
+                                className={`${playfair.className} text-3xl lg:text-[3.5rem] mb-3 lg:mb-5`}
                             >
                                 Your Wish Is <br />
                                 <span className="text-yellow-300">Yodha’s Wish.</span>
                             </h1>
 
-                            <p className="opacity-80 max-w-[520px] mb-8">
+                            <p className="opacity-80 max-w-[520px] mb-4 lg:mb-8 text-xs lg:text-base">
                                 Can't find the product? Tell us what you need and our global
                                 sourcing team will take care of it.
                             </p>
@@ -95,10 +95,21 @@ export default function HeroBannerFour() {
                             </div>
                         </div>
 
+                        {/* 📱 MOBILE SUBMIT BUTTON (IN FLOW) */}
+                        <div className="lg:hidden w-full mt-2 px-4 z-30">
+                            <button
+                                onClick={handleRedirect}
+                                className="w-full bg-gradient-to-br from-yellow-300 to-amber-500 text-[#020617]
+                                py-3 rounded-full font-extrabold uppercase tracking-widest text-xs
+                                flex items-center justify-center gap-2 shadow-lg"
+                            >
+                                Submit Request <FaWhatsapp />
+                            </button>
+                        </div>
                         {/* RIGHT (DESKTOP FORM) - All interactions redirect */}
                         <div
                             onClick={handleRedirect}
-                            className="hidden lg:flex relative bg-black/25 p-10 flex-col justify-center border-l border-white/5 cursor-pointer hover:bg-black/30 transition-colors"
+                            className="hidden lg:flex relative bg-black/25 p-8 flex-col justify-center border border-white/5 cursor-pointer hover:bg-black/30 transition-colors h-[90%] self-center rounded-[30px] mr-6"
                         >
                             <div className="space-y-5 pointer-events-none">
                                 <Field
@@ -122,24 +133,12 @@ export default function HeroBannerFour() {
                                 />
 
                                 <div
-                                    className="w-full mt-4 bg-gradient-to-br from-yellow-300 to-amber-500 text-[#020617] py-4 rounded-full font-extrabold uppercase tracking-widest text-sm flex items-center justify-center gap-2"
+                                    className="w-full mt-2 bg-gradient-to-br from-yellow-300 to-amber-500 text-[#020617] py-4 rounded-full font-extrabold uppercase tracking-widest text-sm flex items-center justify-center gap-2"
                                 >
                                     Submit Request <FaWhatsapp />
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                    {/* 📱 MOBILE SUBMIT BUTTON (HEIGHT SAFE) */}
-                    <div className="lg:hidden absolute bottom-4 left-4 right-4 z-30">
-                        <button
-                            onClick={handleRedirect}
-                            className="w-full bg-gradient-to-br from-yellow-300 to-amber-500 text-[#020617]
-                         py-4 rounded-full font-extrabold uppercase tracking-widest text-sm
-                         flex items-center justify-center gap-2 shadow-lg"
-                        >
-                            Submit Your Request <FaWhatsapp />
-                        </button>
                     </div>
                 </div>
             </div>

@@ -5,7 +5,7 @@ export default function HeroBannerOne() {
     return (
         <section id="home" className="w-full flex justify-center">
             <div className="max-w-[1440px] w-full px-2 md:px-12 mt-6">
-                <div className="relative min-h-[650px] lg:h-[650px] rounded-[40px] overflow-hidden shadow-xl">
+                <div className="relative h-[490px] rounded-[40px] overflow-hidden shadow-xl">
                     {/* Background Image */}
                     <Image
                         src="/assets/images/Hero/hero.jpeg"
