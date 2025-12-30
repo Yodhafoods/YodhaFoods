@@ -3,16 +3,18 @@ import CategoriesList from "./CategoriesList";
 import { ArrowRight, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { Category } from "@/types";
+import { api } from "@/lib/api";
+
+import { cookies } from "next/headers";
 
 async function getCategories() {
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/categories`, {
-            next: { revalidate: 86400 }, // Cache for 24 hours
+        const cookieStore = await cookies();
+        const data: any = await api.get('/api/categories', {
+            headers: {
+                Cookie: cookieStore.toString(),
+            },
         });
-        if (!res.ok) {
-            return [];
-        }
-        const data = await res.json();
         return (data.categories || data) as Category[];
     } catch (error) {
         console.error("Failed to fetch categories:", error);

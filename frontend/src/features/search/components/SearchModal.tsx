@@ -7,6 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useProducts } from "@/features/products/hooks/useProducts";
+import { api } from "@/lib/api";
 
 // Define Product interface compatible with API response
 interface Product {
@@ -62,8 +63,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
       setLoading(true);
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products?search=${encodeURIComponent(debouncedQuery)}&limit=6`);
-        const data = await res.json();
+        const data: any = await api.get(`/api/products?search=${encodeURIComponent(debouncedQuery)}&limit=6`);
         // The API returns { products: [], pagination: ... }
         if (data.products) {
           setResults(data.products);

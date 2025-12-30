@@ -1,20 +1,11 @@
 
+import { api } from "@/lib/api";
 import { VideoResponse } from "@/types/video.types";
+import { AxiosRequestConfig } from "axios";
 
-export const getKitchenVideos = async (): Promise<VideoResponse> => {
+export const getKitchenVideos = async (config?: AxiosRequestConfig): Promise<VideoResponse> => {
     try {
-        const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/videos/kitchen`,
-            {
-                next: { revalidate: 3600 },
-            }
-        );
-
-        if (!response.ok) {
-            throw new Error(`Error fetching videos: ${response.statusText}`);
-        }
-
-        const data = await response.json();
+        const data = await api.get<VideoResponse>("/api/videos/kitchen", config);
         return data;
     } catch (error) {
         console.error("Error in getKitchenVideos service:", error);
@@ -24,18 +15,11 @@ export const getKitchenVideos = async (): Promise<VideoResponse> => {
 
 export const createKitchenVideo = async (formData: FormData) => {
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/videos`, {
-            method: "POST",
-            body: formData,
-            credentials: "include",
+        const data = await api.post<any, FormData>("/api/videos", formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
         });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || "Failed to upload video");
-        }
-
-        const data = await response.json();
         return data;
     } catch (error) {
         console.error("Error in createKitchenVideo service:", error);

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Product } from '@/types';
+import { api } from '@/lib/api';
 
 interface UseProductsResult {
     products: Product[];
@@ -16,16 +17,12 @@ export const useProducts = (categorySlug?: string): UseProductsResult => {
     const fetchProducts = async () => {
         try {
             setLoading(true);
-            let url = `${process.env.NEXT_PUBLIC_API_URL}/api/products`;
+            let url = '/api/products';
             if (categorySlug) {
-                url = `${process.env.NEXT_PUBLIC_API_URL}/api/products/category/${categorySlug}`;
+                url = `/api/products/category/${categorySlug}`;
             }
 
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error('Failed to fetch products');
-            }
-            const data = await response.json();
+            const data: any = await api.get(url);
             setProducts(data.products || data);
         } catch (err: any) {
             setError(err.message || 'An error occurred fetching products');

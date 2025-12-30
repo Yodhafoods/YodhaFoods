@@ -5,11 +5,18 @@ import KitchenVideoCarousel from "@/features/kitchen/components/KitchenVideoCaro
 import { getKitchenVideos } from "@/features/kitchen/services/kitchen.service";
 import { Video } from "@/types/video.types";
 
+import { cookies } from "next/headers";
+
 export default async function WatchAndShop() {
     let videos: Video[] = [];
 
     try {
-        const data = await getKitchenVideos();
+        const cookieStore = await cookies();
+        const data = await getKitchenVideos({
+            headers: {
+                Cookie: cookieStore.toString(),
+            },
+        });
         videos = data.videos || [];
     } catch (err) {
         console.error("Failed to fetch kitchen videos:", err);

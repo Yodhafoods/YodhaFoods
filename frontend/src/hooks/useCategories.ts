@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Category } from '@/types';
+import { api } from '@/lib/api';
 
 interface UseCategoriesResult {
     categories: Category[];
@@ -16,11 +17,7 @@ export const useCategories = (): UseCategoriesResult => {
     const fetchCategories = async () => {
         try {
             setLoading(true);
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/categories`);
-            if (!response.ok) {
-                throw new Error('Failed to fetch categories');
-            }
-            const data = await response.json();
+            const data: any = await api.get('/api/categories');
             setCategories(data.categories || data);
         } catch (err: any) {
             setError(err.message || 'An error occurred fetching categories');

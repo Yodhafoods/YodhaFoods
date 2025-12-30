@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import ProductCardHome from "@/features/products/components/ProductCardHome";
 import { Product } from "@/types";
+import { api } from "@/lib/api";
 
 interface RelatedProductsProps {
     categoryId: string;
@@ -18,8 +19,7 @@ export default function RelatedProducts({ categoryId, currentProductId }: Relate
         const fetchRelated = async () => {
             try {
                 // Fetch more than 4 to ensure we have enough after filtering
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products?category=${categoryId}&limit=6`);
-                const data = await res.json();
+                const data: any = await api.get(`/api/products?category=${categoryId}&limit=6`);
 
                 if (data.products) {
                     const filtered = data.products

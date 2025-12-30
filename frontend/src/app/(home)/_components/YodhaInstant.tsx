@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useAppDispatch } from "@/lib/store/hooks";
 import { addItemToCart } from "@/features/cart/store/cartSlice";
 import { toast } from "sonner";
+import { api } from "@/lib/api";
 
 interface Product {
     _id: string;
@@ -22,8 +23,7 @@ export default function YodhaInstant() {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/category/yodha-instant`)
-            .then((res) => res.json())
+        api.get<any>("/api/products/category/yodha-instant")
             .then((data) => {
                 setProducts(data.products || []);
             })

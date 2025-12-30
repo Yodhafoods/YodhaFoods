@@ -5,6 +5,8 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { Loader2, Upload, X } from 'lucide-react';
 import Image from 'next/image';
+import { api } from '@/lib/api';
+import axios from 'axios';
 
 interface UploadImageProps {
     onUpload?: (url: string, publicId?: string) => void;
@@ -37,13 +39,9 @@ export function UploadImage({ onUpload, onFileSelect, label = 'Upload Image' }: 
             setUploading(true);
 
             // 1. Get Signature & Config
-            const signRes = await fetch('/api/cloudinary-sign', {
-                method: 'POST',
-            });
+            const signRes: any = await api.post('/api/cloudinary-sign');
 
-            if (!signRes.ok) throw new Error('Failed to get upload signature');
-
-            const { signature, timestamp, cloudName, apiKey } = await signRes.json();
+            const { signature, timestamp, cloudName, apiKey } = signRes;
 
             // 2. Upload to Cloudinary
             const formData = new FormData();
@@ -54,19 +52,12 @@ export function UploadImage({ onUpload, onFileSelect, label = 'Upload Image' }: 
             // Optional: add folder if needed
             // formData.append('folder', 'yodhafoods');
 
-            const uploadRes = await fetch(
+            const uploadRes = await axios.post(
                 `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-                {
-                    method: 'POST',
-                    body: formData,
-                }
+                formData
             );
 
-            if (!uploadRes.ok) {
-                throw new Error('Image upload failed');
-            }
-
-            const data = await uploadRes.json();
+            const data = uploadRes.data;
             if (onUpload) onUpload(data.secure_url, data.public_id);
             toast.success('Image uploaded successfully');
 

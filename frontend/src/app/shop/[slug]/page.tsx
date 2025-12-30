@@ -1,20 +1,21 @@
 import ProductClient from "./ProductClient";
 import { notFound } from "next/navigation";
+import { api } from "@/lib/api";
 
 // Force dynamic rendering since we are fetching from an API
 export const dynamic = "force-dynamic";
 
+import { cookies } from "next/headers";
+
 async function getProduct(slug: string) {
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/${slug}`, {
-            cache: "no-store",
+        const cookieStore = await cookies();
+        const data = await api.get<any>(`/api/products/${slug}`, {
+            headers: {
+                Cookie: cookieStore.toString(),
+            },
         });
-
-        if (!res.ok) {
-            return null;
-        }
-
-        return res.json();
+        return data;
     } catch (error) {
         console.error("Failed to fetch product:", error);
         return null;
