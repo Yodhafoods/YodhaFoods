@@ -17,7 +17,7 @@ const resolveCartFilter = (req: GuestRequest) => {
  */
 export const addToCart = async (req: GuestRequest, res: Response) => {
   try {
-    const { productId, quantity } = req.body;
+    const { productId, quantity, pack } = req.body;
 
     if (!productId || quantity <= 0) {
       return res.status(400).json({ message: "Invalid product or quantity" });
@@ -28,42 +28,59 @@ export const addToCart = async (req: GuestRequest, res: Response) => {
       return res.status(400).json({ message: "Cart owner not resolved" });
     }
 
-    const product = await Product.findById(productId);
+    const product: any = await Product.findById(productId);
     if (!product || !product.isActive) {
       return res.status(404).json({ message: "Product not found" });
+    }
+
+    // Determine stock based on pack if provided
+    let currentStock = product.stock || 0;
+    if (pack) {
+      const foundPack = product.packs?.find((p: any) => p.label === pack);
+      if (!foundPack) {
+        return res.status(400).json({ message: "Selected pack not found" });
+      }
+      currentStock = foundPack.stock;
+    } else if (product.packs && product.packs.length > 0) {
+      // If product has packs but none specified, default to first or error?
+      // Let's assume frontend MUST send pack if packs exist.
+      // But for safety, fallback to first pack if logical, or error.
+      // Let's check stock of first pack.
+      currentStock = product.packs[0].stock;
     }
 
     const cart = await Cart.findOne(cartFilter);
 
     // Case 1: Cart does not exist → create
     if (!cart) {
-      if (product.stock < quantity) {
+      if (currentStock < quantity) {
         return res.status(400).json({ message: "Insufficient stock" });
       }
 
       const newCart = await Cart.create({
         ...cartFilter,
-        items: [{ productId, quantity }],
+        items: [{ productId, quantity, pack }],
       });
 
       return res.json({ message: "Added to cart", cart: newCart });
     }
 
     // Case 2: Cart exists → update item
+    // Match by productId AND pack
     const item = cart.items.find(
-      (item :any) => item.productId.toString() === productId
+      (item: any) => item.productId.toString() === productId && item.pack === pack
     );
 
     if (item) {
-      if (product.stock < item.quantity + quantity) {
+      if (currentStock < item.quantity + quantity) {
         return res.status(400).json({ message: "Insufficient stock" });
       }
       item.quantity += quantity;
     } else {
-      if (product.stock < quantity) {
+      if (currentStock < quantity) {
         return res.status(400).json({ message: "Insufficient stock" });
       }
-      cart.items.push({ productId, quantity });
+      cart.items.push({ productId, quantity, pack });
     }
 
     await cart.save();
@@ -85,7 +102,7 @@ export const getCart = async (req: GuestRequest, res: Response) => {
 
     const cart = await Cart.findOne(cartFilter).populate(
       "items.productId",
-      "name price discountPrice images stock isActive"
+      "name price discountPrice images stock isActive packs"
     );
 
     return res.json(cart ?? { items: [] });
@@ -100,7 +117,7 @@ export const getCart = async (req: GuestRequest, res: Response) => {
  */
 export const updateCartItem = async (req: GuestRequest, res: Response) => {
   try {
-    const { productId, quantity } = req.body;
+    const { productId, quantity, pack } = req.body;
 
     if (!productId || quantity < 0) {
       return res.status(400).json({ message: "Invalid input" });
@@ -117,7 +134,7 @@ export const updateCartItem = async (req: GuestRequest, res: Response) => {
     }
 
     const index = cart.items.findIndex(
-      (item: any) => item.productId.toString() === productId
+      (item: any) => item.productId.toString() === productId && item.pack === pack
     );
 
     if (index === -1) {
@@ -127,11 +144,20 @@ export const updateCartItem = async (req: GuestRequest, res: Response) => {
     if (quantity === 0) {
       cart.items.splice(index, 1);
     } else {
-      const product = await Product.findById(productId);
+      const product: any = await Product.findById(productId);
       if (!product || !product.isActive) {
         return res.status(404).json({ message: "Product not found" });
       }
-      if (product.stock < quantity) {
+
+      let stock = product.stock || 0;
+      if (pack) {
+        const foundPack = product.packs?.find((p: any) => p.label === pack);
+        if (foundPack) stock = foundPack.stock;
+      } else if (product.packs?.length > 0) {
+        stock = product.packs[0].stock;
+      }
+
+      if (stock < quantity) {
         return res.status(400).json({ message: "Insufficient stock" });
       }
       cart.items[index].quantity = quantity;
@@ -152,6 +178,7 @@ export const updateCartItem = async (req: GuestRequest, res: Response) => {
 export const removeFromCart = async (req: GuestRequest, res: Response) => {
   try {
     const { productId } = req.params;
+    const { pack } = req.query; // Expect pack in query string?
 
     const cartFilter = resolveCartFilter(req);
     if (!cartFilter) {
@@ -164,7 +191,11 @@ export const removeFromCart = async (req: GuestRequest, res: Response) => {
     }
 
     cart.items = cart.items.filter(
-      (item: any) => item.productId.toString() !== productId
+      (item: any) => {
+        if (item.productId.toString() !== productId) return true; // Keep other products
+        if (pack && item.pack !== pack) return true; // Keep other packs of same product
+        return false; // Remove if productId matches AND (no pack specified OR pack matches)
+      }
     );
 
     await cart.save();

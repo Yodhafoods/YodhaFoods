@@ -29,18 +29,23 @@ export const createAccessToken = (userId: string, role: UserRole) => {
   });
 };
 
-export const createRefreshToken = (userId: string) => {
-  return jwt.sign({ sub: userId }, getSecret("JWT_REFRESH_SECRET"), {
+export const createRefreshToken = (userId: string, tokenId: string) => {
+  // Embed the tokenId (jti) in the JWT so we can look it up instantly
+  return jwt.sign({ sub: userId, jti: tokenId }, getSecret("JWT_REFRESH_SECRET"), {
     expiresIn: REFRESH_EXPIRES_IN,
   });
 };
 
-export const verifyRefreshToken = (token: string): string => {
+export const verifyRefreshToken = (token: string) => {
   const decoded = jwt.verify(
     token,
     getSecret("JWT_REFRESH_SECRET")
   ) as jwt.JwtPayload;
-  return decoded.sub as string;
+
+  return {
+    userId: decoded.sub as string,
+    tokenId: decoded.jti as string
+  };
 };
 
 export const hashToken = async (token: string): Promise<string> => {
@@ -49,6 +54,7 @@ export const hashToken = async (token: string): Promise<string> => {
 
 export const saveRefreshToken = async (
   userId: string,
+  tokenId: string,
   refreshToken: string
 ) => {
   const tokenHash = await hashToken(refreshToken);
@@ -57,7 +63,9 @@ export const saveRefreshToken = async (
     ? new Date(decoded.exp * 1000)
     : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
+  // Use the pre-generated tokenId as the document _id
   return RefreshToken.create({
+    _id: new mongoose.Types.ObjectId(tokenId),
     user: new mongoose.Types.ObjectId(userId),
     tokenHash,
     expiresAt,
@@ -65,14 +73,15 @@ export const saveRefreshToken = async (
 };
 
 export const revokeRefreshToken = async (refreshToken: string) => {
-  const tokens = await RefreshToken.find();
-  for (const doc of tokens) {
-    const match = await bcrypt.compare(refreshToken, doc.tokenHash);
-    if (match) {
-      doc.revoked = true;
-      await doc.save();
-      break;
+  try {
+    const decoded = jwt.decode(refreshToken) as jwt.JwtPayload;
+    if (decoded && decoded.jti) {
+      await RefreshToken.findByIdAndUpdate(decoded.jti, { revoked: true });
     }
+  } catch (err) {
+    // If token is invalid/tampered, we can't reliably revoke a specific ID, 
+    // but the verification steps will fail anyway.
+    console.error("Revoke error:", err);
   }
 };
 
@@ -80,16 +89,29 @@ export const isRefreshTokenValid = async (
   userId: string,
   refreshToken: string
 ): Promise<boolean> => {
-  const tokens = await RefreshToken.find({
-    user: userId,
-    revoked: false,
-  });
+  try {
+    const decoded = jwt.verify(
+      refreshToken,
+      getSecret("JWT_REFRESH_SECRET")
+    ) as jwt.JwtPayload;
 
-  for (const tokenDoc of tokens) {
+    const tokenId = decoded.jti;
+    if (!tokenId) return false;
+
+    // Direct lookup by ID (O(1)) instead of scanning all tokens
+    const tokenDoc = await RefreshToken.findById(tokenId);
+
+    if (!tokenDoc) return false;
+    if (tokenDoc.revoked) return false;
+
+    // Validate ownership
+    if (tokenDoc.user.toString() !== userId) return false;
+
+    // Validate hash
     const isMatch = await bcrypt.compare(refreshToken, tokenDoc.tokenHash);
-    if (isMatch && tokenDoc.expiresAt > new Date()) {
-      return true;
-    }
+    return isMatch;
+
+  } catch (err) {
+    return false;
   }
-  return false;
 };

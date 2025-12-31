@@ -81,14 +81,7 @@ export default function ShopPage() {
               {products.map((product) => (
                 <ProductCard
                   key={product._id}
-                  product={{
-                    id: product._id,
-                    name: product.name,
-                    price: product.price,
-                    img: product.images?.[0]?.url || "/placeholder.png",
-                    slug: product.slug,
-                    badge: product.isFeatured ? "Featured" : undefined,
-                  }}
+                  product={product as any}
                   className="min-w-0"
                 />
               ))}

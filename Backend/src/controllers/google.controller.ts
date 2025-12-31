@@ -5,6 +5,8 @@ import {
     saveRefreshToken,
 } from "../utils/token.js";
 
+import mongoose from "mongoose";
+
 // This controller runs AFTER passport.authenticate has successfully populated req.user
 export const googleCallbackController = async (req: Request, res: Response) => {
     try {
@@ -14,10 +16,11 @@ export const googleCallbackController = async (req: Request, res: Response) => {
             return res.redirect(`${process.env.FRONTEND_ORIGIN}/auth/signin?error=auth_failed`);
         }
 
+        const tokenId = new mongoose.Types.ObjectId().toString();
         const accessToken = createAccessToken(user.id, user.role);
-        const refreshToken = createRefreshToken(user.id);
+        const refreshToken = createRefreshToken(user.id, tokenId);
 
-        await saveRefreshToken(user.id, refreshToken);
+        await saveRefreshToken(user.id, tokenId, refreshToken);
 
         // Set Cookies (Same config as loginUser)
         res.cookie("at", accessToken, {

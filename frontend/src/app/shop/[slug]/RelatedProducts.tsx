@@ -50,14 +50,7 @@ export default function RelatedProducts({ categoryId, currentProductId }: Relate
                     {products.map((product) => (
                         <ProductCardHome
                             key={product._id}
-                            product={{
-                                id: product._id,
-                                name: product.name,
-                                price: product.price,
-                                img: product.images[0]?.url || "/placeholder.png",
-                                slug: product.slug,
-                                badge: product.isFeatured ? 'Featured' : undefined
-                            }}
+                            product={product}
                             className="min-w-0"
                         />
                     ))}

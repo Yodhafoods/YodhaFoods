@@ -24,13 +24,13 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
     0
   );
 
-  const handleUpdateQty = async (id: string, newQty: number) => {
+  const handleUpdateQty = async (productId: string, pack: string | undefined, newQty: number) => {
     try {
       if (newQty <= 0) {
-        await dispatch(removeItemFromCart(id)).unwrap();
+        await dispatch(removeItemFromCart({ productId, pack })).unwrap();
         toast.success("Item removed from cart");
       } else {
-        await dispatch(updateCartItemQty({ productId: id, quantity: newQty })).unwrap();
+        await dispatch(updateCartItemQty({ productId, quantity: newQty, pack })).unwrap();
         // toast.success("Cart updated"); // Optional, might be too noisy
       }
     } catch (error) {
@@ -107,7 +107,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                           <button
                             className="px-2 py-1 text-gray-600 hover:bg-gray-100 cursor-pointer"
                             onClick={() =>
-                              handleUpdateQty(item.id, item.qty - 1)
+                              handleUpdateQty(item.productId, item.pack, item.qty - 1)
                             }
                           >
                             -
@@ -118,7 +118,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                           <button
                             className="px-2 py-1 text-gray-600 hover:bg-gray-100 cursor-pointer"
                             onClick={() =>
-                              handleUpdateQty(item.id, item.qty + 1)
+                              handleUpdateQty(item.productId, item.pack, item.qty + 1)
                             }
                           >
                             +

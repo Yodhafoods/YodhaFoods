@@ -15,16 +15,26 @@ export interface Category {
     updatedAt: string;
 }
 
+export interface Pack {
+    label: string;
+    weightInGrams: number;
+    price: number;
+    stock: number;
+    isDefault: boolean;
+}
+
 export interface Product {
     _id: string;
     name: string;
     slug: string;
     description?: string;
-    categoryId: string | Category; // Depending on population
+    categoryId: Category;
     images: { url: string; public_id: string }[];
-    price: number;
-    discountPrice?: number;
-    stock: number;
+    packs: Pack[];
+    // Deprecated flat fields
+    // price: number;
+    // discountPrice?: number;
+    // stock: number;
     isActive: boolean;
     isFeatured: boolean;
     tags?: string[];

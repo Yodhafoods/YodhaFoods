@@ -70,10 +70,12 @@ export default function KitchenVideoModal({
     const handleAddToCart = () => {
         const cartItem = {
             id: video.productId._id,
+            productId: video.productId._id,
             name: video.productId.name,
             price: video.productId.price,
             qty: 1,
             image: video.productId.images?.[0]?.url || video.thumbnail?.url || video.video.url,
+            stock: video.productId.stock || 100
         };
 
         dispatch(addItemToCart({ product: cartItem, quantity: 1 }))

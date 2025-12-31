@@ -21,7 +21,7 @@ const router = Router();
  * POST /api/orders
  * Create new order
  */
-router.post("/", requireCheckoutAuth, requireAuth, validate(createOrderSchema), createOrder);
+router.post("/", requireAuth, requireCheckoutAuth, validate(createOrderSchema), createOrder);
 
 /**
  * GET /api/orders

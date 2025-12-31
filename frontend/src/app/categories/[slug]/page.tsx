@@ -21,7 +21,7 @@ export default function CategoryProductsPage() {
     const displayProducts = products.map((product) => ({
         id: product._id,
         name: product.name,
-        price: product.price,
+        price: product.packs?.[0]?.price || 0,
         img: product.images?.[0]?.url || '/placeholder.jpg',
         slug: product.slug,
         badge: product.isFeatured ? 'Featured' : undefined
@@ -78,8 +78,8 @@ export default function CategoryProductsPage() {
                     </div>
                 ) : (
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-                        {displayProducts.map((product) => (
-                            <ProductCardHome key={product.id} product={product} className="min-w-0" />
+                        {products.map((product) => (
+                            <ProductCardHome key={product._id} product={product as any} className="min-w-0" />
                         ))}
                     </div>
                 )}

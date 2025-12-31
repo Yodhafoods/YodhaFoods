@@ -1,51 +1,69 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react"; // Added useEffect
 import Image from "next/image";
-import { useAppSelector, useAppDispatch } from "@/lib/store/hooks"; // Added useAppDispatch
-import { addItemToCart, updateCartItemQty } from "@/features/cart/store/cartSlice"; // Updated imports
+import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
+import { addItemToCart, updateCartItemQty } from "@/features/cart/store/cartSlice";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion } from "framer-motion";
 import { Minus, Plus, ShoppingCart, Star } from "lucide-react";
 import RelatedProducts from "./RelatedProducts";
-
-interface Product {
-    _id: string;
-    name: string;
-    slug: string;
-    price: number;
-    description: string;
-    images: { url: string }[];
-    categoryId?: { _id: string; name: string };
-    stock: number;
-}
+import { Product, Pack } from "@/types"; // Import types
 
 interface ProductClientProps {
     product: Product;
 }
 
 export default function ProductClient({ product }: ProductClientProps) {
-    const dispatch = useAppDispatch(); // Use typed dispatch
+    const dispatch = useAppDispatch();
     const [selectedImage, setSelectedImage] = useState(product.images?.[0]?.url || "");
 
-    // Get cart item from Redux
+    // Pack Selection State
+    const [selectedPack, setSelectedPack] = useState<Pack | null>(null);
+
+    // Initialize selected pack
+    useEffect(() => {
+        if (product.packs && product.packs.length > 0) {
+            const defaultPack = product.packs.find(p => p.isDefault) || product.packs[0];
+            setSelectedPack(defaultPack);
+        }
+    }, [product]);
+
+    // Unique ID for cart item depends on product + pack (if we want separate cart items per pack)
+    // For now, let's keep it simple: ID is product ID. 
+    // BUT! Different packs have different prices. Usually unique cart item ID = product_id + "_" + pack_label
+    // Let's assume the cart supports simple IDs for now or we just append label to ID for uniqueness?
+    // Looking at cartSlice (implied), it uses `id` string.
+    // Ideally we should use a composite ID. Let's try `${product._id}-${selectedPack.label}`
+
+    // For this refactor, I will abide by the current simple structure but use a composite ID to differentiate packs in cart
+    const cartItemId = selectedPack ? `${product._id}-${selectedPack.label}` : product._id;
+
     const cartItem = useAppSelector((state) =>
-        state.cart.items.find((item) => item.id === product._id)
+        state.cart.items.find((item) => item.id === cartItemId)
     );
 
     const qty = cartItem ? cartItem.qty : 0;
 
+    // Helpers
+    const currentPrice = selectedPack?.price || 0;
+    const currentStock = selectedPack?.stock || 0;
+
     const handleAddToCart = async () => {
+        if (!selectedPack) return;
         try {
             await dispatch(
                 addItemToCart({
                     product: {
-                        id: product._id,
-                        name: product.name,
-                        price: product.price,
+                        id: cartItemId, // Composite
+                        productId: product._id, // Backend ID
+                        name: `${product.name} (${selectedPack.label})`,
+                        price: currentPrice,
                         qty: 1,
                         image: product.images?.[0]?.url || "",
+                        pack: selectedPack.label,
+                        stock: currentStock
                     },
                     quantity: 1
                 })
@@ -61,9 +79,9 @@ export default function ProductClient({ product }: ProductClientProps) {
 
     const incrementQty = async () => {
         if (!cartItem) return;
-        if (cartItem.qty < product.stock) {
+        if (cartItem.qty < currentStock) {
             try {
-                await dispatch(updateCartItemQty({ productId: product._id, quantity: cartItem.qty + 1 })).unwrap();
+                await dispatch(updateCartItemQty({ productId: product._id, quantity: cartItem.qty + 1, pack: selectedPack?.label })).unwrap();
             } catch (error) {
                 toast.error("Failed to update quantity");
             }
@@ -72,15 +90,16 @@ export default function ProductClient({ product }: ProductClientProps) {
 
     const decrementQty = async () => {
         if (!cartItem) return;
-        // Constraint: product quantity should not be decreased to 0 from here
         if (cartItem.qty > 1) {
             try {
-                await dispatch(updateCartItemQty({ productId: product._id, quantity: cartItem.qty - 1 })).unwrap();
+                await dispatch(updateCartItemQty({ productId: product._id, quantity: cartItem.qty - 1, pack: selectedPack?.label })).unwrap();
             } catch (error) {
                 toast.error("Failed to update quantity");
             }
         }
     };
+
+    if (!selectedPack && product.packs?.length > 0) return null; // Wait for effect
 
     return (
         <div className="min-h-screen bg-[#FDFBF7] pt-10 pb-20">
@@ -167,6 +186,28 @@ export default function ProductClient({ product }: ProductClientProps) {
 
                         <div className="h-px bg-gray-200" />
 
+                        {/* Pack Selection */}
+                        {product.packs && product.packs.length > 0 && (
+                            <div>
+                                <h3 className="text-sm font-semibold text-gray-900 mb-3">Select Size</h3>
+                                <div className="flex flex-wrap gap-3">
+                                    {product.packs.map((pack) => (
+                                        <button
+                                            key={pack.label}
+                                            onClick={() => setSelectedPack(pack)}
+                                            className={`px-4 py-2 rounded-lg border text-sm font-medium transition-all ${selectedPack?.label === pack.label
+                                                ? "border-orange-500 bg-orange-50 text-orange-700 ring-1 ring-orange-500"
+                                                : "border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50"
+                                                }`}
+                                        >
+                                            {pack.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+
                         {/* Price & Actions */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
@@ -176,9 +217,9 @@ export default function ProductClient({ product }: ProductClientProps) {
                         >
                             <div className="flex items-end gap-4">
                                 <span className="text-2xl font-semibold text-gray-900">
-                                    ₹{product.price}
+                                    ₹{currentPrice}
                                 </span>
-                                <span className="text-sm text-gray-500 mb-2">/ per pack</span>
+                                <span className="text-sm text-gray-500 mb-2">/ {selectedPack?.label}</span>
                             </div>
 
                             {/* Quantity & Add to Cart Logic */}
@@ -200,7 +241,7 @@ export default function ProductClient({ product }: ProductClientProps) {
                                             <button
                                                 onClick={incrementQty}
                                                 className="w-12 h-12 flex items-center justify-center text-white rounded-full transition hover:bg-white/20 cursor-pointer"
-                                                disabled={cartItem.qty >= product.stock}
+                                                disabled={cartItem.qty >= currentStock}
                                             >
                                                 <Plus size={20} />
                                             </button>
@@ -215,14 +256,14 @@ export default function ProductClient({ product }: ProductClientProps) {
                                         whileHover={{ scale: 1.02 }}
                                         whileTap={{ scale: 0.98 }}
                                         onClick={handleAddToCart}
-                                        disabled={product.stock === 0}
-                                        className={`flex items-center justify-center gap-2 px-10 py-4 rounded-full text-lg font-bold shadow-lg transition-all ${product.stock > 0
+                                        disabled={currentStock === 0}
+                                        className={`flex items-center justify-center gap-2 px-10 py-4 rounded-full text-lg font-bold shadow-lg transition-all ${currentStock > 0
                                             ? "bg-gray-900 text-white hover:bg-orange-600 cursor-pointer hover:shadow-xl"
                                             : "bg-gray-300 text-gray-500 cursor-not-allowed"
                                             }`}
                                     >
                                         <ShoppingCart size={22} className="mb-0.5" />
-                                        {product.stock > 0 ? "Add to Cart" : "Out of Stock"}
+                                        {currentStock > 0 ? "Add to Cart" : "Out of Stock"}
                                     </motion.button>
                                 )}
                             </div>

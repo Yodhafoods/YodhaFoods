@@ -12,14 +12,7 @@ import {
 import { toast } from "sonner";
 import { RiAddFill, RiSubtractFill } from "react-icons/ri";
 
-export interface Product {
-    id: number | string;
-    name: string;
-    price: number;
-    img: string;
-    badge?: string;
-    slug: string;
-}
+import { Product } from "@/types";
 
 interface ProductCardProps {
     product: Product;
@@ -28,8 +21,13 @@ interface ProductCardProps {
 
 export default function ProductCardHome({ product, className }: ProductCardProps) {
     const dispatch = useAppDispatch();
+    const defaultPack = product.packs?.[0];
     const cart = useAppSelector((state) => state.cart.items);
-    const cartItem = cart.find((item) => item.id === String(product.id));
+    const cartItem = cart.find((item) => item.productId === String(product._id) && item.pack === defaultPack?.label);
+
+    // Fallback price
+    const price = defaultPack?.price || 0;
+    const imgUrl = product.images?.[0]?.url || "";
 
     const handleAddToCart = async (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -38,11 +36,14 @@ export default function ProductCardHome({ product, className }: ProductCardProps
             await dispatch(
                 addItemToCart({
                     product: {
-                        id: String(product.id),
-                        name: product.name,
-                        price: product.price,
+                        id: defaultPack ? `${product._id}-${defaultPack.label}` : String(product._id),
+                        productId: String(product._id),
+                        name: defaultPack ? `${product.name} (${defaultPack.label})` : product.name,
+                        price: price,
                         qty: 1,
-                        image: product.img,
+                        image: imgUrl,
+                        pack: defaultPack?.label,
+                        stock: defaultPack?.stock
                     },
                     quantity: 1
                 })
@@ -58,7 +59,7 @@ export default function ProductCardHome({ product, className }: ProductCardProps
         e.preventDefault();
         if (cartItem) {
             try {
-                await dispatch(updateCartItemQty({ productId: String(product.id), quantity: cartItem.qty + 1 })).unwrap();
+                await dispatch(updateCartItemQty({ productId: String(product._id), quantity: cartItem.qty + 1, pack: defaultPack?.label })).unwrap();
             } catch (error) {
                 toast.error("Failed to update quantity");
             }
@@ -71,10 +72,10 @@ export default function ProductCardHome({ product, className }: ProductCardProps
         if (cartItem) {
             try {
                 if (cartItem.qty <= 1) {
-                    await dispatch(removeItemFromCart(String(product.id))).unwrap();
+                    await dispatch(removeItemFromCart({ productId: String(product._id), pack: defaultPack?.label })).unwrap();
                     toast.success("Removed from cart");
                 } else {
-                    await dispatch(updateCartItemQty({ productId: String(product.id), quantity: cartItem.qty - 1 })).unwrap();
+                    await dispatch(updateCartItemQty({ productId: String(product._id), quantity: cartItem.qty - 1, pack: defaultPack?.label })).unwrap();
                 }
             } catch (error) {
                 toast.error("Failed to update quantity");
@@ -94,21 +95,27 @@ export default function ProductCardHome({ product, className }: ProductCardProps
       `}
         >
             {/* Badge */}
-            {product.badge && (
+            {product.isFeatured && (
                 <span className="absolute top-3 left-3 bg-white text-green-700 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold shadow z-10">
-                    {product.badge}
+                    Featured
                 </span>
             )}
 
             {/* Image Box */}
             {/* Mobile: aspect-3/4 to match CategoryCard. Desktop: Fixed heights to match original ProductCard. */}
             <div className="aspect-3/4 sm:aspect-auto w-full sm:h-40 md:h-48 lg:h-52 rounded-xl overflow-hidden bg-gray-100 relative">
-                <Image
-                    src={product.img}
-                    alt={product.name}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                />
+                {imgUrl ? (
+                    <Image
+                        src={imgUrl}
+                        alt={product.name}
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-gray-200">
+                        <span className="text-gray-400 text-xs">No Image</span>
+                    </div>
+                )}
             </div>
 
             {/* Title */}
@@ -120,7 +127,7 @@ export default function ProductCardHome({ product, className }: ProductCardProps
 
             {/* Price + Add to Cart */}
             <div className="mt-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-2">
-                <p className="text-gray-900 font-bold text-xs sm:text-sm">₹{product.price}</p>
+                <p className="text-gray-900 font-bold text-xs sm:text-sm">₹{price}</p>
 
                 <div className="shrink-0">
                     {cartItem ? (

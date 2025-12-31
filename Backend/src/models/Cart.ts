@@ -3,6 +3,7 @@ import mongoose, { Schema, Document, Types } from "mongoose";
 export interface ICartItem {
   productId: Types.ObjectId;
   quantity: number;
+  pack?: string; // Pack label
 }
 
 export interface ICart extends Document {
@@ -38,6 +39,10 @@ const CartSchema = new Schema<ICart>(
           required: true,
           min: 1,
         },
+        pack: {
+          type: String, // Label of the selected pack e.g. "Standard"
+          required: false // Optional for backward compatibility? Or make it required if we migrate. Let's say false for now but effectively we want it.
+        }
       },
     ],
   },

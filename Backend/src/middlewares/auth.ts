@@ -8,6 +8,7 @@ declare global {
       user?: {
         id: string;
         role: UserRole;
+        exp?: number;
       };
     }
   }
@@ -37,7 +38,7 @@ export const requireAuth = (
 
   try {
     const decoded = jwt.verify(token, ACCESS_SECRET) as DecodedToken;
-    req.user = { id: decoded.sub, role: decoded.role };
+    req.user = { id: decoded.sub, role: decoded.role, exp: decoded.exp };
     next();
   } catch (err) {
     console.error("[Auth] Token verification failed:", err);

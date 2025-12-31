@@ -58,7 +58,11 @@ export const createOrder = async (req: GuestRequest, res: Response) => {
     /**
      * 1️⃣ Fetch address (ownership check)
      */
+    /**
+     * 1️⃣ Fetch address (ownership check)
+     */
     const address = await Address.findOne({ _id: addressId, userId });
+
     if (!address) {
       return res.status(404).json({ message: "Address not found" });
     }

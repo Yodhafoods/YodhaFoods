@@ -3,213 +3,245 @@
 
 import { useState, useEffect } from 'react';
 import { usePost } from '@/hooks/usePost';
-import { UploadImage } from './UploadImage';
 import { toast } from 'sonner';
 import { api } from '@/lib/api';
+
+// Sub-components
+import { BasicInfoSection } from './product-form/BasicInfoSection';
+import { PacksSection, Pack } from './product-form/PacksSection';
+import { MediaSection } from './product-form/MediaSection';
+import { SpecificationsSection } from './product-form/SpecificationsSection';
+import { NutritionSection } from './product-form/NutritionSection';
+import { MetaSection } from './product-form/MetaSection';
 
 interface Category {
     _id: string;
     name: string;
 }
 
+interface NutritionItem {
+    name: string;
+    value: string;
+}
+
 export function ProductUploadForm() {
-    const [formData, setFormData] = useState({
+    // 1. STATE DEFINITIONS
+    const [categories, setCategories] = useState<Category[]>([]);
+
+    // Basic
+    const [basicInfo, setBasicInfo] = useState({
         name: '',
-        price: '',
-        discountPrice: '',
-        stock: '',
         description: '',
         categoryId: '',
+        ingredients: '',
+        shelfLifeMonths: '',
+        storageInstructions: '',
+        howToUse: '',
     });
-    const [image, setImage] = useState<File | null>(null);
 
-    const [categories, setCategories] = useState<Category[]>([]);
-    const [loadingCategories, setLoadingCategories] = useState(false);
+    // Packs
+    const [packs, setPacks] = useState<Pack[]>([
+        { label: '', weightInGrams: 0, price: 0, stock: 0, isDefault: true }
+    ]);
 
-    // Fetch categories on mount
+    // Media
+    const [images, setImages] = useState<File[]>([]);
+    const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+
+    // Specs
+    const [specs, setSpecs] = useState({
+        brand: 'Yodha Foods',
+        form: '',
+        organic: false,
+        ayurvedic: false,
+        vegan: false,
+        allergens: '',
+        containerType: '',
+        servingSize: '',
+    });
+
+    // Nutrition & Highlights
+    const [nutritionTable, setNutritionTable] = useState<NutritionItem[]>([]);
+    const [highlights, setHighlights] = useState<string[]>([]);
+
+    // Meta (Manufacturing + SEO)
+    const [productInfo, setProductInfo] = useState({
+        genericName: '',
+        netQuantity: '',
+        countryOfOrigin: 'India',
+        manufacturer: '',
+        marketedBy: '',
+        fssaiLicense: '',
+    });
+    const [seo, setSeo] = useState({
+        title: '',
+        description: '',
+        keywords: '',
+    });
+
+    // 2. FETCH DATA
     useEffect(() => {
         const fetchCategories = async () => {
-            setLoadingCategories(true);
             try {
                 const res = await api.get<any>('/api/categories');
-
-                if (Array.isArray(res)) {
-                    setCategories(res);
-                } else if (res && Array.isArray(res.data)) {
-                    setCategories(res.data);
-                } else if (res && Array.isArray(res.categories)) {
-                    setCategories(res.categories);
-                } else {
-                    console.error('Unexpected categories response:', res);
-                    setCategories([]);
-                }
+                if (res && Array.isArray(res.categories)) setCategories(res.categories);
+                else if (Array.isArray(res)) setCategories(res);
+                else if (res && Array.isArray(res.data)) setCategories(res.data);
             } catch (error) {
-                console.error('Failed to fetch categories', error);
                 toast.error('Could not load categories');
-            } finally {
-                setLoadingCategories(false);
             }
         };
         fetchCategories();
     }, []);
 
+    // 3. SUBMISSION LOGIC
     const { postData, isLoading } = usePost('/api/products', {
         onSuccess: () => {
             toast.success('Product created successfully!');
-            setFormData({
-                name: '',
-                price: '',
-                discountPrice: '',
-                stock: '',
-                description: '',
-                categoryId: '',
-            });
-            setImage(null);
+            setTimeout(() => window.location.reload(), 1500);
         },
     });
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!formData.name || !formData.price || !formData.categoryId || !formData.stock || !image) {
-            toast.error('Please fill in all required fields (Name, Price, Stock, Category, Image)');
-            return;
+
+        // Validation
+        if (!basicInfo.name || !basicInfo.categoryId || !basicInfo.ingredients || !basicInfo.shelfLifeMonths) {
+            return toast.error('Please fill required basic info (Name, Category, Ingredients, Shelf Life)');
+        }
+        if (packs.some(p => !p.label || !p.weightInGrams || !p.price || !p.stock)) {
+            return toast.error('Please complete all pack details (Label, Weight, Price, Stock)');
+        }
+        if (images.length === 0) {
+            return toast.error('Please upload at least one image');
         }
 
-        const payload = new FormData();
-        payload.append('name', formData.name);
-        payload.append('price', formData.price);
-        payload.append('stock', formData.stock);
-        payload.append('categoryId', formData.categoryId);
-        if (formData.description) payload.append('description', formData.description);
-        if (formData.discountPrice) payload.append('discountPrice', formData.discountPrice);
+        const formData = new FormData();
 
-        payload.append('images', image);
+        // Append Sections
+        Object.entries(basicInfo).forEach(([key, value]) => formData.append(key, value));
 
-        await postData(payload);
+        formData.append('packs', JSON.stringify(packs));
+        formData.append('specifications', JSON.stringify(specs));
+        formData.append('productInfo', JSON.stringify(productInfo));
+
+        if (nutritionTable.length > 0) formData.append('nutritionTable', JSON.stringify(nutritionTable));
+        if (highlights.length > 0) formData.append('highlights', JSON.stringify(highlights));
+
+        const seoData = {
+            ...seo,
+            keywords: seo.keywords.split(',').map(k => k.trim()).filter(k => k),
+        };
+        formData.append('seo', JSON.stringify(seoData));
+
+        images.forEach(image => formData.append('images', image));
+
+        await postData(formData);
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-    };
-
-    const handleImageUpload = (file: File | null) => {
-        setImage(file);
-    };
-
+    // 4. RENDER
     return (
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-bold mb-4 dark:text-white">Add New Product</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-                {/* Name */}
-                <div>
-                    <label className="block text-sm font-medium mb-1 dark:text-gray-200">Product Name</label>
-                    <input
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                        placeholder="Product Name"
-                        required
-                    />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                    {/* Price */}
-                    <div>
-                        <label className="block text-sm font-medium mb-1 dark:text-gray-200">Price (₹)</label>
-                        <input
-                            name="price"
-                            type="number"
-                            value={formData.price}
-                            onChange={handleChange}
-                            className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                            placeholder="0.00"
-                            required
-                            min="0"
-                        />
-                    </div>
-                    {/* Discount Price */}
-                    <div>
-                        <label className="block text-sm font-medium mb-1 dark:text-gray-200">Discount Price (₹)</label>
-                        <input
-                            name="discountPrice"
-                            type="number"
-                            value={formData.discountPrice}
-                            onChange={handleChange}
-                            className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                            placeholder="Optional"
-                            min="0"
-                        />
-                    </div>
-                </div>
-
-                {/* Stock */}
-                <div>
-                    <label className="block text-sm font-medium mb-1 dark:text-gray-200">Stock Quantity</label>
-                    <input
-                        name="stock"
-                        type="number"
-                        value={formData.stock}
-                        onChange={handleChange}
-                        className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                        placeholder="Available stock"
-                        required
-                        min="0"
-                    />
-                </div>
-
-                {/* Category */}
-                <div>
-                    <label className="block text-sm font-medium mb-1 dark:text-gray-200">Category</label>
-                    <select
-                        name="categoryId"
-                        value={formData.categoryId}
-                        onChange={handleChange}
-                        className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                        required
-                    >
-                        <option value="">Select Category</option>
-                        {loadingCategories ? (
-                            <option disabled>Loading...</option>
-                        ) : (
-                            categories.map((cat) => (
-                                <option key={cat._id} value={cat._id}>{cat.name}</option>
-                            ))
-                        )}
-                    </select>
-                </div>
-
-                {/* Description */}
-                <div>
-                    <label className="block text-sm font-medium mb-1 dark:text-gray-200">Description</label>
-                    <textarea
-                        name="description"
-                        value={formData.description}
-                        onChange={handleChange}
-                        className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                        placeholder="Product details..."
-                        rows={3}
-                    />
-                </div>
-
-                {/* Image */}
-                <div>
-                    <label className="block text-sm font-medium mb-1 dark:text-gray-200">Product Image</label>
-                    <UploadImage onFileSelect={handleImageUpload} />
-                    {image && (
-                        <p className="text-xs text-green-500 mt-1">Image selected!</p>
-                    )}
-                </div>
-
+        <form onSubmit={handleSubmit} className="max-w-7xl mx-auto space-y-8 pb-20">
+            <div className='flex justify-between items-center bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700'>
+                <h2 className="text-2xl font-bold dark:text-white bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-green-800">
+                    Add New Product
+                </h2>
                 <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 disabled:opacity-50 transition-colors"
+                    className="bg-green-600 text-white px-8 py-2.5 rounded-lg font-bold hover:bg-green-700 disabled:opacity-50 transition shadow-lg hover:shadow-green-500/30"
                 >
-                    {isLoading ? 'Creating...' : 'Create Product'}
+                    {isLoading ? 'Creating...' : 'Publish Product'}
                 </button>
-            </form>
-        </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Left Column: Media & Meta (Smaller items) */}
+                <div className="space-y-8 lg:col-span-1">
+                    <MediaSection
+                        images={images}
+                        previews={imagePreviews}
+                        onAdd={(files) => {
+                            setImages(prev => [...prev, ...files]);
+                            files.forEach(file => {
+                                const reader = new FileReader(); // Simple preview gen
+                                reader.onloadend = () => setImagePreviews(prev => [...prev, reader.result as string]);
+                                reader.readAsDataURL(file);
+                            });
+                        }}
+                        onRemove={(idx) => {
+                            setImages(prev => prev.filter((_, i) => i !== idx));
+                            setImagePreviews(prev => prev.filter((_, i) => i !== idx));
+                        }}
+                    />
+
+                    <SpecsWrapper
+                        specs={specs}
+                        onChange={(field, val) => setSpecs(prev => ({ ...prev, [field]: val }))}
+                    />
+
+                    <MetaSection
+                        productInfo={productInfo}
+                        seo={seo}
+                        onInfoChange={(field, val) => setProductInfo(prev => ({ ...prev, [field]: val }))}
+                        onSeoChange={(field, val) => setSeo(prev => ({ ...prev, [field]: val }))}
+                    />
+                </div>
+
+                {/* Right Column: Main Content */}
+                <div className="space-y-8 lg:col-span-2">
+                    <BasicInfoSection
+                        data={basicInfo}
+                        categories={categories}
+                        onChange={(field, val) => setBasicInfo(prev => ({ ...prev, [field]: val }))}
+                    />
+
+                    <PacksSection
+                        packs={packs}
+                        onChange={setPacks}
+                    />
+
+                    <NutritionSection
+                        nutrition={nutritionTable}
+                        highlights={highlights}
+                        onNutritionChange={setNutritionTable}
+                        onHighlightsChange={setHighlights}
+                    />
+                </div>
+            </div>
+
+            {/* Global Styles for Inputs */}
+            <style jsx global>{`
+                .input-field {
+                    width: 100%;
+                    padding: 0.625rem;
+                    border-radius: 0.5rem;
+                    border: 1px solid #e5e7eb;
+                    background-color: #f9fafb;
+                    transition: border-color 0.15s ease-in-out;
+                    font-size: 0.875rem;
+                }
+                .input-field:focus {
+                    outline: none;
+                    border-color: #3b82f6;
+                    background-color: #ffffff;
+                    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+                }
+                .dark .input-field {
+                    background-color: #374151;
+                    border-color: #4b5563;
+                    color: white;
+                }
+                .dark .input-field:focus {
+                    background-color: #1f2937;
+                    border-color: #60a5fa;
+                }
+            `}</style>
+        </form>
     );
+}
+
+// Wrapper to prevent circular dependency layout issues if any, or just spacing
+function SpecsWrapper({ specs, onChange }: { specs: any, onChange: (field: string, value: any) => void }) {
+    return <SpecificationsSection specs={specs} onChange={onChange} />;
 }

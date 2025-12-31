@@ -10,15 +10,7 @@ import { useProducts } from "@/features/products/hooks/useProducts";
 import { api } from "@/lib/api";
 
 // Define Product interface compatible with API response
-interface Product {
-  _id: string;
-  name: string;
-  slug: string;
-  price: number;
-  description: string;
-  images: { url: string }[];
-  category?: { name: string };
-}
+import { Product } from "@/types";
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -188,11 +180,11 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                               {product.description || "No description available"}
                             </p>
                             <div className="flex items-center gap-2 mt-1">
-                              <span className="text-sm font-bold text-gray-900">₹{product.price}</span>
+                              <span className="text-sm font-bold text-gray-900">₹{product.packs?.[0]?.price}</span>
                               {/* Handle category display if available in the type */}
-                              {(product as any).category?.name && (
+                              {product.categoryId && (
                                 <span className="text-[10px] px-2 py-0.5 bg-gray-100 text-gray-500 rounded-full">
-                                  {(product as any).category.name}
+                                  {product.categoryId.name}
                                 </span>
                               )}
                             </div>
@@ -240,10 +232,10 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                         {product.description || "No description available"}
                       </p>
                       <div className="flex items-center gap-2 mt-1">
-                        <span className="text-sm font-bold text-gray-900">₹{product.price}</span>
-                        {product.category && (
+                        <span className="text-sm font-bold text-gray-900">₹{product.packs?.[0]?.price}</span>
+                        {product.categoryId && (
                           <span className="text-[10px] px-2 py-0.5 bg-gray-100 text-gray-500 rounded-full">
-                            {product.category.name}
+                            {product.categoryId.name}
                           </span>
                         )}
                       </div>

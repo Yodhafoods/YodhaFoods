@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
+import mongoose from "mongoose";
 
 import {
   createAccessToken,
@@ -177,10 +178,11 @@ export const loginUser = async (
     }
 
     // Create tokens
+    const tokenId = new mongoose.Types.ObjectId().toString();
     const accessToken = createAccessToken(user._id.toString(), user.role);
-    const refreshToken = createRefreshToken(user._id.toString());
+    const refreshToken = createRefreshToken(user._id.toString(), tokenId);
 
-    await saveRefreshToken(user._id.toString(), refreshToken);
+    await saveRefreshToken(user._id.toString(), tokenId, refreshToken);
 
     // Set cookies
     setAuthCookies(res, accessToken, refreshToken);
@@ -240,12 +242,13 @@ export const refreshTokenController = async (req: Request, res: Response) => {
     const token = req.cookies?.rt;
     if (!token) return res.status(401).json({ message: "No refresh token" });
 
-    const userId = verifyRefreshToken(token);
+    const { userId, tokenId } = verifyRefreshToken(token);
 
     const user = await User.findById(userId);
     if (!user)
       return res.status(401).json({ message: "User no longer exists" });
 
+    // isRefreshTokenValid now does O(1) lookup using the tokenId embedded in the JWT
     const valid = await isRefreshTokenValid(userId, token);
     if (!valid)
       return res
@@ -254,9 +257,11 @@ export const refreshTokenController = async (req: Request, res: Response) => {
 
     await revokeRefreshToken(token);
 
+    const newTokenId = new mongoose.Types.ObjectId().toString();
     const newAccessToken = createAccessToken(userId, user.role);
-    const newRefreshToken = createRefreshToken(userId);
-    await saveRefreshToken(userId, newRefreshToken);
+    const newRefreshToken = createRefreshToken(userId, newTokenId);
+
+    await saveRefreshToken(userId, newTokenId, newRefreshToken);
 
     setAuthCookies(res, newAccessToken, newRefreshToken);
 
@@ -313,7 +318,11 @@ export const meController = async (req: Request, res: Response) => {
     const user = await User.findById(req.user.id).select("-password");
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    return res.json({ user });
+    // Return user + current access token expiry (so frontend can schedule silent refresh)
+    // req.user.exp is the unix timestamp (seconds) from the JWT
+    const accessTokenExpiry = req.user.exp ? req.user.exp * 1000 : undefined;
+
+    return res.json({ user, accessTokenExpiry });
   } catch (err) {
     console.error("Me error:", err);
     return res.status(500).json({ message: "Server error" });

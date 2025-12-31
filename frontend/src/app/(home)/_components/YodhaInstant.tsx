@@ -8,14 +8,7 @@ import { addItemToCart } from "@/features/cart/store/cartSlice";
 import { toast } from "sonner";
 import { useProducts } from "@/features/products/hooks/useProducts";
 
-interface Product {
-    _id: string;
-    name: string;
-    images: { url: string }[];
-    description?: string;
-    slug: string;
-    price: number;
-}
+import { Product } from "@/types";
 
 export default function YodhaInstant() {
     const { products, loading } = useProducts("yodha-instant");
@@ -26,14 +19,18 @@ export default function YodhaInstant() {
         e.preventDefault();
 
         try {
+            const defaultPack = product.packs?.[0];
             await dispatch(
                 addItemToCart({
                     product: {
-                        id: product._id,
-                        name: product.name,
-                        price: product.price,
+                        id: defaultPack ? `${product._id}-${defaultPack.label}` : product._id,
+                        productId: product._id,
+                        name: defaultPack ? `${product.name} (${defaultPack.label})` : product.name,
+                        price: defaultPack?.price || 0,
                         qty: 1,
                         image: product.images?.[0]?.url || "",
+                        pack: defaultPack?.label,
+                        stock: defaultPack?.stock
                     },
                     quantity: 1
                 })
@@ -90,7 +87,7 @@ export default function YodhaInstant() {
                             </p>
 
                             <div className="mt-auto flex justify-between items-center">
-                                <span className="text-gray-300 font-bold text-lg ">₹{product.price}</span>
+                                <span className="text-gray-300 font-bold text-lg ">₹{product.packs?.[0]?.price}</span>
                                 <button
                                     onClick={(e) => handleAddToCart(e, product)}
                                     className="bg-white text-black px-4 py-2 rounded-full font-bold text-sm hover:bg-orange-500 hover:text-white transition-colors cursor-pointer"

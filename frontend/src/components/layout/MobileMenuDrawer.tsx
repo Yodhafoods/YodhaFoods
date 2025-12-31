@@ -29,7 +29,7 @@ export default function MobileMenuDrawer({
   open: boolean;
   setOpen: (val: boolean) => void;
 }) {
-  const { user, logout } = useAuth();
+  const { user, logout, loading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -91,7 +91,12 @@ export default function MobileMenuDrawer({
 
         {/* Auth Section */}
         <div className="px-5 py-4 border-b border-gray-200 space-y-3">
-          {!user ? (
+          {loading ? (
+            <div className="flex animate-pulse items-center gap-3 px-5 py-4">
+              <div className="h-4 w-4 bg-gray-200 rounded-full"></div>
+              <div className="h-4 w-24 bg-gray-200 rounded"></div>
+            </div>
+          ) : !user ? (
             <NavButton href="/auth/signin" icon={<User size={18} />}>
               Sign In
             </NavButton>

@@ -81,21 +81,16 @@ export default function ProductsView() {
                                                 : "—"}
                                         </td>
                                         <td className="px-6 py-4 dark:text-gray-200">
-                                            ₹{product.price}
-                                            {product.discountPrice && (
-                                                <span className="ml-2 text-xs text-green-600 bg-green-100 dark:bg-green-900/30 px-1.5 py-0.5 rounded">
-                                                    Offer
-                                                </span>
-                                            )}
+                                            ₹{product.packs?.[0]?.price || 0}
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className={`px-2 py-1 text-xs rounded-full font-medium ${product.stock > 10
-                                                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                                                : product.stock > 0
-                                                    ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
-                                                    : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                                            <span className={`px-2 py-1 text-xs rounded-full font-medium ${(product.packs?.[0]?.stock || 0) > 10
+                                                    ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                                                    : (product.packs?.[0]?.stock || 0) > 0
+                                                        ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
+                                                        : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
                                                 }`}>
-                                                {product.stock} in stock
+                                                {product.packs?.[0]?.stock || 0} in stock
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-right">

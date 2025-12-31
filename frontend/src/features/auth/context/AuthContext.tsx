@@ -2,6 +2,8 @@
 
 import { createContext, useContext, useState, useEffect } from "react";
 import { api, FetchError } from "@/lib/api";
+import { useAppDispatch } from "@/lib/store/hooks";
+import { resetCheckout } from "@/features/checkout/store/checkoutSlice";
 
 // User Type
 interface User {
@@ -37,6 +39,7 @@ export default function AuthProvider({
 }: {
   children: React.ReactNode;
 }) {
+  const dispatch = useAppDispatch();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -84,15 +87,20 @@ export default function AuthProvider({
   // FETCH USER (auto-run on page load)
   const refreshUser = async () => {
     try {
-      const res = await api.get<{ user: User }>("/api/auth/me");
+      // The /me endpoint now returns { user, accessTokenExpiry }
+      // This saves us an extra "refresh_token" call on load.
+      const res = await api.get<{ user: User; accessTokenExpiry?: number }>("/api/auth/me");
 
       Promise.resolve().then(async () => {
         setUser(res.user);
 
-        // We don't know the exact expiry of the current cookie on load.
-        // To ensure we are synced, we trigger a silent refresh immediately.
-        // This gives us a fresh token and a known expiry time to schedule the loop.
-        await silentRefresh();
+        if (res.accessTokenExpiry) {
+          // If backend provided expiry, schedule next refresh based on it.
+          scheduleRefresh(res.accessTokenExpiry);
+        } else {
+          // Fallback if not provided (shouldn't happen with new backend)
+          await silentRefresh();
+        }
       });
     } catch {
       Promise.resolve().then(() => {
@@ -134,6 +142,7 @@ export default function AuthProvider({
       await api.post("/api/auth/logout", {});
     } catch { }
     setUser(null);
+    dispatch(resetCheckout());
   }
 
   return (
