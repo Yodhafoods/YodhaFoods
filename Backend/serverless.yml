@@ -1,0 +1,49 @@
+service: ecommerce-backend
+
+frameworkVersion: "4"
+
+provider:
+  name: aws
+  runtime: nodejs22.x
+  region: ap-south-1
+  stage: prod
+  memorySize: 1024
+  timeout: 15
+
+  environment:
+    NODE_ENV: production
+
+  httpApi:
+    cors:
+      allowedOrigins:
+        - https://www.yodhafoods.com
+        - https://yodhafoods.com
+        - http://localhost:3000
+      allowedHeaders:
+        - Content-Type
+        - Authorization
+        - Cookie
+      allowedMethods:
+        - GET
+        - POST
+        - PUT
+        - PATCH
+        - DELETE
+        - OPTIONS
+      allowCredentials: true
+
+functions:
+  api:
+    handler: dist/handler.handler
+    events:
+      - httpApi:
+          path: /{proxy+}
+          method: ANY
+
+package:
+  patterns:
+    - dist/**
+    - node_modules/**
+
+plugins:
+  - serverless-dotenv-plugin

@@ -10,7 +10,7 @@
     "start": "node dist/server.js",
     "test": "echo \"No tests yet\" && exit 0",
     "test-email": "node --loader ts-node/esm src/utils/test-email.ts",
-    "cleanup-carts": "tsx src/scripts/cleanup-duplicate-carts.ts"
+    "deploy": "npm run build && serverless deploy"
   },
   "keywords": [],
   "author": "",
@@ -32,7 +32,7 @@
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
-    "dotenv": "^16.4.5",
+    "dotenv": "^16.6.1",
     "express": "^5.2.1",
     "express-rate-limit": "^8.2.1",
     "express-validator": "^7.3.1",
@@ -45,12 +45,15 @@
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "razorpay": "^2.9.6",
+    "serverless": "^4.29.3",
+    "serverless-http": "^4.0.0",
     "uuid": "^13.0.0",
     "zod": "^4.1.13"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^24.10.2",
+    "serverless-dotenv-plugin": "^6.0.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.7.0",
     "typescript": "^5.9.3"
