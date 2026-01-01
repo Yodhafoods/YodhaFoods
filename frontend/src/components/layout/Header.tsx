@@ -20,6 +20,7 @@ import DesktopStories from "./header/DesktopStories";
 import MobileStories from "./header/MobileStories";
 import TabletSearchBar from "./header/TabletSearchBar";
 import YodhaMegaMenu from "./YodhaMegaMenu";
+import ProfileDropdown from "./ProfileDropdown";
 
 
 
@@ -123,18 +124,19 @@ export default function Header() {
               </span>
             </button>
             <button
-              className="flex items-center gap-1 cursor-pointer hover:-translate-y-1 transition-all duration-100"
+              className="relative group flex items-center justify-center gap-1 cursor-pointer transition-all duration-100"
               onClick={() => setOpenCart(true)}
             >
-              <TiShoppingCart size={30} /> <span>{cartCount}</span>
+              <TiShoppingCart size={30} />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-2 bg-orange-600 group-hover:-translate-y-1 transition-all duration-100 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                  {cartCount}
+                </span>
+              )}
             </button>
 
-            <Link
-              href="/profile"
-              className="cursor-pointer hover:-translate-y-1 transition-all duration-100"
-            >
-              <FaUser size={22} />
-            </Link>
+            {/* Profile Dropdown */}
+            <ProfileDropdown />
           </div>
 
           {/* MOBILE RIGHT: CART + MENU + Search */}
@@ -145,8 +147,16 @@ export default function Header() {
             >
               <Search size={28} />
             </button>
-            <button onClick={() => setOpenCart(true)}>
+            <button
+              onClick={() => setOpenCart(true)}
+              className="relative flex items-center justify-center"
+            >
               <TiShoppingCart size={30} />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-2 bg-orange-600 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                  {cartCount}
+                </span>
+              )}
             </button>
 
             <button onClick={() => setOpenDrawer(true)}>

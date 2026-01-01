@@ -1,4 +1,11 @@
 import { Leaf, Sprout, HeartHandshake } from "lucide-react";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "About Us | Yodha Foods",
+  description: "Learn about Yodha Foods - our mission to bring back ancient nutritional wisdom through pure, natural superfood powders. Discover our core values and commitment to wellness.",
+  keywords: ["about Yodha Foods", "superfood mission", "natural ingredients", "nutritional wisdom", "wellness journey"],
+};
 
 export default function page() {
   return (

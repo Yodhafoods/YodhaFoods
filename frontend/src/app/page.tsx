@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import JourneySection from "./(home)/_components/Journey";
 
 export const dynamic = 'force-dynamic';
@@ -8,6 +9,19 @@ import BestsellingProducts from "@/features/products/components/BestsellingProdu
 import HeroCarousel from "./(home)/_components/HeroCarousel";
 import QuickActionCards from "./(home)/_components/QuickActionCards";
 
+
+export const metadata: Metadata = {
+  title: "Yodha Foods | Natural & Nutritious Superfood Powders",
+  description: "Discover premium, natural superfood powders at Yodha Foods. Crafted from the finest ingredients to boost your health and wellness journey. Shop our bestsellers today for a healthier tomorrow.",
+  keywords: ["superfoods", "natural powders", "health supplements", "nutritious food", "Yodha Foods", "organic powders", "immunity booster", "healthy lifestyle"],
+  openGraph: {
+    title: "Yodha Foods | Natural & Nutritious Superfood Powders",
+    description: "Discover premium, natural superfood powders at Yodha Foods. Crafted from the finest ingredients to boost your health and wellness journey.",
+    type: "website",
+    locale: "en_IN",
+    siteName: "Yodha Foods",
+  },
+};
 
 export default function Home() {
   return (
