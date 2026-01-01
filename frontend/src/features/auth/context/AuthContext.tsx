@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import { api, FetchError } from "@/lib/api";
 import { useAppDispatch } from "@/lib/store/hooks";
 import { resetCheckout } from "@/features/checkout/store/checkoutSlice";
+import { clearLocalCart, fetchCartItems } from "@/features/cart/store/cartSlice";
 
 // User Type
 interface User {
@@ -94,6 +95,9 @@ export default function AuthProvider({
       Promise.resolve().then(async () => {
         setUser(res.user);
 
+        // Fetch cart immediately after user is set
+        dispatch(fetchCartItems());
+
         if (res.accessTokenExpiry) {
           // If backend provided expiry, schedule next refresh based on it.
           scheduleRefresh(res.accessTokenExpiry);
@@ -143,6 +147,7 @@ export default function AuthProvider({
     } catch { }
     setUser(null);
     dispatch(resetCheckout());
+    dispatch(clearLocalCart());
   }
 
   return (

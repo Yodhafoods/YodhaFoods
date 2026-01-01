@@ -7,12 +7,14 @@ import {
   clearCart,
 } from "../controllers/cart.controller.js";
 import { guestMiddleware } from "../middlewares/guest.middleware.js";
+import { optionalAuth } from "../middlewares/auth.js";
 
 const router = Router();
 
 /**
  * Enable guest carts
  */
+router.use(optionalAuth);
 router.use(guestMiddleware);
 
 router.post("/add", addToCart);

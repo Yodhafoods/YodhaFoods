@@ -130,6 +130,11 @@ export const cartSlice = createSlice({
         // So we MUST accept the product details in the action to update the state effectively
         // without a refetch, OR we just refetch.
         // Let's add a `addProductDetails` payload to `addItemToCart` thunk call in the component.
+        clearLocalCart: (state) => {
+            state.items = [];
+            state.status = 'idle';
+            state.error = null;
+        }
     },
     extraReducers: (builder) => {
         // Fetch
@@ -185,6 +190,8 @@ export const cartSlice = createSlice({
         });
     },
 });
+
+export const { clearLocalCart } = cartSlice.actions;
 
 export default cartSlice.reducer;
 

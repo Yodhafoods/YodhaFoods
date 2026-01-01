@@ -19,46 +19,6 @@ export const createOrder = async (req: GuestRequest, res: Response) => {
     }
 
     /**
-     * 🔹 0️⃣ MERGE GUEST CART → USER CART (NEW)
-     */
-    if (req.guestId) {
-      const guestCart = await Cart.findOne({ guestId: req.guestId });
-      const userCart = await Cart.findOne({ userId });
-
-      if (guestCart) {
-        if (!userCart) {
-          // Assign guest cart to user
-          guestCart.userId = userId;
-          guestCart.guestId = null;
-          await guestCart.save();
-        } else {
-          // Merge items
-          guestCart.items.forEach((gItem: any) => {
-            const uItem = userCart.items.find(
-              (i: any) =>
-                i.productId.toString() === gItem.productId.toString()
-            );
-
-            if (uItem) {
-              uItem.quantity += gItem.quantity;
-            } else {
-              userCart.items.push(gItem);
-            }
-          });
-
-          await userCart.save();
-          await Cart.deleteOne({ guestId: req.guestId });
-        }
-
-        // Clear guestId cookie after merge
-        res.clearCookie("guestId");
-      }
-    }
-
-    /**
-     * 1️⃣ Fetch address (ownership check)
-     */
-    /**
      * 1️⃣ Fetch address (ownership check)
      */
     const address = await Address.findOne({ _id: addressId, userId });

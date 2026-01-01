@@ -57,3 +57,26 @@ export const requireAdmin = (
   }
   next();
 };
+
+export const optionalAuth = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const token = req.cookies?.at;
+
+  if (!token) {
+    return next();
+  }
+
+  try {
+    const decoded = jwt.verify(token, ACCESS_SECRET) as DecodedToken;
+    req.user = { id: decoded.sub, role: decoded.role, exp: decoded.exp };
+  } catch (err) {
+    // Token invalid or expired? Just continue as guest.
+    // We don't want to block access to public pages/cart if token is weird.
+    // The frontend should handle refresh separately if needed.
+  }
+
+  next();
+};

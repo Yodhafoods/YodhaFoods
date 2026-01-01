@@ -6,6 +6,7 @@ import {
 } from "../utils/token.js";
 
 import mongoose from "mongoose";
+import { mergeGuestCart } from "../utils/cartUtils.js";
 
 // This controller runs AFTER passport.authenticate has successfully populated req.user
 export const googleCallbackController = async (req: Request, res: Response) => {
@@ -21,6 +22,19 @@ export const googleCallbackController = async (req: Request, res: Response) => {
         const refreshToken = createRefreshToken(user.id, tokenId);
 
         await saveRefreshToken(user.id, tokenId, refreshToken);
+
+        // Merge Guest Cart if exists
+        const guestId = req.cookies?.guestId;
+        if (guestId) {
+            await mergeGuestCart(user.id, guestId);
+
+            res.clearCookie("guestId", {
+                httpOnly: true,
+                secure: true,
+                sameSite: "none",
+                path: "/",
+            });
+        }
 
         // Set Cookies (Same config as loginUser)
         res.cookie("at", accessToken, {

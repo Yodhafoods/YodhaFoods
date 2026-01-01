@@ -20,6 +20,7 @@ import {
 import { sendEmail } from "../utils/sendEmail.js";
 
 import type { RegisterInput, LoginInput } from "../schemas/auth.schema.js";
+import { mergeGuestCart } from "../utils/cartUtils.js";
 
 // Utility: Set cookies
 const setAuthCookies = (
@@ -184,6 +185,20 @@ export const loginUser = async (
 
     await saveRefreshToken(user._id.toString(), tokenId, refreshToken);
 
+    // Merge Guest Cart if exists
+    const guestId = req.cookies?.guestId;
+    if (guestId) {
+      await mergeGuestCart(user._id.toString(), guestId);
+
+      // Clear guestId cookie (must match guest.middleware.ts options)
+      res.clearCookie("guestId", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        path: "/",
+      });
+    }
+
     // Set cookies
     setAuthCookies(res, accessToken, refreshToken);
 
@@ -298,6 +313,14 @@ export const logoutController = async (req: Request, res: Response) => {
 
     res.clearCookie("at", clearOptions);
     res.clearCookie("rt", clearOptions);
+
+    // Clear guestId (must match guest.middleware.ts options)
+    res.clearCookie("guestId", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      path: "/",
+    });
 
     return res.json({ message: "Logged out" });
   } catch (err) {
