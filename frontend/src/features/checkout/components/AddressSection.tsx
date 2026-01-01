@@ -8,6 +8,7 @@ import { useAppSelector } from "@/lib/store/hooks";
 import { useAppDispatch } from "@/lib/store/hooks";
 import AddressSelectorModal from "./AddressSelectorModal";
 import { setSelectedAddress } from "../store/checkoutSlice";
+import AuthDrawer from "@/features/auth/components/AuthDrawer";
 
 
 export default function AddressSection() {
@@ -18,6 +19,7 @@ export default function AddressSection() {
     );
 
     const [open, setOpen] = useState(false);
+    const [authDrawerOpen, setAuthDrawerOpen] = useState(false);
 
     // auto-select default address once
     useEffect(() => {
@@ -41,11 +43,16 @@ export default function AddressSection() {
                 <div className="text-center py-6">
                     <p className="text-gray-600 mb-4">Please sign in to manage your addresses</p>
                     <button
-                        onClick={() => router.push("/auth/signin")}
+                        onClick={() => setAuthDrawerOpen(true)}
                         className="bg-orange-600 text-white px-6 py-2 rounded-full hover:bg-orange-700 transition cursor-pointer"
                     >
                         Sign In
                     </button>
+
+                    <AuthDrawer
+                        isOpen={authDrawerOpen}
+                        onClose={() => setAuthDrawerOpen(false)}
+                    />
                 </div>
             </div>
         );

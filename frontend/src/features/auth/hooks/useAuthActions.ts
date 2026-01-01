@@ -56,13 +56,15 @@ export function useAuthActions() {
     // -----------------------------
     // SIGNIN
     // -----------------------------
-    async function signin(form: SigninForm) {
+    async function signin(form: SigninForm, shouldRedirect: boolean = true) {
         try {
             await api.post("/api/auth/login", form);
 
             toast.success("Signed in successfully!");
             await refreshUser();
-            router.push("/");
+            if (shouldRedirect) {
+                router.push("/");
+            }
             return true;
         } catch (err) {
             if (err instanceof FetchError) {
