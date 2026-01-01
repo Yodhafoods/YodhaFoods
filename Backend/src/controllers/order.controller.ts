@@ -56,10 +56,37 @@ export const createOrder = async (req: GuestRequest, res: Response) => {
         });
       }
 
-      const price =
-        product.discountPrice && product.discountPrice > 0
-          ? product.discountPrice
-          : product.price;
+      let price = 0;
+
+      // New Pack Logic:
+      // If item has a specific 'pack' label (e.g. "250g"), find it in product.packs
+      // Otherwise fallback to default pack.
+      let selectedPack: any = null;
+
+      if (item.pack && product.packs && product.packs.length > 0) {
+        selectedPack = product.packs.find((p: any) => p.label === item.pack);
+      }
+
+      // Fallback: use default pack if no specific pack found or requested
+      if (!selectedPack && product.packs && product.packs.length > 0) {
+        selectedPack = product.packs.find((p: any) => p.isDefault) || product.packs[0];
+      }
+
+      if (selectedPack) {
+        price =
+          selectedPack.discountPrice && selectedPack.discountPrice > 0
+            ? selectedPack.discountPrice
+            : selectedPack.price;
+      } else {
+        // Legacy fallback if no packs (should not happen with new schema)
+        price = (product as any).price || 0;
+      }
+
+      if (!price) {
+        return res.status(400).json({
+          message: `Price not found for ${product.name} (${item.pack || "Default"})`
+        });
+      }
 
       subtotal += price * item.quantity;
 

@@ -14,7 +14,7 @@ interface Props {
 }
 
 export default function AddressSelectorModal({ isOpen, onClose }: Props) {
-    const { addresses } = useAddresses();
+    const { addresses, refetch } = useAddresses();
     const dispatch = useAppDispatch();
     const [addNew, setAddNew] = useState(false);
 
@@ -56,7 +56,10 @@ export default function AddressSelectorModal({ isOpen, onClose }: Props) {
                 <AddressModal
                     isOpen={addNew}
                     onClose={() => setAddNew(false)}
-                    onSuccess={() => setAddNew(false)}
+                    onSuccess={() => {
+                        refetch();
+                        setAddNew(false);
+                    }}
                 />
             </div>
         </div>
