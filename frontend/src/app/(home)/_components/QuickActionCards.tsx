@@ -22,6 +22,7 @@ const cards = [
         style: "bg-gradient-to-br from-[#f3d9c1] to-[#d97e5a] text-[#0f2f2b]",
         iconColor: "text-[#0f2f2b]",
         subColor: "text-[#0f2f2b]/80",
+        buttonText: "Start Ritual",
     },
     {
         id: 2,
@@ -29,9 +30,23 @@ const cards = [
         subtitle: "Fresh offers just dropped",
         icon: Percent,
         action: "/shop",
-        style: "bg-gradient-to-br from-yellow-300 to-amber-500 text-black",
+        style: "bg-gradient-to-br from-orange-200 to-amber-300 text-black",
         iconColor: "text-black",
         subColor: "text-black/70",
+        buttonText: "Avail Now",
+    },
+
+
+    {
+        id: 4,
+        title: "Today’s Ritual",
+        subtitle: "Simple daily health mix",
+        icon: Sparkles,
+        action: "/kitchen",
+        style: "bg-gradient-to-br from-green-900 to-teal-800 text-white",
+        iconColor: "text-white",
+        subColor: "text-white/80",
+        buttonText: "Explore",
     },
     {
         id: 3,
@@ -39,39 +54,10 @@ const cards = [
         subtitle: "Your wish is Yodha’s wish",
         icon: MessageSquarePlus,
         action: "/shop",
-        style: "bg-gradient-to-br from-[#0a0a1f] to-[#050514] text-white border border-white/20",
-        iconColor: "text-yellow-400",
-        subColor: "text-white/60",
-    },
-    {
-        id: 4,
-        title: "Shop by Concern",
-        subtitle: "Diabetes • Gut • Weight",
-        icon: HeartPulse,
-        action: "/shop-by-concern",
-        style: "bg-[#0f2f2b] text-[#e6c36b]",
-        iconColor: "text-[#e6c36b]",
-        subColor: "text-[#e6c36b]/70",
-    },
-    {
-        id: 5,
-        title: "Today’s Ritual",
-        subtitle: "Simple daily health mix",
-        icon: Sparkles,
-        action: "/kitchen",
-        style: "bg-gradient-to-br from-orange-400 to-orange-600 text-white",
-        iconColor: "text-white",
-        subColor: "text-white/80",
-    },
-    {
-        id: 6,
-        title: "Why Yodha?",
-        subtitle: "Single-ingredient • Organic-sourced • No fillers",
-        icon: Sparkles,
-        action: "/farms-and-sourcing",
-        style: "bg-green-600 text-white",
-        iconColor: "text-white",
-        subColor: "text-white/90",
+        style: "bg-gradient-to-br from-[#b1a34f] to-[#dbdcab] text-black border border-white/20",
+        iconColor: "text-black",
+        subColor: "text-black/60",
+        buttonText: "Submit Request",
     },
 ];
 
@@ -103,9 +89,9 @@ export default function QuickActionCards() {
     };
 
     return (
-        <div className="w-full overflow-x-auto no-scrollbar">
+        <div className="w-full px-2 md:px-0 py-4 md:py-8">
             <motion.div
-                className="flex gap-3 px-2 md:px-12 py-3 min-w-max"
+                className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6"
                 variants={containerVariants}
                 initial="hidden"
                 whileInView="visible"
@@ -114,11 +100,11 @@ export default function QuickActionCards() {
                 {cards.map((card) => {
                     const Icon = card.icon;
                     return (
-                        <motion.button
+                        <motion.div
                             key={card.id}
                             variants={itemVariants}
-                            whileHover={{ scale: 1.02, y: -5 }}
-                            whileTap={{ scale: 0.97 }}
+                            whileHover={{ y: -5 }}
+                            whileTap={{ scale: 0.98 }}
                             onClick={() => {
                                 if (card.id === 1) {
                                     dispatch(openDrawer());
@@ -127,27 +113,52 @@ export default function QuickActionCards() {
                                 }
                             }}
                             className={`
-                                flex flex-col justify-center gap-2
-                                w-[180px] h-[90px]
-                                rounded-xl
-                                p-3 text-left
-                                shadow-md hover:shadow-lg
-                                transition-all
+                                relative overflow-hidden
+                                flex flex-col justify-between
+                                w-full min-h-[140px] md:min-h-[260px]
+                                rounded-xl md:rounded-2xl
+                                p-3 md:p-8 text-left
+                                shadow-lg hover:shadow-xl
+                                transition-all duration-300
                                 cursor-pointer
+                                group
                                 ${card.style}
                             `}
                         >
-                            <div className="flex items-center gap-2">
-                                <Icon size={18} className={card.iconColor} />
-                                <h4 className="text-sm font-bold leading-tight">
-                                    {card.title}
-                                </h4>
+                            {/* Icon Background Effect */}
+                            <Icon
+                                className={`absolute -bottom-4 -right-4 w-20 h-20 md:w-32 md:h-32 opacity-10 rotate-12 ${card.iconColor}`}
+                            />
+
+                            <div className="flex flex-col gap-2 md:gap-3 relative z-10">
+                                <div className={`p-1.5 md:p-3 rounded-xl bg-white/10 w-fit backdrop-blur-sm`}>
+                                    <Icon size={16} className={`md:hidden ${card.iconColor}`} />
+                                    <Icon size={28} className={`hidden md:block ${card.iconColor}`} />
+                                </div>
+
+                                <div>
+                                    <h4 className="text-xs md:text-2xl font-bold leading-tight mb-1 md:mb-2 text-wrap break-words">
+                                        {card.title}
+                                    </h4>
+                                    <p className={`text-[10px] md:text-base font-medium leading-relaxed hidden md:block ${card.subColor}`}>
+                                        {card.subtitle}
+                                    </p>
+                                </div>
                             </div>
 
-                            <p className={`text-[11px] font-medium leading-snug ${card.subColor}`}>
-                                {card.subtitle}
-                            </p>
-                        </motion.button>
+                            <div className="relative z-10 mt-1 md:mt-0">
+                                <span className={`
+                                    inline-flex items-center gap-1 md:gap-2 
+                                    text-[9px] md:text-sm font-bold uppercase tracking-wider 
+                                    px-2 py-1 md:px-4 md:py-2 rounded-lg 
+                                    bg-white/20 backdrop-blur-md 
+                                    group-hover:bg-white/30 transition-colors
+                                    ${card.iconColor}
+                                `}>
+                                    {card.buttonText} <span className="text-xs md:text-lg">→</span>
+                                </span>
+                            </div>
+                        </motion.div>
                     );
                 })}
             </motion.div>

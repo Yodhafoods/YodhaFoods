@@ -1,50 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
+import ProductCard from "@/features/products/components/ProductCard";
 import { useAppDispatch } from "@/lib/store/hooks";
-import { addItemToCart } from "@/features/cart/store/cartSlice";
-import { toast } from "sonner";
 import { useProducts } from "@/features/products/hooks/useProducts";
 
 import { Product } from "@/types";
 
 export default function YodhaInstant() {
     const { products, loading } = useProducts("yodha-instant");
-    const dispatch = useAppDispatch();
-    // useEffect removed - handled by useProducts hooks
-
-    const handleAddToCart = async (e: React.MouseEvent, product: Product) => {
-        e.preventDefault();
-
-        try {
-            const defaultPack = product.packs?.[0];
-            await dispatch(
-                addItemToCart({
-                    product: {
-                        id: defaultPack ? `${product._id}-${defaultPack.label}` : product._id,
-                        productId: product._id,
-                        name: defaultPack ? `${product.name} (${defaultPack.label})` : product.name,
-                        price: defaultPack?.price || 0,
-                        qty: 1,
-                        image: product.images?.[0]?.url || "",
-                        pack: defaultPack?.label,
-                        stock: defaultPack?.stock
-                    },
-                    quantity: 1
-                })
-            ).unwrap();
-            toast.success("Added to cart");
-        } catch (error) {
-            toast.error("Failed to add to cart");
-        }
-    };
 
     return (
         <section
             id="instant"
-            className="container mx-auto mb-28 rounded-[40px] bg-[#050505] text-white px-6 md:px-16 py-20 relative overflow-hidden"
+            className="container mx-auto mb-28 rounded-[40px] bg-[#050505] text-white px-6 md:px-10 py-10 relative overflow-hidden"
         >
             {/* Header */}
             <div className="text-center mb-12 relative z-10">
@@ -63,39 +32,11 @@ export default function YodhaInstant() {
 
             {/* Grid */}
             {!loading && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 relative z-10">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-8 relative z-10">
                     {products.map((product) => (
-                        <Link
-                            href={`/shop/${product.slug}`}
-                            key={product._id}
-                            className="bg-[#1a1a1a] rounded-2xl p-6 border border-[#333] transition-transform duration-300 hover:scale-105 hover:border-[#ff4500] cursor-pointer flex flex-col relative group"
-                        >
-                            <div className="h-[200px] mb-5 overflow-hidden rounded-xl">
-                                <Image
-                                    src={product.images?.[0]?.url || "/placeholder.png"}
-                                    alt={product.name}
-                                    width={400}
-                                    height={300}
-                                    className="h-full w-full object-cover opacity-90 rounded-xl"
-                                />
-                            </div>
-
-                            <h3 className="text-xl font-bold mb-1">{product.name}</h3>
-
-                            <p className="text-gray-300 text-sm mb-4">
-                                {product.description || "Delicious & Ready Instantly"}
-                            </p>
-
-                            <div className="mt-auto flex justify-between items-center">
-                                <span className="text-gray-300 font-bold text-lg ">₹{product.packs?.[0]?.price}</span>
-                                <button
-                                    onClick={(e) => handleAddToCart(e, product)}
-                                    className="bg-white text-black px-4 py-2 rounded-full font-bold text-sm hover:bg-orange-500 hover:text-white transition-colors cursor-pointer"
-                                >
-                                    Add to Cart
-                                </button>
-                            </div>
-                        </Link>
+                        <div key={product._id} className="zoom-in-95 duration-300">
+                            <ProductCard product={product} />
+                        </div>
                     ))}
                 </div>
             )}
