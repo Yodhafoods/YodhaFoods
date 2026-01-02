@@ -50,4 +50,10 @@ export interface Product {
     };
     createdAt: string;
     updatedAt: string;
+    ingredients?: string;
+    shelfLifeMonths?: number;
+    storageInstructions?: string;
+    howToUse?: string;
+    highlights?: string[];
+    nutritionTable?: { label: string; value: string }[];
 }
