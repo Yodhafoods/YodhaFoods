@@ -24,7 +24,7 @@ export default function OrderCard({ order }: { order: Order }) {
     return (
         <div className="bg-white rounded-xl shadow overflow-hidden border border-gray-100 transition-all">
             {/* Header / Summary */}
-            <div className="p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div className="p-1 md:p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <div className="flex items-center gap-3">
                         <p className="font-bold text-gray-800 text-lg">Order #{order._id.slice(-6)}</p>
@@ -61,18 +61,55 @@ export default function OrderCard({ order }: { order: Order }) {
 
             {/* EXPANDED CONTENT */}
             {expanded && (
-                <div className="border-t border-gray-100 bg-gray-50/50 p-6 space-y-8 animate-in slide-in-from-top-2 fade-in duration-300">
+                <div className="border-t border-gray-100 bg-gray-50/50 p-1 md:p-6 space-y-8 animate-in slide-in-from-top-2 fade-in duration-300">
 
                     {/* 1. TRACKING TIMELINE */}
                     {!isCancelled && (
                         <div>
                             <h3 className="font-semibold text-gray-900 mb-6">Order Status</h3>
-                            <div className="relative flex justify-between items-center w-full max-w-3xl mx-auto">
+
+                            {/* Vertical Timeline (Mobile) */}
+                            <div className="flex flex-col md:hidden space-y-6 relative pl-1">
+                                <div className="absolute top-2 left-[23px] bottom-2 w-0.5 bg-gray-200 z-0" />
+                                <div
+                                    className="absolute top-2 left-[23px] w-0.5 bg-green-500 z-0 transition-all duration-500"
+                                    style={{ height: `${(currentStepIndex / (steps.length - 1)) * 100}%` }}
+                                />
+
+                                {steps.map((step, idx) => {
+                                    const isCompleted = idx <= currentStepIndex;
+                                    const isCurrent = idx === currentStepIndex;
+                                    const Icon = step.icon;
+                                    return (
+                                        <div key={step.status} className="relative z-10 flex items-center gap-4">
+                                            <div
+                                                className={`w-10 h-10 rounded-full flex items-center justify-center border-2 shrink-0 transition-all duration-300 bg-white ${isCompleted
+                                                    ? "border-green-500 text-green-600"
+                                                    : "border-gray-200 text-gray-400"
+                                                    }`}
+                                            >
+                                                <Icon size={18} />
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <p className={`text-sm font-medium ${isCompleted ? "text-gray-900" : "text-gray-500"}`}>
+                                                    {step.label}
+                                                </p>
+                                                {isCurrent && (
+                                                    <span className="text-xs text-green-600 font-medium">Current Status</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Horizontal Timeline (Desktop) */}
+                            <div className="hidden md:flex relative justify-between items-center w-full max-w-3xl mx-auto">
                                 {/* Line background */}
-                                <div className="absolute top-1/2 left-0 w-full h-1 bg-gray-200 -z-0 -translate-y-1/2 rounded-full" />
+                                <div className="absolute top-1/2 left-0 w-full h-1 bg-gray-200 z-0 -translate-y-1/2 rounded-full" />
                                 {/* Progress Line */}
                                 <div
-                                    className="absolute top-1/2 left-0 h-1 bg-green-500 -z-0 -translate-y-1/2 rounded-full transition-all duration-500"
+                                    className="absolute top-1/2 left-0 h-1 bg-green-500 z-0 -translate-y-1/2 rounded-full transition-all duration-500"
                                     style={{ width: `${(currentStepIndex / (steps.length - 1)) * 100}%` }}
                                 />
 
@@ -118,7 +155,7 @@ export default function OrderCard({ order }: { order: Order }) {
                             <div className="bg-white rounded-lg border border-gray-200 divide-y divide-gray-100">
                                 {order.items.map((item, idx) => (
                                     <div key={idx} className="p-4 flex gap-4">
-                                        <div className="w-16 h-16 bg-gray-100 rounded-md overflow-hidden flex-shrink-0 relative">
+                                        <div className="w-16 h-16 bg-gray-100 rounded-md overflow-hidden shrink-0 relative">
                                             {item.image ? (
                                                 <Image
                                                     src={item.image}

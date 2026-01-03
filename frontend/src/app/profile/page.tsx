@@ -7,11 +7,12 @@ import Sidebar from "@/features/profile/components/Sidebar";
 import OrdersList from "@/features/profile/components/OrdersList";
 import AddressList from "@/features/profile/components/AddressList";
 import AccountDetails from "@/features/profile/components/AccountDetails";
+import OffersList from "@/features/profile/components/OffersList";
 
 export default function ProfilePage() {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const [active, setActive] = useState<"orders" | "addresses" | "account">("orders");
+  const [active, setActive] = useState<"orders" | "addresses" | "account" | "offers">("orders");
 
   useEffect(() => {
     if (!loading && !user) {
@@ -22,16 +23,16 @@ export default function ProfilePage() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-gray-100 flex justify-center py-10">
-      <div className="flex flex-col md:flex-row w-full max-w-6xl bg-gray-50 rounded-xl shadow-lg overflow-hidden">
+    <div className="min-h-screen bg-gray-50/50 flex justify-center pt-6 pb-10 px-4">
+      <div className="flex flex-row w-full max-w-6xl gap-3 md:gap-6">
         <Sidebar active={active} setActive={setActive} />
 
-        <main className="flex-1 p-8">
-          <h1 className="text-2xl font-bold mb-6">
-            {active === "orders" ? "My Orders" : active === "addresses" ? "Addresses" : "Account"}
+        <main className="flex-1 bg-white rounded-xl shadow-sm border border-gray-100 p-3 md:p-8 h-fit">
+          <h1 className="text-2xl font-bold mb-6 text-gray-800">
+            {active === "orders" ? "My Orders" : active === "addresses" ? "Addresses" : active === "offers" ? "My Offers" : "Profile"}
           </h1>
 
-          {active === "orders" ? <OrdersList /> : active === "addresses" ? <AddressList /> : <AccountDetails />}
+          {active === "orders" ? <OrdersList /> : active === "addresses" ? <AddressList /> : active === "offers" ? <OffersList /> : <AccountDetails />}
         </main>
       </div>
     </div>
