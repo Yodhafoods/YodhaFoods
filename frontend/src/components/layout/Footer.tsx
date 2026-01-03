@@ -9,7 +9,8 @@ import {
   FaYoutube,
   FaLinkedinIn,
 } from "react-icons/fa";
-import { ArrowRight, MapPin, Mail, Phone } from "lucide-react";
+import { ArrowRight, MapPin, Mail, Phone, ShoppingBag } from "lucide-react";
+import { SiFlipkart, SiAmazon, SiVisa, SiMastercard, SiPaytm, SiPhonepe, SiGooglepay } from "react-icons/si";
 
 const Footer = () => {
   return (
@@ -28,7 +29,7 @@ const Footer = () => {
               />
             </div>
             <p className="text-sm font-bold text-gray-800 tracking-wide">
-              Rooted in Legacy | Guided by Tradition
+              Rooted in Legacy.
             </p>
           </div>
 
@@ -199,11 +200,55 @@ const Footer = () => {
       </div>
 
       {/* COPYRIGHT */}
-      <div className="max-w-[1440px] mx-auto px-6 mt-12 pt-6 border-t border-gray-200 text-center text-xs font-semibold text-gray-500">
-        <p>
-          &copy; {new Date().getFullYear()} Yodha Foods . All
-          rights reserved.
+      {/* COPYRIGHT & AVAILABILITY */}
+      <div className="max-w-[1440px] mx-auto px-6 mt-12 pt-6 border-t border-gray-200 grid grid-cols-1 lg:grid-cols-3 gap-6 items-center text-xs font-semibold text-gray-500">
+
+        {/* Col 1: Copyright */}
+        <p className="text-center lg:text-left order-3 lg:order-1">
+          &copy; 2025 - {new Date().getFullYear()} Yodha Foods. All rights reserved.
         </p>
+
+        {/* Col 2: Payment Methods */}
+        <div className="flex flex-col items-center justify-center gap-2 order-2 lg:order-2">
+          <div className="flex items-center gap-4">
+            <span className="text-gray-900 font-bold uppercase tracking-wider text-[10px]">Securely pay using:</span>
+            <div className="flex items-center gap-4 text-3xl">
+              <SiMastercard className="text-[#EB001B]" title="Mastercard" />
+              <SiVisa className="text-[#1434CB]" title="Visa" />
+              <SiPaytm className="text-[#00B9F1]" title="Paytm" />
+              <span className="font-extrabold text-gray-600 italic tracking-tighter text-sm border-2 border-gray-400 px-1 rounded">UPI</span>
+              <SiGooglepay className="text-gray-600 hover:text-gray-900" title="Google Pay" />
+              <SiPhonepe className="text-[#6739B7]" title="PhonePe" />
+            </div>
+          </div>
+          <p className="text-[10px] text-purple-900 font-bold tracking-wide">
+            Oh! and Cash On Delivery too :)
+          </p>
+        </div>
+
+        {/* Col 3: Available On */}
+        <div className="flex flex-col md:flex-row items-center justify-center lg:justify-end gap-4 order-1 lg:order-3">
+          <span className="text-gray-900 font-bold uppercase tracking-wider text-[10px]">Also available on:</span>
+          <div className="flex items-center gap-6">
+            {/* Flipkart */}
+            <div className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-default" title="Flipkart">
+              <SiFlipkart className="text-[#2874f0] text-2xl" />
+              <span className="font-extrabold text-base text-[#2874f0]">Flipkart</span>
+            </div>
+
+            {/* Amazon */}
+            <div className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-default" title="Amazon">
+              <SiAmazon className="text-[#FF9900] text-2xl" />
+              <span className="font-extrabold text-base text-gray-900">Amazon</span>
+            </div>
+
+            {/* BigBasket */}
+            <div className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-default" title="BigBasket">
+              <ShoppingBag className="text-[#84c225] w-6 h-6" />
+              <span className="font-extrabold text-base text-[#84c225]">bigbasket</span>
+            </div>
+          </div>
+        </div>
       </div>
     </footer>
   );

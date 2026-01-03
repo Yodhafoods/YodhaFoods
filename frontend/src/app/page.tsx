@@ -65,9 +65,9 @@ export default function Home() {
         <section>
           <YodhaInstant />
         </section>
-        <section>
+        {/* <section>
           <JourneySection />
-        </section>
+        </section> */}
       </main>
     </div>
   );

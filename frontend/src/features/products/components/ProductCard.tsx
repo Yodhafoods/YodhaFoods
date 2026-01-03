@@ -9,6 +9,8 @@ import {
 } from "@/features/cart/store/cartSlice";
 import { toast } from "sonner";
 import { RiAddFill, RiSubtractFill } from "react-icons/ri";
+import { Heart, Eye } from "lucide-react";
+import QuickViewModal from "./QuickViewModal";
 
 import { Product } from "@/types";
 
@@ -19,6 +21,7 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, className }) => {
     const dispatch = useAppDispatch();
+    const [showQuickView, setShowQuickView] = React.useState(false);
     const defaultPack = product.packs?.[0];
     const cart = useAppSelector((state) => state.cart.items);
     const cartItem = cart.find((item) => item.productId === String(product._id) && item.pack === defaultPack?.label);
@@ -82,8 +85,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, className }) => {
     };
 
     return (
-        <Link
-            href={`/shop/${product.slug}`}
+        <div
             className={`
         bg-gray-50 rounded-2xl p-2.5 sm:p-4 shadow-sm cursor-pointer overflow-hidden
         transition-all duration-300 hover:-translate-y-2 hover:shadow-sm 
@@ -100,31 +102,73 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, className }) => {
             )}
 
             {/* Image Box */}
-            <div className="aspect-3/4 sm:aspect-auto w-full sm:h-40 md:h-48 lg:h-52 rounded-xl overflow-hidden bg-gray-100 relative">
-                {imgUrl ? (
-                    <Image
-                        src={imgUrl}
-                        alt={product.name}
-                        fill
-                        className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-gray-200">
-                        <span className="text-gray-400 text-xs">No Image</span>
+            <div className="aspect-3/4 sm:aspect-auto w-full sm:h-40 md:h-48 lg:h-52 rounded-xl overflow-hidden bg-gray-100 relative group/image">
+                <Link href={`/shop/${product.slug}`} className="block w-full h-full">
+                    {imgUrl ? (
+                        <Image
+                            src={imgUrl}
+                            alt={product.name}
+                            fill
+                            className="object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                    ) : (
+                        <div className="flex h-full w-full items-center justify-center bg-gray-200">
+                            <span className="text-gray-400 text-xs">No Image</span>
+                        </div>
+                    )}
+                </Link>
+
+                {/* Hover Icons */}
+                <div className="absolute top-2 right-2 flex flex-col gap-2 transition-all duration-300 z-20 translate-x-0 opacity-100 md:translate-x-10 md:opacity-0 md:group-hover:translate-x-0 md:group-hover:opacity-100">
+                    <div className="relative group/btn flex items-center justify-end">
+                        <button
+                            className="p-2 bg-white rounded-full shadow-md cursor-pointer text-gray-700 hover:bg-orange-600 hover:text-white transition-colors"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                // Handle wishlist logic
+                                toast.info("Added to wishlist (demo)");
+                            }}
+                        >
+                            <Heart size={16} />
+                        </button>
+                        <span className="absolute right-full mr-2 px-2 py-1 bg-black/80 text-white text-[10px] font-medium rounded opacity-0 group-hover/btn:opacity-100 transition-opacity whitespace-nowrap pointer-events-none backdrop-blur-sm">
+                            Wishlist
+                        </span>
                     </div>
-                )}
+
+                    <div className="relative group/btn hidden md:flex items-center justify-end">
+                        <button
+                            className="p-2 bg-white rounded-full shadow-md cursor-pointer text-gray-700 hover:bg-orange-600 hover:text-white transition-colors"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setShowQuickView(true);
+                            }}
+                        >
+                            <Eye size={16} />
+                        </button>
+                        <span className="absolute right-full mr-2 px-2 py-1 bg-black/80 text-white text-[10px] font-medium rounded opacity-0 group-hover/btn:opacity-100 transition-opacity whitespace-nowrap pointer-events-none backdrop-blur-sm">
+                            Quick View
+                        </span>
+                    </div>
+                </div>
             </div>
 
             {/* Title */}
             <div className="mt-3">
-                <p className="font-bold text-xs sm:text-sm line-clamp-2 leading-tight text-gray-800" title={product.name}>
-                    {product.name}
-                </p>
+                <Link href={`/shop/${product.slug}`}>
+                    <p className="font-bold text-xs sm:text-sm line-clamp-2 leading-tight text-gray-800" title={product.name}>
+                        {product.name}
+                    </p>
+                </Link>
             </div>
 
             {/* Price + Add to Cart */}
             <div className="mt-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-2">
-                <p className="text-gray-900 font-bold text-xs sm:text-sm">₹{price}</p>
+                <Link href={`/shop/${product.slug}`}>
+                    <p className="text-gray-900 font-bold text-xs sm:text-sm">₹{price}</p>
+                </Link>
 
                 <div className="shrink-0">
                     {cartItem ? (
@@ -154,7 +198,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, className }) => {
                     )}
                 </div>
             </div>
-        </Link>
+            {/* Quick View Modal */}
+            <QuickViewModal
+                product={product}
+                isOpen={showQuickView}
+                onClose={() => setShowQuickView(false)}
+            />
+        </div>
     );
 };
 

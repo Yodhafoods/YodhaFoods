@@ -60,7 +60,7 @@ export default function DesktopCategoryBar({
                         relative flex-shrink-0 w-[140px] aspect-[3/4] rounded-xl overflow-hidden cursor-pointer transition-all duration-300 group
                         ${selectedCategory === undefined
                             ? "ring-4 ring-orange-500 scale-105 shadow-xl"
-                            : "hover:scale-105 hover:shadow-lg opacity-80 hover:opacity-100"
+                            : "hover:scale-105 hover:shadow-lg hover:opacity-100"
                         }
                     `}
                 >
@@ -76,10 +76,10 @@ export default function DesktopCategoryBar({
                         key={category._id}
                         onClick={() => onSelectCategory(category.slug)}
                         className={`
-                            relative flex-shrink-0 w-[140px] aspect-[3/4] rounded-xl overflow-hidden cursor-pointer transition-all duration-300 group
+                            relative flex-shrink-0 w-[140px] aspect-3/4 rounded-xl overflow-hidden cursor-pointer transition-all duration-300 group
                             ${selectedCategory === category.slug
-                                ? "ring-4 ring-orange-500 scale-105 shadow-xl"
-                                : "hover:scale-105 hover:shadow-lg opacity-90 hover:opacity-100"
+                                ? "ring-4 ring-orange-500 scale-105 shadow-sm"
+                                : "hover:scale-105 hover:shadow-md"
                             }
                         `}
                     >
@@ -98,13 +98,12 @@ export default function DesktopCategoryBar({
                                 </div>
                             )}
 
-                            {/* Gradient Overlay */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80" />
+
 
                             {/* Number Overlay */}
-                            <div className="absolute top-0 left-3 text-5xl font-black text-white/10 group-hover:text-white/20 transition-colors pointer-events-none select-none" style={{ lineHeight: 0.8 }}>
+                            {/* <div className="absolute top-0 left-3 text-5xl font-black text-white/80 group-hover:text-white transition-colors pointer-events-none select-none" style={{ lineHeight: 0.8 }}>
                                 {index + 1}
-                            </div>
+                            </div> */}
 
                             {/* Selected Indicator Text */}
                             {selectedCategory === category.slug && (
