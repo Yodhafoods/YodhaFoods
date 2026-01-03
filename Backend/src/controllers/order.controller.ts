@@ -43,13 +43,13 @@ export const createOrder = async (req: GuestRequest, res: Response) => {
      */
     for (const item of cart.items) {
       const product = item.productId as any;
-
+      // console.log(product);
       if (!product || !product.isActive) {
         return res.status(400).json({
           message: `Product unavailable`,
         });
       }
-
+      // console.log(product.stock);
       if (product.stock < item.quantity) {
         return res.status(400).json({
           message: `${product.name} is out of stock`,

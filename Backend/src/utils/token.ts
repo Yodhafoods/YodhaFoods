@@ -4,8 +4,7 @@ import RefreshToken from "../models/RefreshToken.js";
 import type { UserRole } from "../models/User.js";
 import mongoose from "mongoose";
 
-const ACCESS_SECRET = process.env.JWT_ACCESS_SECRET!;
-const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET!;
+
 const ACCESS_EXPIRES_IN = "15m";
 const REFRESH_EXPIRES_IN = "7d";
 

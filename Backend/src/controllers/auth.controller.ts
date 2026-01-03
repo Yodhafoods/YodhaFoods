@@ -186,6 +186,7 @@ export const loginUser = async (
     await saveRefreshToken(user._id.toString(), tokenId, refreshToken);
 
     // Merge Guest Cart if exists
+    
     const guestId = req.cookies?.guestId;
     if (guestId) {
       await mergeGuestCart(user._id.toString(), guestId);
