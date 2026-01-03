@@ -22,14 +22,14 @@ export function MarkdownEditor({
     return (
         <div className="space-y-2">
             <div className="flex justify-between items-center">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>
+                <label className="block text-sm font-medium text-gray-700">{label}</label>
                 <div className="flex gap-2">
                     <button
                         type="button"
                         onClick={() => setPreview(false)}
                         className={`text-xs px-3 py-1 rounded transition-colors ${!preview
-                            ? "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-100"
-                            : "text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+                            ? "bg-blue-100 text-blue-700"
+                            : "text-gray-500 hover:bg-gray-100"
                             }`}
                     >
                         Write
@@ -38,8 +38,8 @@ export function MarkdownEditor({
                         type="button"
                         onClick={() => setPreview(true)}
                         className={`text-xs px-3 py-1 rounded transition-colors ${preview
-                            ? "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-100"
-                            : "text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+                            ? "bg-blue-100 text-blue-700"
+                            : "text-gray-500 hover:bg-gray-100"
                             }`}
                     >
                         Preview
@@ -47,16 +47,16 @@ export function MarkdownEditor({
                 </div>
             </div>
 
-            <div className={`relative border rounded-lg overflow-hidden dark:border-gray-600 ${height}`}>
+            <div className={`relative border rounded-lg overflow-hidden ${height}`}>
                 {!preview ? (
                     <textarea
                         value={value}
                         onChange={(e) => onChange(e.target.value)}
                         placeholder={placeholder}
-                        className="w-full h-full p-4 resize-none focus:outline-none dark:bg-gray-800 dark:text-white font-mono text-sm"
+                        className="w-full h-full p-4 resize-none focus:outline-none font-mono text-sm"
                     />
                 ) : (
-                    <div className="w-full h-full p-4 overflow-auto prose dark:prose-invert max-w-none bg-gray-50 dark:bg-gray-800/50">
+                    <div className="w-full h-full p-4 overflow-auto prose max-w-none bg-gray-50">
                         {value ? <Streamdown>{value}</Streamdown> : <span className="text-gray-400 italic">Nothing to preview</span>}
                     </div>
                 )}

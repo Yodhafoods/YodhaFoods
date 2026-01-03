@@ -23,9 +23,9 @@ interface MetaSectionProps {
 
 export function MetaSection({ productInfo, seo, onInfoChange, onSeoChange }: MetaSectionProps) {
     return (
-        <section className="space-y-4 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
+        <section className="space-y-4 bg-white p-6 rounded-lg shadow-sm border border-gray-100">
             <details className="group">
-                <summary className="flex justify-between items-center cursor-pointer font-semibold dark:text-gray-200 list-none">
+                <summary className="flex justify-between items-center cursor-pointer font-semibold list-none">
                     <span>Manufacturing & SEO Details</span>
                     <span className="transition group-open:rotate-180">
                         <svg fill="none" height="24" shapeRendering="geometricPrecision" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>

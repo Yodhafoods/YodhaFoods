@@ -48,6 +48,16 @@ export const createCategory = async (req: Request, res: Response) => {
       }
     }
 
+    // Parse subCategories if sent as string
+    let parsedSubCategories = req.body.subCategories;
+    if (typeof parsedSubCategories === 'string') {
+      try {
+        parsedSubCategories = JSON.parse(parsedSubCategories);
+      } catch (e) {
+        // ignore
+      }
+    }
+
     const category = await Category.create({
       name,
       description,
@@ -55,6 +65,7 @@ export const createCategory = async (req: Request, res: Response) => {
       isActive: isActive === 'true' || isActive === true, // Handle string 'true' from form-data
       sortOrder: sortOrder ? Number(sortOrder) : 0,
       seo: parsedSeo,
+      subCategories: parsedSubCategories || [],
     });
 
     return res.status(201).json({
@@ -94,6 +105,19 @@ export const updateCategory = async (req: Request, res: Response) => {
       } catch (e) {
         // ignore
       }
+    }
+
+    // Parse subCategories if needed
+    if (req.body.subCategories) {
+      let parsedSubCategories = req.body.subCategories;
+      if (typeof parsedSubCategories === 'string') {
+        try {
+          parsedSubCategories = JSON.parse(parsedSubCategories);
+        } catch (e) {
+          // ignore
+        }
+      }
+      category.subCategories = parsedSubCategories;
     }
 
     // Update fields
@@ -171,6 +195,112 @@ export const getCategoryBySlug = async (req: Request, res: Response) => {
     return res.json({ category });
   } catch (err) {
     console.error("Get Category Error:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+/** ADD SUB-CATEGORY */
+export const addSubCategory = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { name, description, isActive } = req.body;
+
+    if (!name) return res.status(400).json({ message: "Subcategory name is required" });
+
+    const category = await Category.findById(id);
+    if (!category) return res.status(404).json({ message: "Category not found" });
+
+    const slug = name.toLowerCase().replace(/ /g, "-").replace(/[^\w-]+/g, "");
+
+    // Check if subcategory slug already exists in this category
+    const exists = category.subCategories.find((sub: any) => sub.slug === slug);
+    if (exists) {
+      return res.status(409).json({ message: "Subcategory with this name already exists in this category" });
+    }
+
+    category.subCategories.push({
+      name,
+      slug,
+      description,
+      isActive: isActive !== undefined ? isActive : true,
+    });
+
+    await category.save();
+
+    return res.status(201).json({
+      message: "Subcategory added successfully",
+      category,
+    });
+  } catch (err) {
+    console.error("Add Subcategory Error:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+/** UPDATE SUB-CATEGORY */
+export const updateSubCategory = async (req: Request, res: Response) => {
+  try {
+    const { id, slug } = req.params;
+    const { name, description, isActive } = req.body;
+
+    const category = await Category.findById(id);
+    if (!category) return res.status(404).json({ message: "Category not found" });
+
+    const subCategory = category.subCategories.find((sub: any) => sub.slug === slug);
+    if (!subCategory) return res.status(404).json({ message: "Subcategory not found" });
+
+    if (name) {
+      subCategory.name = name;
+      // Optionally update slug if name changes? 
+      // Usually dangerous if products rely on slug, but let's update it for consistency if desired.
+      // For now, let's keep slug static or strictly separate update.
+      // Let's create a new slug if name changes
+      const newSlug = name.toLowerCase().replace(/ /g, "-").replace(/[^\w-]+/g, "");
+      if (newSlug !== subCategory.slug) {
+        // Check collision
+        const exists = category.subCategories.find((sub: any) => sub.slug === newSlug && sub !== subCategory);
+        if (exists) return res.status(409).json({ message: "Subcategory name already in use" });
+        subCategory.slug = newSlug;
+      }
+    }
+    if (description !== undefined) subCategory.description = description;
+    if (isActive !== undefined) subCategory.isActive = isActive;
+
+    await category.save();
+
+    return res.json({
+      message: "Subcategory updated successfully",
+      category,
+    });
+  } catch (err) {
+    console.error("Update Subcategory Error:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+/** REMOVE SUB-CATEGORY */
+export const removeSubCategory = async (req: Request, res: Response) => {
+  try {
+    const { id, slug } = req.params;
+
+    const category = await Category.findById(id);
+    if (!category) return res.status(404).json({ message: "Category not found" });
+
+    const originalLength = category.subCategories.length;
+    category.subCategories = category.subCategories.filter((sub: any) => sub.slug !== slug);
+
+    if (category.subCategories.length === originalLength) {
+      return res.status(404).json({ message: "Subcategory not found" });
+    }
+
+    await category.save();
+
+    return res.json({
+      message: "Subcategory removed successfully",
+      category,
+    });
+  } catch (err) {
+    console.error("Remove Subcategory Error:", err);
     return res.status(500).json({ message: "Server error" });
   }
 };

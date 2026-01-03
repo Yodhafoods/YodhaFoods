@@ -17,8 +17,8 @@ export function MediaSection({ images, previews, onAdd, onRemove }: MediaSection
     };
 
     return (
-        <section className="space-y-4 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
-            <h3 className="text-lg font-semibold dark:text-gray-200 border-b pb-2">Product Images</h3>
+        <section className="space-y-4 bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+            <h3 className="text-lg font-semibold border-b pb-2">Product Images</h3>
 
             <div className="flex flex-wrap gap-4">
                 {previews.map((src, idx) => (
@@ -34,7 +34,7 @@ export function MediaSection({ images, previews, onAdd, onRemove }: MediaSection
                     </div>
                 ))}
 
-                <label className="w-32 h-32 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group">
+                <label className="w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors group">
                     <Upload className="text-gray-400 group-hover:text-blue-500 transition-colors" size={24} />
                     <span className="text-xs text-gray-500 mt-2 font-medium">Upload</span>
                     <input

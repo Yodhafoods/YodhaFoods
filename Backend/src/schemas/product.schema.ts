@@ -67,6 +67,7 @@ export const createProductSchema = z.object({
   slug: z.string().optional(), // Auto-generated if not provided, but allow override
   description: z.string().optional(),
   categoryId: z.string().min(1, "Category ID is required"),
+  subCategory: z.string().optional(),
 
   // Arrays and Objects coming as JSON strings in multipart/form-data
   packs: z.preprocess(

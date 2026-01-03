@@ -33,11 +33,11 @@ export function NutritionSection({ nutrition, highlights, onNutritionChange, onH
     };
 
     return (
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white p-6 rounded-lg shadow-sm border border-gray-100">
             {/* Nutrition Table */}
             <div>
                 <div className="flex justify-between items-center mb-4 border-b pb-2">
-                    <h3 className="text-lg font-semibold dark:text-gray-200">Nutrition Facts</h3>
+                    <h3 className="text-lg font-semibold">Nutrition Facts</h3>
                     <button type="button" onClick={addNut} className="text-xs bg-blue-50 text-blue-600 border border-blue-200 px-2 py-1 rounded hover:bg-blue-100 flex items-center gap-1">
                         <Plus size={14} /> Add Row
                     </button>
@@ -69,7 +69,7 @@ export function NutritionSection({ nutrition, highlights, onNutritionChange, onH
             {/* Highlights */}
             <div>
                 <div className="flex justify-between items-center mb-4 border-b pb-2">
-                    <h3 className="text-lg font-semibold dark:text-gray-200">Key Highlights</h3>
+                    <h3 className="text-lg font-semibold">Key Highlights</h3>
                     <button type="button" onClick={addHigh} className="text-xs bg-blue-50 text-blue-600 border border-blue-200 px-2 py-1 rounded hover:bg-blue-100 flex items-center gap-1">
                         <Plus size={14} /> Add Item
                     </button>

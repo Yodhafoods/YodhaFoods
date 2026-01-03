@@ -57,6 +57,7 @@ export const createProduct = async (req: Request, res: Response) => {
     const product = await Product.create({
       ...validatedData,
       categoryId: resolvedCategoryId,
+      subCategory: validatedData.subCategory || null,
       images,
       // Default auto-slug handling is in Model
     });
@@ -137,6 +138,7 @@ export const updateProduct = async (req: Request, res: Response) => {
 
     if (validatedData.isActive !== undefined) product.isActive = validatedData.isActive;
     if (validatedData.isFeatured !== undefined) product.isFeatured = validatedData.isFeatured;
+    if (validatedData.subCategory !== undefined) product.subCategory = validatedData.subCategory || null; // allow clearing it
 
     await product.save();
     await product.populate("categoryId", "name slug");
@@ -219,6 +221,10 @@ export const getProducts = async (req: Request, res: Response) => {
         catId = cat._id;
       }
       filter.categoryId = catId;
+    }
+
+    if (req.query.subCategory) {
+      filter.subCategory = req.query.subCategory;
     }
 
     let sortOption: any = { createdAt: -1 };
@@ -329,3 +335,51 @@ export const getProductsByCategory = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
+
+/**
+ * GET /api/products/category/:categorySlug/:subCategorySlug
+ * Public: Get products by subcategory
+ */
+export const getProductsBySubCategory = async (req: Request, res: Response) => {
+  try {
+    const { categorySlug, subCategorySlug } = req.params;
+
+    // 1. Find connection parent category
+    const category = await Category.findOne({ slug: categorySlug.toLowerCase(), isActive: true });
+    if (!category) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
+    // 2. Find subcategory
+    const subCategory = category.subCategories.find(
+      (sub: any) => sub.slug === subCategorySlug.toLowerCase() && sub.isActive
+    );
+
+    if (!subCategory) {
+      return res.status(404).json({ message: "Subcategory not found" });
+    }
+
+    // 3. Find Products
+    const products = await Product.find({
+      categoryId: category._id,
+      subCategory: subCategory.slug,
+      isActive: true,
+    }).populate("categoryId", "name slug");
+
+    return res.json({
+      category: {
+        name: category.name,
+        slug: category.slug,
+      },
+      subCategory: {
+        name: subCategory.name,
+        slug: subCategory.slug,
+      },
+      products,
+    });
+  } catch (err) {
+    console.error("Get Products by SubCategory Error:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+

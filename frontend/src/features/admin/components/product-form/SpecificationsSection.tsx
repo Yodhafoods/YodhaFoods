@@ -17,19 +17,19 @@ interface SpecificationsSectionProps {
 
 export function SpecificationsSection({ specs, onChange }: SpecificationsSectionProps) {
     return (
-        <section className="space-y-4 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
-            <h3 className="text-lg font-semibold dark:text-gray-200 border-b pb-2">Specifications</h3>
+        <section className="space-y-4 bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+            <h3 className="text-lg font-semibold border-b pb-2">Specifications</h3>
 
             <div className="flex flex-wrap gap-6 mb-4">
-                <label className="flex items-center gap-2 cursor-pointer bg-green-50 dark:bg-green-900/30 px-3 py-1.5 rounded-full text-sm font-medium text-green-700 dark:text-green-300 select-none">
+                <label className="flex items-center gap-2 cursor-pointer bg-green-50 px-3 py-1.5 rounded-full text-sm font-medium text-green-700 select-none">
                     <input type="checkbox" checked={specs.organic} onChange={e => onChange('organic', e.target.checked)} className="rounded text-green-600 focus:ring-green-500" />
                     Organic
                 </label>
-                <label className="flex items-center gap-2 cursor-pointer bg-amber-50 dark:bg-amber-900/30 px-3 py-1.5 rounded-full text-sm font-medium text-amber-700 dark:text-amber-300 select-none">
+                <label className="flex items-center gap-2 cursor-pointer bg-amber-50 px-3 py-1.5 rounded-full text-sm font-medium text-amber-700 select-none">
                     <input type="checkbox" checked={specs.ayurvedic} onChange={e => onChange('ayurvedic', e.target.checked)} className="rounded text-amber-600 focus:ring-amber-500" />
                     Ayurvedic
                 </label>
-                <label className="flex items-center gap-2 cursor-pointer bg-emerald-50 dark:bg-emerald-900/30 px-3 py-1.5 rounded-full text-sm font-medium text-emerald-700 dark:text-emerald-300 select-none">
+                <label className="flex items-center gap-2 cursor-pointer bg-emerald-50 px-3 py-1.5 rounded-full text-sm font-medium text-emerald-700 select-none">
                     <input type="checkbox" checked={specs.vegan} onChange={e => onChange('vegan', e.target.checked)} className="rounded text-emerald-600 focus:ring-emerald-500" />
                     Vegan
                 </label>

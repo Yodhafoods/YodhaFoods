@@ -38,9 +38,9 @@ export function PacksSection({ packs, onChange }: PacksSectionProps) {
     };
 
     return (
-        <section className="space-y-4 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
+        <section className="space-y-4 bg-white p-6 rounded-lg shadow-sm border border-gray-100">
             <div className="flex justify-between items-center border-b pb-2">
-                <h3 className="text-lg font-semibold dark:text-gray-200">Packs & Pricing</h3>
+                <h3 className="text-lg font-semibold">Packs & Pricing</h3>
                 <button type="button" onClick={addPack} className="text-sm bg-blue-50 text-blue-600 px-3 py-1.5 rounded hover:bg-blue-100 flex items-center gap-1 font-medium transition-colors">
                     <Plus size={16} /> Add Variant
                 </button>
@@ -48,7 +48,7 @@ export function PacksSection({ packs, onChange }: PacksSectionProps) {
 
             <div className="space-y-4">
                 {packs.map((pack, idx) => (
-                    <div key={idx} className="p-4 border rounded-lg bg-gray-50 dark:bg-gray-700/50 relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 transition-all hover:border-blue-200 dark:hover:border-blue-800">
+                    <div key={idx} className="p-4 border rounded-lg bg-gray-50 relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 transition-all hover:border-blue-200">
                         {packs.length > 1 && (
                             <button type="button" onClick={() => removePack(idx)} className="absolute top-2 right-2 text-red-400 hover:text-red-600 p-1">
                                 <Trash2 size={16} />
@@ -118,7 +118,7 @@ export function PacksSection({ packs, onChange }: PacksSectionProps) {
                         </div>
 
                         <div className="flex items-center pt-6">
-                            <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 font-medium cursor-pointer">
+                            <label className="flex items-center gap-2 text-sm text-gray-700 font-medium cursor-pointer">
                                 <input
                                     type="checkbox"
                                     checked={pack.isDefault}

@@ -11,6 +11,12 @@ export interface Category {
         description?: string;
         keywords?: string[];
     };
+    subCategories?: {
+        name: string;
+        slug: string;
+        description?: string;
+        isActive: boolean;
+    }[];
     createdAt: string;
     updatedAt: string;
 }

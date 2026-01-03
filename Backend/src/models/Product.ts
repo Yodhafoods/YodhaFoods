@@ -21,6 +21,7 @@ export interface IProduct extends Document {
   description?: string;
 
   categoryId: Types.ObjectId;
+  subCategory?: string;
 
   images: { url: string; public_id: string }[];
 
@@ -97,6 +98,12 @@ const ProductSchema = new Schema<IProduct>(
       ref: "Category",
       required: true,
       index: true,
+    },
+
+    subCategory: {
+      type: String,
+      index: true,
+      default: null,
     },
 
     images: [

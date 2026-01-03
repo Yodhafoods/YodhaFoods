@@ -6,6 +6,7 @@ import {
   getProducts,
   getProductBySlug,
   getProductsByCategory,
+  getProductsBySubCategory,
 } from "../controllers/product.controller.js";
 
 import { requireAuth, requireAdmin } from "../middlewares/auth.js";
@@ -24,6 +25,7 @@ const router = Router();
 router.get("/", getProducts); // list products
 router.get("/:slug", getProductBySlug); // product detail page
 router.get("/category/:slug", getProductsByCategory); // list products by category
+router.get("/category/:categorySlug/:subCategorySlug", getProductsBySubCategory); // list products by subcategory
 
 /** ==========================
  *  ADMIN ROUTES

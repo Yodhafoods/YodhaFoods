@@ -6,6 +6,9 @@ import {
   deleteCategory,
   getCategories,
   getCategoryBySlug,
+  addSubCategory,
+  updateSubCategory,
+  removeSubCategory,
 } from "../controllers/category.controller.js";
 
 import { validate } from "../middlewares/validate.js";
@@ -47,6 +50,28 @@ router.delete(
   requireAuth,
   requireAdmin,
   deleteCategory
+);
+
+// Subcategory Management
+router.post(
+  "/:id/subcategories",
+  requireAuth,
+  requireAdmin,
+  addSubCategory
+);
+
+router.put(
+  "/:id/subcategories/:slug",
+  requireAuth,
+  requireAdmin,
+  updateSubCategory
+);
+
+router.delete(
+  "/:id/subcategories/:slug",
+  requireAuth,
+  requireAdmin,
+  removeSubCategory
 );
 
 export default router;

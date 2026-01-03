@@ -15,6 +15,13 @@ export interface ICategory extends Document {
     keywords?: string[];
   };
 
+  subCategories: {
+    name: string;
+    slug: string;
+    description?: string;
+    isActive: boolean;
+  }[];
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -65,6 +72,16 @@ const CategorySchema = new Schema<ICategory>(
       description: { type: String, maxlength: 200 },
       keywords: [{ type: String }],
     },
+
+    subCategories: [
+      {
+        name: { type: String, required: true },
+        slug: { type: String, required: true },
+        description: String,
+        isActive: { type: Boolean, default: true },
+        _id: false,
+      },
+    ],
   },
   {
     timestamps: true,

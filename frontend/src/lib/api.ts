@@ -158,6 +158,7 @@ export const api = {
   post,
   put,
   del,
+  delete: del,
   refreshToken,
   axios: axiosInstance,
 };
