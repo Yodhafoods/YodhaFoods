@@ -7,6 +7,10 @@ import {
     updateCartItemQty,
     removeItemFromCart,
 } from "@/features/cart/store/cartSlice";
+import {
+    addToWishlist,
+    removeFromWishlist
+} from "@/features/wishlist/store/wishlistSlice";
 import { toast } from "sonner";
 import { RiAddFill, RiSubtractFill } from "react-icons/ri";
 import { Heart, Eye } from "lucide-react";
@@ -25,6 +29,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, className }) => {
     const defaultPack = product.packs?.[0];
     const cart = useAppSelector((state) => state.cart.items);
     const cartItem = cart.find((item) => item.productId === String(product._id) && item.pack === defaultPack?.label);
+
+    const wishlistItems = useAppSelector((state) => state.wishlist.items);
+    // Safe check if productId is populated object or string
+    const isInWishlist = wishlistItems.some((item) =>
+        (typeof item.productId === 'object' && item.productId?._id === product._id) ||
+        item.productId === product._id
+    );
 
     // Fallback price
     const price = defaultPack?.price || 0;
@@ -84,6 +95,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, className }) => {
         }
     };
 
+    const handleWishlist = async (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (isInWishlist) {
+            dispatch(removeFromWishlist(String(product._id)));
+        } else {
+            // Pass full product for optimistic update possibilities
+            dispatch(addToWishlist(product));
+        }
+    };
+
     return (
         <div
             className={`
@@ -122,18 +145,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, className }) => {
                 <div className="absolute top-2 right-2 flex flex-col gap-2 transition-all duration-300 z-20 translate-x-0 opacity-100 md:translate-x-10 md:opacity-0 md:group-hover:translate-x-0 md:group-hover:opacity-100">
                     <div className="relative group/btn flex items-center justify-end">
                         <button
-                            className="p-2 bg-white rounded-full shadow-md cursor-pointer text-gray-700 hover:bg-orange-600 hover:text-white transition-colors"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                // Handle wishlist logic
-                                toast.info("Added to wishlist (demo)");
-                            }}
+                            className={`p-2 rounded-full shadow-md cursor-pointer transition-colors ${isInWishlist ? "bg-orange-600 text-white" : "bg-white text-gray-700 hover:bg-orange-600 hover:text-white"}`}
+                            onClick={handleWishlist}
                         >
-                            <Heart size={16} />
+                            <Heart size={16} fill={isInWishlist ? "currentColor" : "none"} />
                         </button>
                         <span className="absolute right-full mr-2 px-2 py-1 bg-black/80 text-white text-[10px] font-medium rounded opacity-0 group-hover/btn:opacity-100 transition-opacity whitespace-nowrap pointer-events-none backdrop-blur-sm">
-                            Wishlist
+                            {isInWishlist ? "Remove" : "Wishlist"}
                         </span>
                     </div>
 

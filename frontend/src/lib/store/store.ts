@@ -1,6 +1,7 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import cartReducer from "@/features/cart/store/cartSlice";
 import checkoutReducer from "@/features/checkout/store/checkoutSlice";
+import wishlistReducer from "@/features/wishlist/store/wishlistSlice";
 import uiReducer from "@/features/ui/store/uiSlice";
 
 import {
@@ -13,6 +14,7 @@ import storage from "redux-persist/lib/storage";
 const rootReducer = combineReducers({
     cart: cartReducer,
     checkout: checkoutReducer,
+    wishlist: wishlistReducer,
     ui: uiReducer,
 });
 
@@ -20,7 +22,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
     key: "yodhafoods",
     storage,
-    whitelist: ["cart", "checkout", "ui"],
+    whitelist: ["cart", "checkout", "wishlist", "ui"],
 };
 
 

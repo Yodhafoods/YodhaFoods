@@ -4,14 +4,16 @@ import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaUser, FaWhatsapp } from "react-icons/fa";
-import { Menu, Search } from "lucide-react";
+import { Menu, Search, Heart } from "lucide-react";
 import Image from "next/image";
 import { TiShoppingCart } from "react-icons/ti";
 import Link from "next/link";
 import CartDrawer from "@/features/cart/components/CartDrawer";
+import WishlistDrawer from "@/features/wishlist/components/WishlistDrawer";
 import MobileMenuDrawer from "./MobileMenuDrawer";
 import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
 import { fetchCartItems } from "@/features/cart/store/cartSlice";
+import { fetchWishlist } from "@/features/wishlist/store/wishlistSlice";
 import SearchModal from "@/features/search/components/SearchModal";
 import RunningBanner from "./RunningBanner";
 import { useTypewriter } from "./header/useTypewriter";
@@ -28,9 +30,11 @@ export default function Header() {
   const pathname = usePathname();
   const [openDrawer, setOpenDrawer] = useState(false);
   const [openCart, setOpenCart] = useState(false);
+  const [openWishlist, setOpenWishlist] = useState(false);
   const [openSearch, setOpenSearch] = useState(false);
   const [showBanner, setShowBanner] = useState(true);
   const cartItems = useAppSelector((state) => state.cart.items);
+  const wishlistItems = useAppSelector((state) => state.wishlist.items);
   const dispatch = useAppDispatch();
 
   // Search typing animation
@@ -40,6 +44,7 @@ export default function Header() {
 
   useEffect(() => {
     dispatch(fetchCartItems());
+    dispatch(fetchWishlist());
   }, [dispatch]);
 
   useEffect(() => {
@@ -62,6 +67,7 @@ export default function Header() {
   };
 
   const cartCount = cartItems.reduce((acc, item) => acc + item.qty, 0);
+  const wishlistCount = wishlistItems.length;
 
   return (
     <>
@@ -124,15 +130,22 @@ export default function Header() {
               </span>
             </button>
             <button
+              className="relative group flex items-center justify-center gap-1 cursor-pointer transition-all duration-100 mr-2"
+              onClick={() => setOpenWishlist(true)}
+            >
+              <Heart size={24} className="group-hover:text-orange-600 transition-colors" />
+              <span className="absolute -top-1 -right-3 bg-orange-600 group-hover:-translate-y-1 transition-all duration-100 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                {wishlistCount}
+              </span>
+            </button>
+            <button
               className="relative group flex items-center justify-center gap-1 cursor-pointer transition-all duration-100"
               onClick={() => setOpenCart(true)}
             >
               <TiShoppingCart size={30} />
-              {cartCount > 0 && (
-                <span className="absolute -top-1 -right-2 bg-orange-600 group-hover:-translate-y-1 transition-all duration-100 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full">
-                  {cartCount}
-                </span>
-              )}
+              <span className="absolute -top-1 -right-2 bg-orange-600 group-hover:-translate-y-1 transition-all duration-100 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                {cartCount}
+              </span>
             </button>
 
             {/* Profile Dropdown */}
@@ -148,15 +161,22 @@ export default function Header() {
               <Search size={28} />
             </button>
             <button
+              onClick={() => setOpenWishlist(true)}
+              className="relative flex items-center justify-center cursor-pointer"
+            >
+              <Heart size={28} />
+              <span className="absolute -top-1 -right-2 bg-black text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                {wishlistCount}
+              </span>
+            </button>
+            <button
               onClick={() => setOpenCart(true)}
               className="relative flex items-center justify-center"
             >
               <TiShoppingCart size={30} />
-              {cartCount > 0 && (
-                <span className="absolute -top-1 -right-2 bg-orange-600 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full">
-                  {cartCount}
-                </span>
-              )}
+              <span className="absolute -top-1 -right-2 bg-orange-600 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                {cartCount}
+              </span>
             </button>
 
             <button onClick={() => setOpenDrawer(true)}>
@@ -184,6 +204,10 @@ export default function Header() {
       <CartDrawer
         open={openCart}
         onClose={() => setOpenCart(false)}
+      />
+      <WishlistDrawer
+        open={openWishlist}
+        onClose={() => setOpenWishlist(false)}
       />
       <SearchModal
         isOpen={openSearch}

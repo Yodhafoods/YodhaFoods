@@ -21,6 +21,7 @@ import { sendEmail } from "../utils/sendEmail.js";
 
 import type { RegisterInput, LoginInput } from "../schemas/auth.schema.js";
 import { mergeGuestCart } from "../utils/cartUtils.js";
+import { mergeGuestWishlist } from "../utils/wishlistUtils.js";
 
 // Utility: Set cookies
 const setAuthCookies = (
@@ -186,10 +187,13 @@ export const loginUser = async (
     await saveRefreshToken(user._id.toString(), tokenId, refreshToken);
 
     // Merge Guest Cart if exists
-    
+
     const guestId = req.cookies?.guestId;
     if (guestId) {
-      await mergeGuestCart(user._id.toString(), guestId);
+      await Promise.all([
+        mergeGuestCart(user._id.toString(), guestId),
+        mergeGuestWishlist(user._id.toString(), guestId)
+      ]);
 
       // Clear guestId cookie (must match guest.middleware.ts options)
       res.clearCookie("guestId", {

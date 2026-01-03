@@ -5,6 +5,7 @@ import { api, FetchError } from "@/lib/api";
 import { useAppDispatch } from "@/lib/store/hooks";
 import { resetCheckout } from "@/features/checkout/store/checkoutSlice";
 import { clearLocalCart, fetchCartItems } from "@/features/cart/store/cartSlice";
+import { clearLocalWishlist } from "@/features/wishlist/store/wishlistSlice";
 
 // User Type
 interface User {
@@ -141,6 +142,7 @@ export default function AuthProvider({
   // --------------------------------------------------------
   // LOGOUT
   // --------------------------------------------------------
+
   async function logout() {
     try {
       await api.post("/api/auth/logout", {});
@@ -148,6 +150,7 @@ export default function AuthProvider({
     setUser(null);
     dispatch(resetCheckout());
     dispatch(clearLocalCart());
+    dispatch(clearLocalWishlist());
   }
 
   return (

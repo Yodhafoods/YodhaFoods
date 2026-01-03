@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, X } from "lucide-react";
+import { ArrowRight, X, ShoppingBag } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 
@@ -44,7 +44,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
         <>
           {/* Overlay */}
           <motion.div
-            className="fixed inset-0 bg-black/40 z-[60]"
+            className="fixed inset-0 bg-black/40 z-60"
             onClick={onClose}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -53,7 +53,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
 
           {/* Side Drawer */}
           <motion.div
-            className="fixed right-0 top-0 h-full w-[90%] sm:w-[60%] md:w-[40%] lg:w-[35%] bg-white shadow-xl z-[70] p-5 flex flex-col"
+            className="fixed right-0 top-0 h-full w-[90%] sm:w-[60%] md:w-[40%] lg:w-[35%] rounded-l-2xl bg-white shadow-xl z-70 p-5 flex flex-col"
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
@@ -74,10 +74,18 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
             <div className="flex-1 overflow-y-auto space-y-4">
               <p className="text-orange-600">Products</p>
               {items.length === 0 ? (
-                <div className="mt-10 flex flex-col gap-2 justify-center items-center">
-                  <p className="text-gray-500 text-center">Your cart is empty.</p>
-                  <Link href="/shop">
-                    <button className="px-4 py-2 bg-orange-600 text-white hover:bg-orange-700 rounded-sm  cursor-pointer">Continue Shopping </button>
+                <div className="flex flex-col items-center justify-center py-20 text-center opacity-80">
+                  <div className="bg-gray-100 p-4 rounded-full mb-4">
+                    <ShoppingBag size={48} className="text-gray-400" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-800">Your Cart is Empty</h3>
+                  <p className="max-w-[250px] mx-auto text-gray-500 mt-2 mb-8">
+                    Looks like you haven't added anything to your cart yet.
+                  </p>
+                  <Link href="/shop" onClick={onClose}>
+                    <button className="px-8 py-3 bg-black text-white rounded-full font-bold hover:bg-orange-600 transition-all duration-300 shadow-md hover:shadow-lg cursor-pointer transform hover:-translate-y-0.5">
+                      Start Shopping
+                    </button>
                   </Link>
                 </div>
               ) : (
