@@ -1,57 +1,115 @@
 "use client";
 
-import { useState } from "react";
-import { concerns, mockProducts } from "../data/mockData";
+import { useState, useEffect } from "react";
 import ConcernSelector from "./ConcernSelector";
 import ProductCard from "@/features/products/components/ProductCard";
+import { api } from "@/lib/api";
+import { ChevronRight, Loader2 } from "lucide-react";
+import { Product } from "@/types";
 
-export default function ConcernPageClient() {
-    const [activeConcernId, setActiveConcernId] = useState(concerns[0].id);
+interface SubCategory {
+    name: string;
+    slug: string;
+    _id?: string;
+    isActive?: boolean;
+}
 
-    // Filter products based on the active concern's tag
-    // Since mockProducts have tags array, we check if the concern id exists in tags
-    const filteredProducts = mockProducts.filter(product =>
-        product.tags?.includes(activeConcernId)
-    );
+interface ConcernPageClientProps {
+    headerContent: React.ReactNode;
+    emptyState: React.ReactNode;
+}
 
-    const activeConcernName = concerns.find(c => c.id === activeConcernId)?.name;
+export default function ConcernPageClient({ headerContent, emptyState }: ConcernPageClientProps) {
+    const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
+    const [activeConcernSlug, setActiveConcernSlug] = useState<string>("");
+    const [products, setProducts] = useState<Product[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [productsLoading, setProductsLoading] = useState(false);
+
+    // 1. Fetch "Shop By Concern" Category & its Subcategories
+    useEffect(() => {
+        const fetchConcerns = async () => {
+            try {
+                // Assuming the main category slug is 'shop-by-concern'
+                const response: any = await api.get("/api/categories/shop-by-concern");
+                if (response?.category?.subCategories) {
+                    const activeSubs = response.category.subCategories.filter((s: any) => s.isActive);
+                    setSubCategories(activeSubs);
+                    if (activeSubs.length > 0) {
+                        setActiveConcernSlug(activeSubs[0].slug);
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to fetch concerns:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchConcerns();
+    }, []);
+
+    // 2. Fetch Products when Active Concern Changes
+    useEffect(() => {
+        if (!activeConcernSlug) return;
+
+        const fetchProducts = async () => {
+            setProductsLoading(true);
+            try {
+                // api to fetch products by subcategory
+                // Route: /api/products/category/:categorySlug/:subCategorySlug
+                const response: any = await api.get(`/api/products/category/shop-by-concern/${activeConcernSlug}`);
+                setProducts(response.products || []);
+            } catch (error) {
+                console.error("Failed to fetch products:", error);
+                setProducts([]);
+            } finally {
+                setProductsLoading(false);
+            }
+        };
+
+        fetchProducts();
+    }, [activeConcernSlug]);
+
+    const activeConcernName = subCategories.find(c => c.slug === activeConcernSlug)?.name || "Shop By Concern";
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <Loader2 className="w-12 h-12 text-pink-400 animate-spin" />
+            </div>
+        );
+    }
 
     return (
-        <div className="min-h-screen bg-white">
-            {/* Top Section - Concern Selector */}
-            <div className="bg-orange-50/50 pt-8 pb-12 border-b border-orange-100">
-                <div className="container mx-auto px-4 text-center mb-8">
-                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Shop By Concern</h1>
-                    <p className="text-gray-600">Select a health goal to find perfectly curated products for you.</p>
-                </div>
-
+        <div className="mb-8">
+            <div className="pt-2 pb-4">
+                {headerContent}
                 <ConcernSelector
-                    concerns={concerns}
-                    activeConcernId={activeConcernId}
-                    onSelect={setActiveConcernId}
+                    concerns={subCategories}
+                    activeConcernId={activeConcernSlug}
+                    onSelect={setActiveConcernSlug}
                 />
             </div>
 
             {/* Product Section */}
-            <div className="container mx-auto px-4 py-12 md:py-16">
-                <div className="flex flex-col items-center mb-10">
-                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900 uppercase tracking-wide">
-                        {activeConcernName}
-                    </h2>
-                    <div className="h-1 w-20 bg-emerald-500 mt-2 rounded-full"></div>
-                </div>
-
-                {filteredProducts.length > 0 ? (
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
-                        {filteredProducts.map((product) => (
+            <div className="container mx-auto px-4 -mt-2">
+                <p className="text-2xl font-bold text-gray-900 pb-4 flex items-center gap-2">{activeConcernName}
+                    <span><ChevronRight size={24} className="text-pink-400 font-bold" /></span></p>
+                {productsLoading ? (
+                    <div className="flex justify-center py-10">
+                        <Loader2 className="w-10 h-10 text-pink-300 animate-spin" />
+                    </div>
+                ) : products.length > 0 ? (
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
+                        {products.map((product) => (
                             <ProductCard key={product._id} product={product} />
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-20 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-                        <p className="text-gray-500 text-lg">No products found for this concern yet.</p>
-                        <p className="text-gray-400 text-sm mt-1">We are adding new products soon!</p>
-                    </div>
+                    <>
+                        {emptyState}
+                    </>
                 )}
             </div>
         </div>
