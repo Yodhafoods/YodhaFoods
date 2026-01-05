@@ -10,6 +10,7 @@ import WatchAndShop from "./(home)/_components/WatchAndShop";
 import BestsellingProducts from "@/features/products/components/BestsellingProducts";
 import HeroCarousel from "./(home)/_components/HeroCarousel";
 import QuickActionCards from "./(home)/_components/QuickActionCards";
+import YodhaFamSection from "./(home)/_components/YodhaFamSection";
 
 
 export const metadata: Metadata = {
@@ -64,6 +65,9 @@ export default function Home() {
 
         <section>
           <YodhaInstant />
+        </section>
+        <section>
+          <YodhaFamSection />
         </section>
         {/* <section>
           <JourneySection />

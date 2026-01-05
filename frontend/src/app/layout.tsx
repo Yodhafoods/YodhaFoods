@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Permanent_Marker } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -20,6 +20,12 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const permanentMarker = Permanent_Marker({
+  weight: "400",
+  variable: "--font-permanent-marker",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
   title: "Yodha Foods | Ancient Powders - Reimagined for Today.",
   description: "Yodha Foods - Ancient Powders. Reimagined for Today.",
@@ -37,7 +43,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${permanentMarker.variable} antialiased`}
       >
         <Toaster richColors position="top-center" />
 
