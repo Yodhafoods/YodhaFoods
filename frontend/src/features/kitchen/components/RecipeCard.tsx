@@ -4,11 +4,15 @@ type Props = {
     title: string;
     image: string;
     tag: string;
+    onClick?: () => void;
 };
 
-export default function RecipeCard({ title, image, tag }: Props) {
+export default function RecipeCard({ title, image, tag, onClick }: Props) {
     return (
-        <div className="relative h-[300px] rounded-[24px] overflow-hidden bg-black cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg group">
+        <div
+            onClick={onClick}
+            className="relative h-[300px] rounded-[24px] overflow-hidden bg-black cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg group"
+        >
             {/* Image */}
             <Image
                 src={image}
