@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import KitchenHero from "@/features/kitchen/components/KitchenHero";
 import KitchenFilters from "@/features/kitchen/components/KitchenFilters";
 import RecipeCard from "@/features/kitchen/components/RecipeCard";
-import RecipeModal from "@/features/kitchen/components/RecipeModal";
+import RecipeDrawer from "@/features/kitchen/components/RecipeDrawer";
 
 // --- MOCK DATA ---
 const RECIPES = [
@@ -16,6 +16,8 @@ const RECIPES = [
         mealType: "snack",
         cuisine: "indian",
         tag: "SNACK • 30s",
+        prod: "Beetroot",
+        price: 499,
     },
     {
         id: "2",
@@ -25,6 +27,9 @@ const RECIPES = [
         mealType: "breakfast",
         cuisine: "western",
         tag: "BREAKFAST • 30s",
+        prod: "Mango",
+        price: 499,
+
     },
     {
         id: "3",
@@ -34,6 +39,8 @@ const RECIPES = [
         mealType: "lunch",
         cuisine: "western",
         tag: "LUNCH • 60s",
+        prod: "Moringa",
+        price: 549,
     },
     {
         id: "4",
@@ -43,6 +50,8 @@ const RECIPES = [
         mealType: "dinner",
         cuisine: "indian",
         tag: "DINNER • 60s",
+        prod: "Turmeric",
+        price: 399,
     },
     {
         id: "5",
@@ -52,6 +61,8 @@ const RECIPES = [
         mealType: "snack",
         cuisine: "indian",
         tag: "SNACK • 2m",
+        prod: "Turmeric",
+        price: 399,
     },
     {
         id: "6",
@@ -61,6 +72,8 @@ const RECIPES = [
         mealType: "lunch",
         cuisine: "western",
         tag: "LUNCH • 60s",
+        prod: "Quinoa",
+        price: 449,
     },
     {
         id: "7",
@@ -70,6 +83,8 @@ const RECIPES = [
         mealType: "breakfast",
         cuisine: "indian",
         tag: "BREAKFAST • 60s",
+        prod: "Oats",
+        price: 349,
     },
     {
         id: "8",
@@ -79,6 +94,8 @@ const RECIPES = [
         mealType: "dinner",
         cuisine: "indian",
         tag: "DINNER • 30s",
+        prod: "Tea",
+        price: 299,
     },
 ];
 
@@ -87,6 +104,10 @@ export default function KitchenClient() {
     const [time, setTime] = useState("all");
     const [meal, setMeal] = useState("all");
     const [style, setStyle] = useState("all");
+
+    // DRAWER STATE
+    const [selectedRecipe, setSelectedRecipe] = useState<any>(null);
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
     // FILTER LOGIC
     const filteredRecipes = useMemo(() => {
@@ -97,6 +118,16 @@ export default function KitchenClient() {
             return matchTime && matchMeal && matchStyle;
         });
     }, [time, meal, style]);
+
+    const handleOpenDrawer = (recipe: any) => {
+        setSelectedRecipe(recipe);
+        setIsDrawerOpen(true);
+    };
+
+    const handleCloseDrawer = () => {
+        setIsDrawerOpen(false);
+        // Optional: clear selected recipe after animation if needed, but not strictly necessary
+    };
 
     return (
         <section className="mb-24">
@@ -119,6 +150,7 @@ export default function KitchenClient() {
                             title={r.title}
                             image={r.image}
                             tag={r.tag}
+                            onClick={() => handleOpenDrawer(r)}
                         />
                     ))}
                 </div>
@@ -133,6 +165,13 @@ export default function KitchenClient() {
                     </button>
                 </div>
             )}
+
+            {/* RECIPE DRAWER */}
+            <RecipeDrawer
+                isOpen={isDrawerOpen}
+                onClose={handleCloseDrawer}
+                recipe={selectedRecipe}
+            />
         </section>
     );
 }
