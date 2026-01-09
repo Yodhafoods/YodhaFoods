@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Permanent_Marker } from "next/font/google";
+import { Geist, Geist_Mono, Permanent_Marker, Playfair_Display, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import BundleBoxDrawer from "@/components/BundleBoxDrawer";
+import SpinWheelDrawer from "@/components/SpinWheelDrawer";
 
 import { Toaster } from "sonner";
 import AuthProvider from "@/features/auth/context/AuthContext";
@@ -26,6 +27,16 @@ const permanentMarker = Permanent_Marker({
   subsets: ["latin"],
 });
 
+const playfairDisplay = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-playfair",
+});
+
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-jakarta",
+});
+
 export const metadata: Metadata = {
   title: "Yodha Foods | Ancient Powders - Reimagined for Today.",
   description: "Yodha Foods - Ancient Powders. Reimagined for Today.",
@@ -43,9 +54,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${permanentMarker.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${permanentMarker.variable} ${playfairDisplay.variable} ${plusJakartaSans.variable} font-jakarta antialiased`}
       >
         <Toaster richColors position="top-center" />
+        {/* ... */}
 
         <QueryProvider>
           <StoreProvider>
@@ -54,6 +66,7 @@ export default function RootLayout({
               <div className="page-wrapper">{children}</div>
               <Footer />
               <BundleBoxDrawer />
+              <SpinWheelDrawer />
             </AuthProvider>
           </StoreProvider>
         </QueryProvider>

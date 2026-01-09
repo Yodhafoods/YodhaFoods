@@ -48,7 +48,7 @@ export default function TrustBadges() {
             </div>
 
             {/* Row 2: Key Info - Originally Row 1 */}
-            <div className="grid grid-cols-4 gap-2">
+            {/* <div className="grid grid-cols-4 gap-2">
                 {row1.map((item, idx) => (
                     <div key={idx} className="flex flex-col items-center justify-center text-center gap-2 group cursor-default">
                         <div className={`p-2.5 rounded-full bg-white shadow-sm ring-1 ring-gray-100 group-hover:scale-110 transition-transform ${item.color.replace('text-', 'ring-').replace('600', '100').replace('500', '100')}`}>
@@ -57,17 +57,17 @@ export default function TrustBadges() {
                         <span className="text-[10px] font-semibold text-gray-600 leading-tight">{item.label}</span>
                     </div>
                 ))}
-            </div>
+            </div> */}
 
             {/* Row 3: Service Cards - Originally Row 2 */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {/* <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {row2.map((item, idx) => (
                     <div key={idx} className={`flex flex-col items-center justify-center p-3 rounded-xl border ${item.bg} ${item.border} text-center hover:shadow-md transition-all`}>
                         <item.icon className={`w-6 h-6 ${item.iconColor} mb-2`} strokeWidth={1.5} />
                         <span className="text-[10px] font-bold text-gray-700 uppercase tracking-tight">{item.label}</span>
                     </div>
                 ))}
-            </div>
+            </div> */}
 
         </div>
     );

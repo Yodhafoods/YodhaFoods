@@ -36,7 +36,7 @@ export default function HeroBannerThree() {
                             </p>
 
                             <button
-                                onClick={() => dispatch(openDrawer())}
+                                onClick={() => dispatch(openDrawer("bundle"))}
                                 className="mt-8 px-10 py-4 rounded-full bg-[#0f2f2b] text-white font-extrabold uppercase tracking-widest"
                             >
                                 Start Your Ritual

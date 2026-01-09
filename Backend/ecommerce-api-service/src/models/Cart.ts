@@ -3,13 +3,17 @@ import mongoose, { Schema, Document, Types } from "mongoose";
 export interface ICartItem {
   productId: Types.ObjectId;
   quantity: number;
-  pack?: string; // Pack label
+  pack?: string;
+  appliedCoins?: number;
+  coinDiscount?: number;
 }
 
 export interface ICart extends Document {
   userId?: Types.ObjectId | null;
   guestId?: string | null;
   items: ICartItem[];
+  appliedCoins: number;   // Total coins applied to the cart
+  coinDiscount: number;   // Total discount value in currency
   createdAt: Date;
   updatedAt: Date;
 }
@@ -45,6 +49,16 @@ const CartSchema = new Schema<ICart>(
         }
       },
     ],
+
+    appliedCoins: {
+      type: Number,
+      default: 0
+    },
+
+    coinDiscount: {
+      type: Number,
+      default: 0
+    }
   },
   {
     timestamps: true,

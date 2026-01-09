@@ -35,6 +35,9 @@ export interface IOrder extends Document {
   subtotal: number;
   shippingFee: number;
   tax: number;
+  discount: number;
+  coinsRedeemed: number;
+  couponCode?: string;
   totalAmount: number;
 
   shippingAddress: {
@@ -111,6 +114,10 @@ const OrderSchema = new Schema<IOrder>(
       type: Number,
       required: true,
     },
+
+    discount: { type: Number, default: 0 },
+    coinsRedeemed: { type: Number, default: 0 },
+    couponCode: { type: String },
 
     /**
      * Address snapshot (NEVER store addressId)
