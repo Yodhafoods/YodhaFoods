@@ -1,5 +1,5 @@
 
-import { RewardService } from '../src/services/reward.service';
+import { RewardService } from '../../src/services/reward.service';
 
 const PRIZES = [
     { label: "5 Coins", value: 5, weight: 40 },
