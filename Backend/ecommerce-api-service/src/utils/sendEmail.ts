@@ -10,11 +10,18 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export const sendEmail = async (to: string, subject: string, html: string) => {
+interface Attachment {
+  filename: string;
+  content: Buffer | string;
+  contentType?: string;
+}
+
+export const sendEmail = async (to: string, subject: string, html: string, attachments?: Attachment[]) => {
   return transporter.sendMail({
     from: `"Yodha Foods" <${process.env.SMTP_USER}>`,
     to,
     subject,
     html,
+    attachments,
   });
 };

@@ -3,6 +3,8 @@ import Cart from "../models/Cart.js";
 import Product from "../models/Product.js";
 import Order from "../models/Order.js";
 import Address from "../models/Address.js";
+import CoinWallet from "../models/CoinWallet.js";
+import mongoose from "mongoose";
 import { GuestRequest } from "../middlewares/guest.middleware.js";
 import { emitNotification } from "../services/notification.producer.js";
 import { OrderStatus } from "../types/notification-event.js";
@@ -43,50 +45,58 @@ export const createOrder = async (req: GuestRequest, res: Response) => {
     /**
      * 3️⃣ Validate products & freeze price snapshot
      */
+    /**
+     * 3️⃣ Validate products & calculate subtotal
+     */
     for (const item of cart.items) {
       const product = item.productId as any;
-      // console.log(product);
+
       if (!product || !product.isActive) {
-        return res.status(400).json({
-          message: `Product unavailable`,
-        });
-      }
-      // console.log(product.stock);
-      if (product.stock < item.quantity) {
-        return res.status(400).json({
-          message: `${product.name} is out of stock`,
-        });
+        console.warn(`[Order] Skipping unavailable item during order creation: ${item.productId}`);
+        continue;
       }
 
-      let price = 0;
-
-      // New Pack Logic:
-      // If item has a specific 'pack' label (e.g. "250g"), find it in product.packs
-      // Otherwise fallback to default pack.
+      // Check stock
+      let currentStock = product.stock || 0;
       let selectedPack: any = null;
 
-      if (item.pack && product.packs && product.packs.length > 0) {
+      // Pack resolution logic (Align with RewardController)
+      if (item.pack && product.packs) {
         selectedPack = product.packs.find((p: any) => p.label === item.pack);
       }
 
-      // Fallback: use default pack if no specific pack found or requested
+      // Fallback to default if not found (though Cart should usually ensure validity)
       if (!selectedPack && product.packs && product.packs.length > 0) {
         selectedPack = product.packs.find((p: any) => p.isDefault) || product.packs[0];
       }
 
       if (selectedPack) {
-        price =
-          selectedPack.discountPrice && selectedPack.discountPrice > 0
-            ? selectedPack.discountPrice
-            : selectedPack.price;
+        currentStock = selectedPack.stock;
+      }
+
+      if (currentStock < item.quantity) {
+        const msg = `${product.name} (${selectedPack?.label || 'Default'}) is out of stock`;
+        console.error(`[Order] Stock error: ${msg}`);
+        return res.status(400).json({
+          message: msg,
+        });
+      }
+
+      // Price resolution
+      let price = 0;
+      if (selectedPack) {
+        price = selectedPack.discountPrice && selectedPack.discountPrice > 0
+          ? selectedPack.discountPrice
+          : selectedPack.price;
       } else {
-        // Legacy fallback if no packs (should not happen with new schema)
-        price = (product as any).price || 0;
+        price = product.price || 0;
       }
 
       if (!price) {
+        const msg = `Price not found for ${product.name}`;
+        console.error(`[Order] Price error: ${msg}`);
         return res.status(400).json({
-          message: `Price not found for ${product.name} (${item.pack || "Default"})`
+          message: msg
         });
       }
 
@@ -97,42 +107,102 @@ export const createOrder = async (req: GuestRequest, res: Response) => {
         name: product.name,
         price,
         quantity: item.quantity,
+        pack: selectedPack?.label, // verify if Order model supports pack field? It should.
         image: product.images?.[0]?.url || "",
       });
     }
 
-    /**
-     * 4️⃣ Create order
-     */
-    const order = await Order.create({
-      userId,
-      items: orderItems,
-      subtotal,
-      totalAmount: subtotal,
-      status: "PLACED",
-      paymentStatus: "PENDING",
-
-      shippingAddress: {
-        fullName: address.fullName,
-        phone: address.phone,
-        addressLine1: address.addressLine1,
-        addressLine2: address.addressLine2,
-        city: address.city,
-        state: address.state,
-        pincode: address.pincode,
-        country: address.country,
-      },
-    });
+    if (orderItems.length === 0) {
+      return res.status(400).json({ message: "No valid items in order (all items unavailable)" });
+    }
 
     /**
-     * 5️⃣ Clear USER cart after order creation
+     * 3.5 Calculate Discounts (Coins)
      */
-    await Cart.deleteOne({ userId });
+    // SECURE: Read from Cart, NOT request body
+    const coinsApplied = cart.appliedCoins || 0;
+    let discount = 0;
+    let coinsRedeemed = 0;
 
-    return res.status(201).json({
-      message: "Order created successfully",
-      order,
-    });
+    // Start a session for atomic coin deduction
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      if (coinsApplied && Number(coinsApplied) > 0) {
+        const wallet = await CoinWallet.findOne({ userId }).session(session);
+
+        // Return 400 for business logic failure instead of 500
+        if (!wallet || wallet.balance < Number(coinsApplied)) {
+          console.error(`[Order] Insufficient coins. Wallet: ${wallet?.balance}, Applied: ${coinsApplied}`);
+          await session.abortTransaction();
+          return res.status(400).json({ message: "Insufficient coin balance" });
+        }
+
+        // Verify Logic: Max 20% of subtotal
+        const maxDiscount = Math.floor(subtotal * 0.20);
+        const maxCoinsUsable = maxDiscount * 10;
+
+        const coinsToUse = Math.min(Number(coinsApplied), maxCoinsUsable, wallet.balance);
+
+        coinsRedeemed = coinsToUse;
+        discount = coinsRedeemed / 10;
+
+        // Deduct coins
+        wallet.balance -= coinsRedeemed;
+        wallet.lifetimeRedeemed = (wallet.lifetimeRedeemed || 0) + coinsRedeemed;
+        await wallet.save({ session });
+      }
+
+      // Calculate Final Total
+      // Delivery logic: if subtotal > 299 free, else 40
+      const shippingFee = subtotal > 299 ? 0 : 40;
+      const totalAmount = Math.max(0, subtotal + shippingFee - discount);
+
+      /**
+       * 4️⃣ Create order
+       */
+      const order = await Order.create([{
+        userId,
+        items: orderItems,
+        subtotal,
+        shippingFee,
+        discount,
+        coinsRedeemed,
+        totalAmount,
+        status: "PLACED",
+        paymentStatus: "PENDING",
+
+        shippingAddress: {
+          fullName: address.fullName,
+          phone: address.phone,
+          addressLine1: address.addressLine1,
+          addressLine2: address.addressLine2,
+          city: address.city,
+          state: address.state,
+          pincode: address.pincode,
+          country: address.country,
+        },
+      }], { session });
+
+      /**
+       * 5️⃣ Clear USER cart after order creation
+       */
+      await Cart.deleteOne({ userId }).session(session);
+
+      await session.commitTransaction();
+      session.endSession();
+
+      return res.status(201).json({
+        message: "Order created successfully",
+        order: order[0], // Order.create returns array if passed array or with session
+      });
+
+    } catch (err: any) {
+      await session.abortTransaction();
+      session.endSession();
+      throw err;
+    }
   } catch (error) {
     console.error("Create Order Error:", error);
     return res.status(500).json({ message: "Server error" });

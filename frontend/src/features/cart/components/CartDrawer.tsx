@@ -9,6 +9,7 @@ import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
 import { updateCartItemQty, removeItemFromCart } from "@/features/cart/store/cartSlice";
 import Link from "next/link";
 import { toast } from "sonner";
+import FreeDeliveryProgressBar from "./FreeDeliveryProgressBar";
 
 interface CartDrawerProps {
   open: boolean;
@@ -72,6 +73,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
 
             {/* Cart Items */}
             <div className="flex-1 overflow-y-auto space-y-4">
+              {items.length > 0 && <FreeDeliveryProgressBar subtotal={totalAmount} />}
               <p className="text-orange-600">Products</p>
               {items.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-20 text-center opacity-80">
@@ -162,7 +164,8 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
             )}
           </motion.div>
         </>
-      )}
-    </AnimatePresence>
+      )
+      }
+    </AnimatePresence >
   );
 }

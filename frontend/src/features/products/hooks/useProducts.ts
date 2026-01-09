@@ -17,8 +17,8 @@ export const useProducts = (categorySlug?: string): UseProductsResult => {
             if (categorySlug) {
                 url = `/api/products/category/${categorySlug}`;
             }
-            const res: any = await api.get(url);
-            return res.products || res;
+            const res = await api.get<Product[]>(url);
+            return Array.isArray(res) ? res : (res as any).products || [];
         },
         staleTime: 5 * 60 * 1000, // 5 minutes
     });

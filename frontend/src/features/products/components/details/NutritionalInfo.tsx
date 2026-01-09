@@ -29,7 +29,7 @@ export default function NutritionalInfo({ product }: NutritionalInfoProps) {
                     <tbody className="divide-y divide-gray-200 bg-white">
                         {data.map((item, idx) => (
                             <tr key={idx} className="hover:bg-gray-50 transition-colors">
-                                <td className="px-4 py-2 font-medium text-gray-900">{item.label}</td>
+                                <td className="px-4 py-2 font-medium text-gray-900">{item.name}</td>
                                 <td className="px-4 py-2 text-right text-gray-600">{item.value}</td>
                             </tr>
                         ))}

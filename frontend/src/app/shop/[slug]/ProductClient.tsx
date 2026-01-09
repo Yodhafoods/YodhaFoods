@@ -6,7 +6,12 @@ import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
 import { addItemToCart, updateCartItemQty } from "@/features/cart/store/cartSlice";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Minus, Plus, ShoppingCart, Star, Heart, Share2, ChevronDown } from "lucide-react";
+import { Minus, Plus, ShoppingCart, Star, Heart, Share2, ChevronDown, Check, ChevronLeft, ChevronRight, Crown } from "lucide-react";
+import { Swiper, SwiperSlide, useSwiper } from "swiper/react";
+import { Navigation } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import type { Swiper as SwiperType } from "swiper";
 import RelatedProducts from "./RelatedProducts";
 import { Product, Pack } from "@/types";
 
@@ -19,6 +24,24 @@ import ProductSpecsTable from "@/features/products/components/details/ProductSpe
 import GeneralSpecs from "@/features/products/components/details/GeneralSpecs";
 import CouponSection from "@/features/products/components/details/CouponSection";
 
+function CustomPrevButton() {
+    const swiper = useSwiper();
+    return (
+        <button onClick={() => swiper.slidePrev()} className="p-2 bg-white/80 backdrop-blur-sm rounded-full shadow-md text-gray-700 hover:bg-white hover:text-orange-600 transition-colors">
+            <ChevronLeft size={20} />
+        </button>
+    );
+}
+
+function CustomNextButton() {
+    const swiper = useSwiper();
+    return (
+        <button onClick={() => swiper.slideNext()} className="p-2 bg-white/80 backdrop-blur-sm rounded-full shadow-md text-gray-700 hover:bg-white hover:text-orange-600 transition-colors">
+            <ChevronRight size={20} />
+        </button>
+    );
+}
+
 interface ProductClientProps {
     product: Product;
 }
@@ -27,6 +50,7 @@ export default function ProductClient({ product }: ProductClientProps) {
     const dispatch = useAppDispatch();
     const [activeImage, setActiveImage] = useState(0);
     const [selectedPack, setSelectedPack] = useState<Pack | null>(null);
+    const [swiperRef, setSwiperRef] = useState<SwiperType | null>(null);
 
     // Initialize selected pack
     useEffect(() => {
@@ -38,8 +62,18 @@ export default function ProductClient({ product }: ProductClientProps) {
 
     // Reset image index if product changes
     useEffect(() => {
+        if (swiperRef && !swiperRef.destroyed) {
+            swiperRef.slideTo(activeImage);
+        }
+    }, [activeImage, swiperRef]);
+
+    // Reset image index if product changes
+    useEffect(() => {
         setActiveImage(0);
-    }, [product]);
+        if (swiperRef && !swiperRef.destroyed) {
+            swiperRef.slideTo(0);
+        }
+    }, [product, swiperRef]);
 
 
     const cartItemId = selectedPack ? `${product._id}-${selectedPack.label}` : product._id;
@@ -50,6 +84,7 @@ export default function ProductClient({ product }: ProductClientProps) {
 
     const qty = cartItem ? cartItem.qty : 0;
     const currentPrice = selectedPack?.price || 0;
+    const currentDiscountPrice = selectedPack?.discountPrice;
     const currentStock = selectedPack?.stock || 0;
 
     const handleAddToCart = async () => {
@@ -103,75 +138,100 @@ export default function ProductClient({ product }: ProductClientProps) {
     return (
         <div className="min-h-screen bg-white font-sans pb-16">
             <ToastContainer />
-            <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
-
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            <div className="max-w-7xl mx-auto px-4 md:px-8 py-4 lg:py-8">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-1 lg:gap-10">
                     {/* Left Column: Image Gallery */}
                     <div className="lg:col-span-7 h-fit lg:sticky lg:top-24">
                         {/* Mobile: Swipeable Carousel */}
-                        <div className="block lg:hidden relative aspect-square bg-gray-50 rounded-2xl overflow-hidden mb-6 border border-gray-100">
-                            <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide h-full">
+                        <div className="block lg:hidden relative aspect-square bg-gray-50 rounded-2xl overflow-hidden mb-6 border border-gray-100 group">
+                            <Swiper
+                                modules={[Navigation]}
+                                spaceBetween={0}
+                                slidesPerView={1}
+                                className="w-full h-full"
+                                onSwiper={(swiper) => {
+                                    // Make sure we can access this instance if needed, or just use internal nav
+                                    // For mobile independent swiper, we might want local ref if we use custom buttons outside
+                                }}
+                            >
                                 {product.images?.map((img, idx) => (
-                                    <div key={idx} className="min-w-full h-full snap-center relative">
+                                    <SwiperSlide key={idx} className="w-full h-full">
                                         {/* eslint-disable-next-line @next/next/no-img-element */}
                                         <img src={img.url} alt={product.name} className="w-full h-full object-cover" />
-                                    </div>
+                                    </SwiperSlide>
                                 ))}
-                            </div>
-                            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
+                                {/* Mobile Custom Navigation (Always Visible) */}
+                                <div className="absolute top-1/2 left-2 -translate-y-1/2 z-10">
+                                    <CustomPrevButton />
+                                </div>
+                                <div className="absolute top-1/2 right-2 -translate-y-1/2 z-10">
+                                    <CustomNextButton />
+                                </div>
+                            </Swiper>
+
+                            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
                                 {product.images?.map((_, idx) => (
-                                    <div key={idx} className="w-2 h-2 rounded-full bg-white/50 backdrop-blur-sm" />
+                                    <div key={idx} className={`w-2 h-2 rounded-full backdrop-blur-sm transition-colors ${idx === activeImage ? 'bg-orange-500' : 'bg-white/50'}`} />
                                 ))}
                             </div>
                         </div>
 
                         {/* Desktop: Main Image + Thumbnails Below */}
-                        <div className="hidden lg:flex flex-col gap-4">
+                        <div className="hidden lg:flex flex-col gap-2 lg:gap-4">
                             {/* Main Display - Constrained height */}
                             <div className="relative bg-gray-50 rounded-3xl overflow-hidden border border-gray-100 group cursor-zoom-in max-h-[600px] w-full flex items-center justify-center">
-                                {/* Floating Actions */}
-                                <div className="absolute top-6 right-6 z-10 flex flex-col gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                    <button className="p-3 bg-white rounded-full shadow-lg text-gray-600 hover:text-red-500 transition-transform hover:scale-110">
-                                        <Heart size={20} />
-                                    </button>
-                                    <button className="p-3 bg-white rounded-full shadow-lg text-gray-600 hover:text-blue-500 transition-transform hover:scale-110">
-                                        <Share2 size={20} />
-                                    </button>
-                                </div>
+                                <Swiper
+                                    modules={[Navigation]}
+                                    spaceBetween={0}
+                                    slidesPerView={1}
+                                    onSwiper={setSwiperRef}
+                                    onSlideChange={(swiper) => setActiveImage(swiper.activeIndex)}
+                                    className="w-full h-full"
+                                >
+                                    {product.images?.map((img, idx) => (
+                                        <SwiperSlide key={idx} className="w-full h-full flex items-center justify-center bg-gray-50">
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img
+                                                src={img.url}
+                                                alt={product.name}
+                                                className="w-full h-full object-contain max-h-[600px] transition-transform duration-700 ease-out group-hover:scale-110"
+                                            />
+                                        </SwiperSlide>
+                                    ))}
 
-                                {product.images?.[activeImage] && (
-                                    // eslint-disable-next-line @next/next/no-img-element
-                                    <img
-                                        src={product.images[activeImage].url}
-                                        alt={product.name}
-                                        className="w-full h-full object-contain max-h-[600px] transition-transform duration-700 ease-out group-hover:scale-110"
-                                    />
-                                )}
+                                    {/* Desktop Custom Navigation (Visible on Hover) */}
+                                    <div className="absolute top-1/2 left-4 -translate-y-1/2 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                        <button onClick={() => swiperRef?.slidePrev()} className="p-2 bg-white/80 backdrop-blur-sm rounded-full shadow-md text-gray-700 hover:bg-white hover:text-orange-600 transition-colors">
+                                            <ChevronLeft size={24} />
+                                        </button>
+                                    </div>
+                                    <div className="absolute top-1/2 right-4 -translate-y-1/2 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                        <button onClick={() => swiperRef?.slideNext()} className="p-2 bg-white/80 backdrop-blur-sm rounded-full shadow-md text-gray-700 hover:bg-white hover:text-orange-600 transition-colors">
+                                            <ChevronRight size={24} />
+                                        </button>
+                                    </div>
+                                </Swiper>
                             </div>
+                        </div>
 
-                            {/* Thumbnails Row */}
-                            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin">
-                                {product.images?.map((img, idx) => (
-                                    <button
-                                        key={idx}
-                                        onClick={() => setActiveImage(idx)}
-                                        className={`relative w-20 h-20 shrink-0 rounded-xl overflow-hidden border-2 transition-all ${activeImage === idx ? 'border-orange-500 ring-2 ring-orange-200' : 'border-transparent hover:border-gray-200'}`}
-                                    >
-                                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                                        <img src={img.url} alt="Thumbnail" className="w-full h-full object-cover" />
-                                    </button>
-                                ))}
-                            </div>
+                        {/* Thumbnails Row */}
+                        <div className="hidden md:flex gap-3 overflow-x-auto pb-2 scrollbar-thin">
+                            {product.images?.map((img, idx) => (
+                                <button
+                                    key={idx}
+                                    onClick={() => setActiveImage(idx)}
+                                    className={`relative w-20 h-20 shrink-0 rounded-xl overflow-hidden border-2 transition-all ${activeImage === idx ? 'border-orange-500 ring-2 ring-orange-200' : 'border-transparent hover:border-gray-200'}`}
+                                >
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img src={img.url} alt="Thumbnail" className="w-full h-full object-cover" />
+                                </button>
+                            ))}
                         </div>
                     </div>
 
                     {/* Right Column: Information Flow */}
                     <div className="lg:col-span-5 flex flex-col h-full">
                         <div className="space-y-2">
-
-                            {/* 1. Title */}
-                            <h1 className="text-xl md:text-3xl font-bold text-gray-900 leading-tight tracking-tight">{product.name}</h1>
-
                             {/* 2. Badge & Rating */}
                             <div className="flex items-center gap-4">
                                 {product.categoryId && (
@@ -184,6 +244,8 @@ export default function ProductClient({ product }: ProductClientProps) {
                                     <span className="text-base font-bold text-gray-900">4.7</span>
                                 </div>
                             </div>
+                            {/* 1. Title */}
+                            <h1 className="text-xl md:text-3xl font-bold text-gray-900 leading-tight tracking-tight">{product.name}</h1>
 
                             <div className="h-px bg-gray-100 w-full" />
 
@@ -208,9 +270,17 @@ export default function ProductClient({ product }: ProductClientProps) {
 
                             {/* 4. Price & Add to Cart (Same Row) */}
                             <div className="flex items-center justify-between gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                                <div className="flex flex-col">
-                                    <span className="text-3xl font-bold text-gray-900">₹{currentPrice}</span>
-                                    <span className="text-xs text-gray-400">Inclusive of all taxes</span>
+                                <div className="flex flex-col gap-1">
+                                    {currentDiscountPrice && (
+                                        <div className="flex items-center gap-1.5 text-green-700 bg-green-100 px-2 py-1 rounded-lg w-fit border border-green-200">
+                                            <Crown size={14} fill="currentColor" className="text-green-600" />
+                                            <span className="text-xs font-bold">₹{currentDiscountPrice} for YodhaFam</span>
+                                        </div>
+                                    )}
+                                    <div className="flex flex-col">
+                                        <span className="text-3xl font-bold text-gray-900">₹{currentPrice}</span>
+                                        <span className="text-xs text-gray-400">Inclusive of all taxes</span>
+                                    </div>
                                 </div>
 
                                 <div className="flex-1 max-w-[200px]">
@@ -235,20 +305,33 @@ export default function ProductClient({ product }: ProductClientProps) {
                                     )}
                                 </div>
                             </div>
+                            {/* 5. Product Highlights */}
+                            {product.highlights && product.highlights.length > 0 && (
+                                <div className="space-y-3 border-t border-gray-100 pt-6">
+                                    <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider">Highlights</h3>
+                                    <div className="grid gap-2">
+                                        {product.highlights.map((highlight, idx) => (
+                                            <div key={idx} className="flex items-start gap-3">
+                                                <div className="mt-0.5 min-w-[18px] text-green-500">
+                                                    <Check size={18} strokeWidth={3} />
+                                                </div>
+                                                <span className="text-gray-700 font-medium leading-tight">{highlight}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
 
-                            {/* 5. Coupons */}
-                            <CouponSection />
-
-                            {/* 6. Trust Badges */}
-                            <TrustBadges />
-
-                            {/* 7. Description */}
+                            {/* 6. Description */}
                             {product.description && (
-                                <div className="prose prose-sm prose-gray max-w-none text-gray-600 border-t border-gray-100 pt-4">
-                                    <h3 className="text-sm font-bold text-gray-900 mb-2 uppercase">About this item</h3>
+                                <div className="prose prose-sm prose-gray max-w-none text-gray-600 border-t border-gray-100 pt-6">
+                                    <h3 className="text-sm font-bold text-gray-900 mb-2 uppercase tracking-wider">About this item</h3>
                                     <div dangerouslySetInnerHTML={{ __html: product.description }} />
                                 </div>
                             )}
+
+                            {/* 6. Trust Badges */}
+                            <TrustBadges />
 
                         </div>
                     </div>

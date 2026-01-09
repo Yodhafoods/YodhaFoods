@@ -9,16 +9,17 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { resetCheckout, selectCheckoutTotals } from "../store/checkoutSlice";
+import FreeDeliveryProgressBar from "@/features/cart/components/FreeDeliveryProgressBar";
+import CoinRedemptionSection from "./CoinRedemptionSection";
 
 export default function PriceSummary() {
     const dispatch = useAppDispatch();
     const items = useAppSelector((state) => state.cart.items);
-    const totals = useAppSelector((state) =>
-        selectCheckoutTotals(state, items)
-    );
+    const totals = useAppSelector(selectCheckoutTotals);
     const selectedAddress = useAppSelector(
         (state) => state.checkout.selectedAddress
     );
+    const coinsApplied = useAppSelector((state) => state.checkout.coinsApplied);
     const { user } = useAuth(); // Use AuthContext instead of Redux
 
     const router = useRouter();
@@ -37,6 +38,7 @@ export default function PriceSummary() {
             // 1. Create Order
             const orderRes = await api.post<{ order: any }>("/api/orders", {
                 addressId: selectedAddress._id,
+                coinsApplied,
             });
             const orderId = orderRes.order._id;
 
@@ -93,9 +95,10 @@ export default function PriceSummary() {
             await displayRazorpay(options);
 
         } catch (error: any) {
-            console.error("Order placement failed", error);
+            console.error("Order placement failed details:", error);
+            console.error("Error body:", error?.body);
             const msg = error?.body?.message || "Failed to place order";
-            toast.error(msg);
+            toast.error(`Error: ${msg}`);
         } finally {
             setLoading(false);
         }
@@ -104,6 +107,10 @@ export default function PriceSummary() {
     return (
         <div className="bg-white rounded-xl p-6 shadow sticky top-24">
             <h2 className="font-semibold text-lg mb-4">Price Summary</h2>
+
+            <div className="mb-4">
+                <FreeDeliveryProgressBar subtotal={totals.subtotal} />
+            </div>
 
             <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
@@ -123,6 +130,11 @@ export default function PriceSummary() {
                     <span>Total</span>
                     <span>₹{totals.total}</span>
                 </div>
+            </div>
+
+            {/* Coin Redemption */}
+            <div className="mb-6 border-t border-b border-gray-100 py-4">
+                <CoinRedemptionSection />
             </div>
 
             <button
