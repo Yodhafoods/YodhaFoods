@@ -4,6 +4,8 @@ import Product from "../models/Product.js";
 import Order from "../models/Order.js";
 import Address from "../models/Address.js";
 import { GuestRequest } from "../middlewares/guest.middleware.js";
+import { emitNotification } from "../services/notification.producer.js";
+import { OrderStatus } from "../types/notification-event.js";
 /**
  * POST /api/orders
  * Create order from cart + address snapshot
@@ -181,15 +183,21 @@ export const getOrderById = async (req: Request, res: Response) => {
 };
 
 /**
+POST /api/orders/:id/cancel
+User cancels own order
+
+
+/**
  * PUT /api/orders/:id/status
  * Admin updates order status
  */
+
 export const updateOrderStatus = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { status } = req.body;
+    const { status } = req.body as { status: OrderStatus };
 
-    const allowedStatuses = [
+    const allowedStatuses: OrderStatus[] = [
       "PLACED",
       "CONFIRMED",
       "SHIPPED",
@@ -202,13 +210,41 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Invalid order status" });
     }
 
-    const order = await Order.findById(id);
-    if (!order) {
+    // Populate user to get email
+    const order = await Order.findById(id).populate("userId");
+    if (!order || !order.userId) {
       return res.status(404).json({ message: "Order not found" });
+    }
+
+    // Prevent unnecessary updates (optional but good)
+    if (order.status === status) {
+      return res.json({
+        message: "Order status unchanged",
+        order,
+      });
     }
 
     order.status = status;
     await order.save();
+
+    /**
+     * Emit notification event (ASYNC, NON-BLOCKING)
+     */
+    try {
+      const user = order.userId as any;
+
+      await emitNotification({
+        eventType: "ORDER_STATUS_CHANGED",
+        email: user.email,
+        data: {
+          orderId: order._id.toString(),
+          status,
+        },
+      });
+    } catch (eventErr) {
+      console.error("Failed to emit order status notification:", eventErr);
+      // Do NOT fail admin operation
+    }
 
     return res.json({
       message: "Order status updated",

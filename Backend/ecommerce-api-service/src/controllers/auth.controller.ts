@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
+import { emitNotification } from "../services/notification.producer.js";
 import mongoose from "mongoose";
 
 import {
@@ -17,7 +18,6 @@ import {
   verifyEmailToken,
 } from "../utils/emailToken.js";
 
-import { sendEmail } from "../utils/sendEmail.js";
 
 import type { RegisterInput, LoginInput } from "../schemas/auth.schema.js";
 import { mergeGuestCart } from "../utils/cartUtils.js";
@@ -59,8 +59,10 @@ const setAuthCookies = (
   }
 };
 
+
+
 // =====================================================================
-// REGISTER USER + SEND VERIFICATION EMAIL
+// REGISTER USER (EVENT-DRIVEN EMAIL VERIFICATION)
 // =====================================================================
 export const registerUser = async (
   req: Request<{}, {}, RegisterInput>,
@@ -77,42 +79,49 @@ export const registerUser = async (
       if (existing.email === email) {
         return res.status(409).json({ message: "Email already exists" });
       }
-      return res.status(409).json({ message: "Mobile number already registered" });
+      return res
+        .status(409)
+        .json({ message: "Mobile number already registered" });
     }
 
-    const hash = await bcrypt.hash(password, 12);
+    const hashed_Password = await bcrypt.hash(password, 12);
 
     const user = await User.create({
       first_name,
       last_name,
       email,
       Contact_number: contact_number,
-      password: hash,
+      password: hashed_Password,
       verified: false,
     });
 
     // Create email verification token
-    const token = createEmailVerifyToken(user._id.toString(), user.email);
-
-    const verifyUrl = `${process.env.FRONTEND_ORIGIN}/auth/verify-email?token=${encodeURIComponent(token)}`;
-
-    // Send email
-    await sendEmail(
-      user.email,
-      "Verify your Yodha Foods account",
-      `
-        <h2>Welcome to Yodha Foods, ${user.first_name}!</h2>
-        <p>Please verify your email by clicking the button below:</p>
-
-        <a href="${verifyUrl}"
-           style="background:#FF4500;color:white;padding:10px 16px;
-           border-radius:6px;text-decoration:none;display:inline-block;">
-           Verify Email
-        </a>
-
-        <p>This link expires in 10 minutes.</p>
-      `
+    const token = createEmailVerifyToken(
+      user._id.toString(),
+      user.email
     );
+
+    const verifyUrl = `${process.env.FRONTEND_ORIGIN}/auth/verify-email?token=${encodeURIComponent(
+      token
+    )}`;
+
+    /**
+     * Emit verification email event (DO NOT SEND EMAIL HERE)
+     * we push the email sending task to a separate service via event bus
+     * to keep the auth service lightweight and responsive.
+     */
+    try {
+      await emitNotification({
+        eventType: "USER_EMAIL_VERIFICATION",
+        email: user.email,
+        data: {
+          verificationLink: verifyUrl,
+        },
+      });
+    } catch (eventErr) {
+      console.error("Failed to emit verification email event:", eventErr);
+      // IMPORTANT: Do NOT fail signup if notification fails
+    }
 
     return res.status(201).json({
       message: "Registered successfully! Please verify your email.",
@@ -121,8 +130,8 @@ export const registerUser = async (
     console.error("Register error:", err);
     return res.status(500).json({ message: "Server error" });
   }
-
 };
+
 
 // =====================================================================
 // LOGIN USER — BLOCK IF EMAIL NOT VERIFIED

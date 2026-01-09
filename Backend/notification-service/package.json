@@ -1,0 +1,26 @@
+{
+  "name": "notification-service",
+  "version": "1.0.0",
+  "description": "Notification service for E-commerce (SQS + SES)",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "deploy": "npm run build && serverless deploy"
+  },
+  "dependencies": {
+    "@aws-sdk/client-ses": "^3.540.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.147",
+    "@types/node": "^24.10.4",
+    "tsx": "^4.7.0",
+    "typescript": "^5.9.3",
+    "serverless": "^4.29.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

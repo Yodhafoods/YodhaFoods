@@ -11,7 +11,7 @@ provider:
   timeout: 15
 
   environment:
-    NODE_ENV: production
+   NODE_ENV: production
     PORT: ${env:PORT}
     FRONTEND_ORIGIN: ${env:FRONTEND_ORIGIN}
     JWT_ACCESS_SECRET: ${env:JWT_ACCESS_SECRET}
@@ -28,7 +28,7 @@ provider:
     GOOGLE_CLIENT_SECRET: ${env:GOOGLE_CLIENT_SECRET}
     RAZORPAY_KEY_ID: ${env:RAZORPAY_KEY_ID}
     RAZORPAY_KEY_SECRET: ${env:RAZORPAY_KEY_SECRET}
-    RAZORPAY_WEBHOOK_SECRET: ${env:RAZORPAY_WEBHOOK_SECRET}
+    RAZORPAY_WEBHOOK_SECRET: ${env:RAZORPAY_WEBHOOK_SECRET} 
 
   httpApi:
     cors:

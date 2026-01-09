@@ -3,8 +3,7 @@ import razorpay from "../config/razorpay.js";
 import Order from "../models/Order.js";
 import crypto from "crypto";
 import Product from "../models/Product.js";
-import { sendEmail } from "../utils/sendEmail.js";
-import { getOrderConfirmationTemplate } from "../utils/emailTemplates.js";
+import { emitNotification } from "../services/notification.producer.js";
 
 /**
  * POST /api/payments/create-razorpay-order
@@ -121,23 +120,31 @@ export const verifyRazorpayPayment = async (
      * Send Confirmation Email
      */
     /**
-     * Send Confirmation Email
+     * Emit Order Confirmed Notification Event
+     * (Order placed + payment success)
+     * We push the email sending task to a separate service via event bus
+     * to keep the payment service lightweight and responsive.
      */
     try {
-      // Req.user only has id/role, so we must fetch the user.
       const orderWithUser = await Order.findById(order._id).populate("userId");
 
       if (orderWithUser && orderWithUser.userId) {
         const user = orderWithUser.userId as any;
-        const emailHtml = getOrderConfirmationTemplate(orderWithUser, user.name || "Customer");
-        await sendEmail(user.email, `Order Confirmation #${order._id.toString().slice(-6)}`, emailHtml);
-        console.log(`Order confirmation email sent to ${user.email}`);
-      }
-    } catch (emailErr) {
-      console.error("Failed to send order email:", emailErr);
-      // Don't fail the request if email fails
-    }
 
+        await emitNotification({
+          eventType: "ORDER_STATUS_CHANGED",
+          email: user.email,
+          data: {
+            orderId: order._id.toString(),
+            status: "CONFIRMED",
+          },
+        });
+      }
+    } catch (eventErr) {
+      console.error("Failed to emit order notification event:", eventErr);
+      // IMPORTANT: do NOT fail payment flow
+    }
+    // Prepare email content
     return res.json({
       message: "Payment verified successfully",
       order,
@@ -147,3 +154,4 @@ export const verifyRazorpayPayment = async (
     return res.status(500).json({ message: "Server error" });
   }
 };
+

@@ -1,0 +1,1 @@
+{"location":"client.ts:3","message":"Redis import type check","data":{"redisType":"function","isFunction":true,"hasDefault":true,"keys":"N/A"},"timestamp":1767533981164,"sessionId":"debug-session","runId":"run1","hypothesisId":"A"}

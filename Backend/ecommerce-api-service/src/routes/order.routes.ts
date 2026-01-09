@@ -35,6 +35,8 @@ router.get("/", requireAuth, getMyOrders);
  */
 router.get("/:id", requireAuth, getOrderById);
 
+// router.post("/", requireAuth, cancelOrderById);
+
 /** ==========================
  *  ADMIN ROUTES
  *  ========================== */
