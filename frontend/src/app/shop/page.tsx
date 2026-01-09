@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useCategories } from "@/hooks/useCategories";
 import { useProducts } from "@/features/products/hooks/useProducts";
 import ProductCard from "@/features/products/components/ProductCardHome";
+import RequestProductCard from "@/features/products/components/RequestProductCard";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import ShopSidebar from "@/features/products/components/ShopSidebar";
@@ -85,6 +86,7 @@ export default function ShopPage() {
                   className="min-w-0"
                 />
               ))}
+              <RequestProductCard className="min-w-0" />
             </div>
           )}
         </div>

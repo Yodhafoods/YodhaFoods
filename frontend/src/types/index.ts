@@ -25,6 +25,7 @@ export interface Pack {
     label: string;
     weightInGrams: number;
     price: number;
+    discountPrice?: number;
     stock: number;
     isDefault: boolean;
 }
@@ -61,5 +62,5 @@ export interface Product {
     storageInstructions?: string;
     howToUse?: string;
     highlights?: string[];
-    nutritionTable?: { label: string; value: string }[];
+    nutritionTable?: { name: string; value: string; _id?: string }[];
 }
