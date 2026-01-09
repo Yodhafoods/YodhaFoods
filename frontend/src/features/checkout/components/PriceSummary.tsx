@@ -15,9 +15,7 @@ import CoinRedemptionSection from "./CoinRedemptionSection";
 export default function PriceSummary() {
     const dispatch = useAppDispatch();
     const items = useAppSelector((state) => state.cart.items);
-    const totals = useAppSelector((state) =>
-        selectCheckoutTotals(state, items)
-    );
+    const totals = useAppSelector(selectCheckoutTotals);
     const selectedAddress = useAppSelector(
         (state) => state.checkout.selectedAddress
     );
@@ -97,9 +95,10 @@ export default function PriceSummary() {
             await displayRazorpay(options);
 
         } catch (error: any) {
-            console.error("Order placement failed", error);
+            console.error("Order placement failed details:", error);
+            console.error("Error body:", error?.body);
             const msg = error?.body?.message || "Failed to place order";
-            toast.error(msg);
+            toast.error(`Error: ${msg}`);
         } finally {
             setLoading(false);
         }

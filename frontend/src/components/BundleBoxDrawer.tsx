@@ -35,7 +35,7 @@ const PRODUCTS = [
 
 export default function BundleBoxDrawer() {
     const dispatch = useDispatch();
-    const isOpen = useSelector((state: RootState) => state.ui.isDrawerOpen);
+    const isOpen = useSelector((state: RootState) => state.ui.activeDrawer === "bundle");
     const [viewState, setViewState] = useState<"banner" | "bundler" | "report">("banner");
 
     // Logic State
@@ -82,7 +82,7 @@ export default function BundleBoxDrawer() {
         if (isOpen) {
             dispatch(closeDrawer());
         } else {
-            dispatch(openDrawer());
+            dispatch(openDrawer("bundle"));
         }
         if (!isOpen && !timerActive) {
             // Logic for opening
@@ -161,7 +161,7 @@ export default function BundleBoxDrawer() {
             {!isOpen && (
                 <div className="fixed bottom-8 right-8 z-[9999]">
                     <button
-                        onClick={() => dispatch(openDrawer())}
+                        onClick={() => dispatch(openDrawer("bundle"))}
                         className="w-[60px] h-[60px] rounded-full bg-[#0f2f2b] text-[#d4af37] border border-[#d4af37] flex items-center justify-center cursor-pointer shadow-lg hover:scale-110 transition-all duration-300"
                     >
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

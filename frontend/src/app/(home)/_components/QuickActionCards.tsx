@@ -107,7 +107,9 @@ export default function QuickActionCards() {
                             whileTap={{ scale: 0.98 }}
                             onClick={() => {
                                 if (card.id === 1) {
-                                    dispatch(openDrawer());
+                                    dispatch(openDrawer("bundle"));
+                                } else if (card.id === 2) {
+                                    dispatch(openDrawer("spinWheel"));
                                 } else {
                                     router.push(card.action);
                                 }

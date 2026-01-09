@@ -1,28 +1,31 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 interface UiState {
-    isDrawerOpen: boolean;
+    activeDrawer: string | null;
 }
 
 const initialState: UiState = {
-    isDrawerOpen: false,
+    activeDrawer: null,
 };
 
 const uiSlice = createSlice({
     name: "ui",
     initialState,
     reducers: {
-        openDrawer: (state) => {
-            state.isDrawerOpen = true;
+        openDrawer: (state, action) => {
+            state.activeDrawer = action.payload;
         },
         closeDrawer: (state) => {
-            state.isDrawerOpen = false;
+            state.activeDrawer = null;
         },
-        toggleDrawer: (state) => {
-            state.isDrawerOpen = !state.isDrawerOpen;
+        toggleDrawer: (state, action) => {
+            state.activeDrawer = state.activeDrawer ? null : action.payload;
         },
     },
 });
 
 export const { openDrawer, closeDrawer, toggleDrawer } = uiSlice.actions;
+
+export const selectActiveDrawer = (state: any) => state.ui.activeDrawer;
+
 export default uiSlice.reducer;

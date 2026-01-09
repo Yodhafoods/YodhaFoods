@@ -15,6 +15,8 @@ import paymentRoutes from "./routes/payment.routes.js";
 import webhookRoutes from "./routes/webhook.routes.js";
 import addressRoutes from "./routes/address.routes.js";
 import videoRuotes from "./routes/video.routes.js";
+import rewardRoutes from "./routes/reward.routes.js";
+import truthLabRoutes from "./routes/truthLab.routes.js";
 
 
 import passport from "./config/passport.js";
@@ -41,12 +43,10 @@ app.use(
 ---------------------------------------------------- */
 app.use(
   cors({
-    origin: [
-      process.env.FRONTEND_ORIGIN || "http://localhost:3000",
-      "http://localhost:3000",
-      "https://www.yodhafoods.com",
-      "https://yodhafoods.com"
-    ],
+    origin: (origin: any, callback: any) => {
+      // Allow all origins for dev
+      callback(null, true);
+    },
     credentials: true, // allow cookies
     methods: ["GET", "POST", "PUT", "DELETE"],
   })
@@ -114,6 +114,8 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/webhooks", webhookRoutes);
 app.use("/api/videos", videoRuotes);
+app.use("/api/truth-lab", truthLabRoutes);
+app.use("/api/rewards", rewardRoutes);
 
 
 /* ----------------------------------------------------
