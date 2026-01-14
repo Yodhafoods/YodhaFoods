@@ -11,7 +11,7 @@ provider:
   timeout: 15
 
   environment:
-   NODE_ENV: production
+    NODE_ENV: production
     PORT: ${env:PORT}
     FRONTEND_ORIGIN: ${env:FRONTEND_ORIGIN}
     JWT_ACCESS_SECRET: ${env:JWT_ACCESS_SECRET}
