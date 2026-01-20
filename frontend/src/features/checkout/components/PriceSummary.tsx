@@ -57,7 +57,7 @@ export default function PriceSummary() {
                 currency: paymentRes.currency,
                 name: "Yodha Foods",
                 description: `Order #${orderId}`,
-                // image: "/logo.png", // Add logo if available
+                image: "/logo.png",
                 order_id: paymentRes.razorpayOrderId,
                 handler: async function (response: any) {
                     try {

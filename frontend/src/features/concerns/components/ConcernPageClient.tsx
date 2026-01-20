@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import ConcernSelector from "./ConcernSelector";
 import ProductCard from "@/features/products/components/ProductCard";
 import { api } from "@/lib/api";
@@ -26,6 +27,9 @@ export default function ConcernPageClient({ headerContent, emptyState }: Concern
     const [loading, setLoading] = useState(true);
     const [productsLoading, setProductsLoading] = useState(false);
 
+    const searchParams = useSearchParams();
+    const concernParam = searchParams.get("concern");
+
     // 1. Fetch "Shop By Concern" Category & its Subcategories
     useEffect(() => {
         const fetchConcerns = async () => {
@@ -35,8 +39,15 @@ export default function ConcernPageClient({ headerContent, emptyState }: Concern
                 if (response?.category?.subCategories) {
                     const activeSubs = response.category.subCategories.filter((s: any) => s.isActive);
                     setSubCategories(activeSubs);
+
                     if (activeSubs.length > 0) {
-                        setActiveConcernSlug(activeSubs[0].slug);
+                        // Check if we have a concern param that matches one of our subcategories
+                        const matchingConcern = concernParam
+                            ? activeSubs.find((s: any) => s.slug === concernParam)
+                            : null;
+
+                        // Set active concern to the param if valid, otherwise default to first
+                        setActiveConcernSlug(matchingConcern ? matchingConcern.slug : activeSubs[0].slug);
                     }
                 }
             } catch (error) {
@@ -47,7 +58,7 @@ export default function ConcernPageClient({ headerContent, emptyState }: Concern
         };
 
         fetchConcerns();
-    }, []);
+    }, [concernParam]); // Re-run if query param changes (though unlikely to change without page reload/nav)
 
     // 2. Fetch Products when Active Concern Changes
     useEffect(() => {

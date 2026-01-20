@@ -56,10 +56,10 @@ export const ShopByCategory = () => {
 
 export const ShopByConcern = () => {
     const concerns = [
-        { label: "Diabetes Care", href: "/shop-by-concern", icon: <FaHeartbeat className="text-red-500" /> },
-        { label: "Gut Health", href: "/shop-by-concern", icon: <FaAppleAlt className="text-green-500" /> },
-        { label: "Weight Management", href: "/shop-by-concern", icon: <FaWeight className="text-blue-500" /> },
-        { label: "Immunity", href: "/shop-by-concern", icon: <TbRibbonHealth className="text-orange-500" /> },
+        { label: "Diabetes Care", href: "/shop-by-concern?concern=diabetes-care", icon: <FaHeartbeat className="text-red-500" /> },
+        { label: "Gut Health", href: "/shop-by-concern?concern=gut-health", icon: <FaAppleAlt className="text-green-500" /> },
+        { label: "Weight Management", href: "/shop-by-concern?concern=weight-loss", icon: <FaWeight className="text-blue-500" /> },
+        { label: "Immunity", href: "/shop-by-concern?concern=immunity", icon: <TbRibbonHealth className="text-orange-500" /> },
     ];
 
     return (

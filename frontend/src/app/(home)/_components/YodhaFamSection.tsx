@@ -73,8 +73,8 @@ const YodhaFamSection = () => {
                             className="text-4xl md:text-5xl text-[#b85c7c] leading-tight"
                             style={{ fontFamily: "var(--font-permanent-marker)" }}
                         >
-                            STOP the PRESS! <br />
-                            <span className="text-3xl md:text-4xl">print THE Looove ♥</span>
+                            BLEND THE BEST! <br />
+                            <span className="text-3xl md:text-4xl">Stir the Health ♥</span>
                         </div>
                     </div>
                 </div>
@@ -113,7 +113,7 @@ const YodhaFamSection = () => {
                                     <div className="mt-auto flex items-center gap-3">
                                         <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center font-serif font-bold text-xl">F</div>
                                         <div>
-                                            <p className="text-[10px] font-bold uppercase tracking-wider">FORBES</p>
+                                            <p className="text-[10px] font-bold uppercase tracking-wider">Facts</p>
                                             <p className="text-[10px] text-gray-500">2 min read</p>
                                         </div>
                                     </div>
@@ -127,7 +127,7 @@ const YodhaFamSection = () => {
                                     <div className="mt-auto flex items-center gap-3">
                                         <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center font-bold text-[10px] p-1 text-center leading-none">ET</div>
                                         <div>
-                                            <p className="text-[10px] font-bold uppercase tracking-wider">BRANDEQUITY.COM</p>
+                                            <p className="text-[10px] font-bold uppercase tracking-wider">HEALTHEQUITY</p>
                                             <p className="text-[10px] text-gray-500">2 min read</p>
                                         </div>
                                     </div>
@@ -141,7 +141,7 @@ const YodhaFamSection = () => {
                                     <div className="mt-auto flex items-center gap-3">
                                         <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center font-serif font-bold text-xl">Y</div>
                                         <div>
-                                            <p className="text-[10px] font-bold uppercase tracking-wider">YOURSTORY</p>
+                                            <p className="text-[10px] font-bold uppercase tracking-wider">TRUTHLAB</p>
                                             <p className="text-[10px] text-gray-500">3 min read</p>
                                         </div>
                                     </div>
