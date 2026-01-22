@@ -17,7 +17,7 @@ export default function YodhaMegaMenu() {
                     className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-orange-600 transition-colors"
                 >
                     <FaUtensils className="text-lg" />
-                    Explore Kitchen
+                    REQUEST a PRODUCT
                 </Link>
                 <Link
                     href="/membership"

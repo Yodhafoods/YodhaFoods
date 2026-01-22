@@ -174,10 +174,10 @@ export default function HeroCarousel() {
                 className="hero-swiper w-full"
             >
                 <SwiperSlide>
-                    <HeroBannerOne />
+                    <HeroBannerTwo />
                 </SwiperSlide>
                 <SwiperSlide>
-                    <HeroBannerTwo />
+                    <HeroBannerOne />
                 </SwiperSlide>
                 <SwiperSlide>
                     <HeroBannerThree />

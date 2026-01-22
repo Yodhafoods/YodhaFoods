@@ -215,7 +215,7 @@ const Footer = () => {
             <div className="flex items-center gap-4 text-3xl">
               <SiMastercard className="text-[#EB001B]" title="Mastercard" />
               <SiVisa className="text-[#1434CB]" title="Visa" />
-              <SiPaytm className="text-[#00B9F1]" title="Paytm" />
+              <SiPaytm className="text-[#002E6E]" title="Paytm" />
               <span className="font-extrabold text-gray-600 italic tracking-tighter text-sm border-2 border-gray-400 px-1 rounded">UPI</span>
               <SiGooglepay className="text-gray-600 hover:text-gray-900" title="Google Pay" />
               <SiPhonepe className="text-[#6739B7]" title="PhonePe" />
@@ -232,7 +232,7 @@ const Footer = () => {
           <div className="flex items-center gap-6">
             {/* Flipkart */}
             <div className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-default" title="Flipkart">
-              <SiFlipkart className="text-[#2874f0] text-2xl" />
+              <SiFlipkart className="text-[#F8E831] bg-blue-600 rounded-lg text-2xl" />
               <span className="font-extrabold text-base text-[#2874f0]">Flipkart</span>
             </div>
 

@@ -197,7 +197,10 @@ export default function SpinWheelDrawer() {
                                             {wonPrize.value > 0 ? "Added to your wallet!" : "Try again tomorrow."}
                                         </p>
                                         <button
-                                            onClick={handleClose}
+                                            onClick={() => {
+                                                handleClose();
+                                                router.push("/shop");
+                                            }}
                                             className="bg-[#0f2f2b] text-white px-8 py-3 rounded-xl font-bold text-lg hover:bg-[#1a4a44] transition-colors shadow-lg"
                                         >
                                             Use Coins Now
