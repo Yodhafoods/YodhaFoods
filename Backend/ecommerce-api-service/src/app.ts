@@ -20,6 +20,7 @@ import truthLabRoutes from "./routes/truthLab.routes.js";
 
 
 import passport from "./config/passport.js";
+import { postOrder } from "./controllers/postOrder.controller.js";
 
 const app = express();
 
@@ -116,6 +117,8 @@ app.use("/api/webhooks", webhookRoutes);
 app.use("/api/videos", videoRuotes);
 app.use("/api/truth-lab", truthLabRoutes);
 app.use("/api/rewards", rewardRoutes);
+app.use("/api/order", postOrder); // order actions like cancel/return
+
 
 
 /* ----------------------------------------------------
