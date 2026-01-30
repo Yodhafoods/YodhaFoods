@@ -17,6 +17,7 @@ import addressRoutes from "./routes/address.routes.js";
 import videoRuotes from "./routes/video.routes.js";
 import rewardRoutes from "./routes/reward.routes.js";
 import truthLabRoutes from "./routes/truthLab.routes.js";
+import partnerRoutes from "./routes/partner.routes.js";
 
 
 import passport from "./config/passport.js";
@@ -118,6 +119,8 @@ app.use("/api/videos", videoRuotes);
 app.use("/api/truth-lab", truthLabRoutes);
 app.use("/api/rewards", rewardRoutes);
 app.use("/api/order", postOrder); // order actions like cancel/return
+app.use("/api/partner", partnerRoutes);
+
 
 
 

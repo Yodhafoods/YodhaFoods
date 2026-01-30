@@ -214,10 +214,10 @@ const Footer = () => {
             <span className="text-gray-900 font-bold uppercase tracking-wider text-[10px]">Securely pay using:</span>
             <div className="flex items-center gap-4 text-3xl">
               <SiMastercard className="text-[#EB001B]" title="Mastercard" />
-              <SiVisa className="text-[#1434CB]" title="Visa" />
-              <SiPaytm className="text-[#002E6E]" title="Paytm" />
+              <Image src="/assets/images/footer/visa.png" alt="Phone Pay" width={40} height={40} />
+              <Image src="/assets/images/footer/google-pay.png" alt="Google Pay" width={40} height={40} />
+              <Image src="/assets/images/footer/paytm.png" alt="Paytm" width={40} height={40} />
               <span className="font-extrabold text-gray-600 italic tracking-tighter text-sm border-2 border-gray-400 px-1 rounded">UPI</span>
-              <SiGooglepay className="text-gray-600 hover:text-gray-900" title="Google Pay" />
               <SiPhonepe className="text-[#6739B7]" title="PhonePe" />
             </div>
           </div>
@@ -238,7 +238,7 @@ const Footer = () => {
 
             {/* Amazon */}
             <div className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-default" title="Amazon">
-              <SiAmazon className="text-[#FF9900] text-2xl" />
+              <SiAmazon size={32} className="text-[#FF9900] text-2xl bg-gray-700 p-2 rounded-full " />
               <span className="font-extrabold text-base text-gray-900">Amazon</span>
             </div>
 

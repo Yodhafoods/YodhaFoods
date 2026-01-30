@@ -11,6 +11,7 @@ import BestsellingProducts from "@/features/products/components/BestsellingProdu
 import HeroCarousel from "./(home)/_components/HeroCarousel";
 import QuickActionCards from "./(home)/_components/QuickActionCards";
 import YodhaFamSection from "./(home)/_components/YodhaFamSection";
+import LandingBanner from "@/components/layout/LandingBanner";
 
 
 export const metadata: Metadata = {
@@ -29,6 +30,7 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <div className="">
+      <LandingBanner />
       <main className="max-w-[1440px] mx-auto px-6">
 
         <section>

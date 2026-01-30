@@ -6,19 +6,23 @@ import { FaUsers, FaUtensils, FaUserPlus, FaInstagram, FaYoutube, FaFacebook, Fa
 import { FaXTwitter } from "react-icons/fa6"; // Ensure you have react-icons v5+ for this
 import { ShiftingTabs, TabItem } from "./mega-menu/ShiftingTabs";
 import { ShopByCategory, ShopByConcern, FarmsAndSourcing } from "./mega-menu/MenuSections";
+import { useDispatch } from "react-redux";
+import { openDrawer } from "@/features/ui/store/uiSlice";
+import { BiMessageSquareAdd } from "react-icons/bi";
 
 export default function YodhaMegaMenu() {
+    const dispatch = useDispatch();
     return (
         <div className="flex h-fit w-full justify-center px-2 py-1 text-gray-800">
             <div className="flex items-center gap-6">
                 {/* Static Links */}
-                <Link
-                    href="/kitchen"
-                    className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-orange-600 transition-colors"
+                <button
+                    onClick={() => dispatch(openDrawer("productRequest"))}
+                    className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-orange-600 transition-colors cursor-pointer"
                 >
-                    <FaUtensils className="text-lg" />
+                    <BiMessageSquareAdd className="text-lg" />
                     REQUEST a PRODUCT
-                </Link>
+                </button>
                 <Link
                     href="/membership"
                     className="flex items-center gap-2 text-sm font-bold bg-linear-to-r from-orange-500 to-red-500 bg-clip-text text-transparent hover:opacity-80 transition-opacity"

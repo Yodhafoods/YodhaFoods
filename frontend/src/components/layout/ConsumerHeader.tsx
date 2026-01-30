@@ -1,0 +1,228 @@
+"use client";
+
+import { useState, useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaUser, FaWhatsapp } from "react-icons/fa";
+import { Menu, Search, Heart } from "lucide-react";
+import Image from "next/image";
+import { TiShoppingCart } from "react-icons/ti";
+import Link from "next/link";
+import CartDrawer from "@/features/cart/components/CartDrawer";
+import WishlistDrawer from "@/features/wishlist/components/WishlistDrawer";
+import MobileMenuDrawer from "./MobileMenuDrawer";
+import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
+import { openDrawer as openDrawerAction } from "@/features/ui/store/uiSlice";
+import { fetchCartItems } from "@/features/cart/store/cartSlice";
+import { fetchWishlist } from "@/features/wishlist/store/wishlistSlice";
+import SearchModal from "@/features/search/components/SearchModal";
+import RunningBanner from "./RunningBanner";
+import { useTypewriter } from "./header/useTypewriter";
+import { searchPhrases } from "./header/constants";
+import DesktopStories from "./header/DesktopStories";
+import MobileStories from "./header/MobileStories";
+import TabletSearchBar from "./header/TabletSearchBar";
+import YodhaMegaMenu from "./YodhaMegaMenu";
+import ProfileDropdown from "./ProfileDropdown";
+
+
+
+export default function ConsumerHeader() {
+    const pathname = usePathname();
+    const [openDrawer, setOpenDrawer] = useState(false);
+    const [openCart, setOpenCart] = useState(false);
+    const [openWishlist, setOpenWishlist] = useState(false);
+    const [openSearch, setOpenSearch] = useState(false);
+    const [showBanner, setShowBanner] = useState(true);
+    const cartItems = useAppSelector((state) => state.cart.items);
+    const wishlistItems = useAppSelector((state) => state.wishlist.items);
+    const dispatch = useAppDispatch();
+
+    // Search typing animation
+    const searchPlaceholder = useTypewriter(searchPhrases);
+
+
+
+    useEffect(() => {
+        dispatch(fetchCartItems());
+        dispatch(fetchWishlist());
+    }, [dispatch]);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            // Hide banner if scrolled more than 10px to account for bounce
+            if (window.scrollY > 0) {
+                setShowBanner(false);
+            } else {
+                setShowBanner(true);
+            }
+        };
+
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
+    const scrollTo = (id: string) => {
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: "smooth" });
+    };
+
+    const cartCount = cartItems.reduce((acc, item) => acc + item.qty, 0);
+    const wishlistCount = wishlistItems.length;
+
+    return (
+        <>
+            {/* HEADER */}
+            <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-gray-200 transition-all duration-300">
+                <AnimatePresence>
+                    {showBanner && (
+                        <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="overflow-hidden"
+                        >
+                            <RunningBanner
+                                messages={[
+                                    {
+                                        text: "🚚 Free Shipping on Orders Above ₹299 | Shop Now",
+                                        link: "/shop",
+                                    },
+                                    {
+                                        text: "💳 Big Saving Alert! Extra 10% OFF on First Order",
+                                        link: "/shop",
+                                    },
+                                    {
+                                        text: "🔥 Become a Member of YodhaFam | Get Exclusive Benefits",
+                                        link: "/membership",
+                                    },
+                                ]}
+                            />
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                <div className="max-w-[1440px] mx-auto px-4 py-3 flex items-center justify-between">
+                    {/* LOGO */}
+                    <div className="text-3xl font-black text-orange-600 tracking-tight">
+                        <Link href="/">
+                            <Image
+                                src="/logo-nobg.png"
+                                alt="Logo"
+                                width={100}
+                                height={100}
+                                className="w-16 h-16 md:w-[100px] md:h-[100px]"
+                            />
+                        </Link>
+                    </div>
+
+                    {/* STORY BAR — DESKTOP */}
+                    <DesktopStories pathname={pathname} />
+
+                    {/* RIGHT — DESKTOP */}
+                    <div className="hidden md:flex gap-4 items-center">
+                        <button
+                            onClick={() => dispatch(openDrawerAction("becomePartner"))}
+                            className="text-xs font-bold text-gray-700 hover:text-orange-600 uppercase tracking-wide transition-colors"
+                        >
+                            Become a Partner
+                        </button>
+                        <div className="w-px h-4 bg-gray-300"></div>
+                        <button
+                            className="hidden lg:flex border border-gray-800 text-xs font-medium text-gray-800 items-center justify-between gap-2 cursor-pointer hover:bg-gray-100 p-2 pl-4 rounded-full transition-all duration-100 md:w-[100px] lg:w-[200px]"
+                            onClick={() => setOpenSearch(true)}
+                        >
+                            <span className="flex-1 text-left truncate">{searchPlaceholder}</span>
+                            <span>
+                                <Search size={16} />
+                            </span>
+                        </button>
+                        <button
+                            className="relative group flex items-center justify-center gap-1 cursor-pointer transition-all duration-100 mr-2"
+                            onClick={() => setOpenWishlist(true)}
+                        >
+                            <Heart size={24} className="group-hover:text-orange-600 transition-colors" />
+                            <span className="absolute -top-1 -right-3 bg-orange-600 group-hover:-translate-y-1 transition-all duration-100 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                                {wishlistCount}
+                            </span>
+                        </button>
+                        <button
+                            className="relative group flex items-center justify-center gap-1 cursor-pointer transition-all duration-100"
+                            onClick={() => setOpenCart(true)}
+                        >
+                            <TiShoppingCart size={30} />
+                            <span className="absolute -top-1 -right-2 bg-orange-600 group-hover:-translate-y-1 transition-all duration-100 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                                {cartCount}
+                            </span>
+                        </button>
+
+                        {/* Profile Dropdown */}
+                        <ProfileDropdown />
+                    </div>
+
+                    {/* MOBILE RIGHT: CART + MENU + Search */}
+                    <div className="flex md:hidden items-center gap-4">
+                        <button
+                            className="text-xs text-gray-900 flex items-center gap-1 cursor-pointer hover:bg-gray-300 p-2 rounded-full transition-all duration-100"
+                            onClick={() => setOpenSearch(true)}
+                        >
+                            <Search size={28} />
+                        </button>
+                        <button
+                            onClick={() => setOpenWishlist(true)}
+                            className="relative flex items-center justify-center cursor-pointer"
+                        >
+                            <Heart size={28} />
+                            <span className="absolute -top-1 -right-2 bg-black text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                                {wishlistCount}
+                            </span>
+                        </button>
+                        <button
+                            onClick={() => setOpenCart(true)}
+                            className="relative flex items-center justify-center"
+                        >
+                            <TiShoppingCart size={30} />
+                            <span className="absolute -top-1 -right-2 bg-orange-600 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                                {cartCount}
+                            </span>
+                        </button>
+
+                        <button onClick={() => setOpenDrawer(true)}>
+                            <Menu size={30} />
+                        </button>
+                    </div>
+                </div>
+
+                {/* TABLET SEARCH LAYOUT (between md and lg) */}
+                <TabletSearchBar
+                    placeholder={searchPlaceholder}
+                    onClick={() => setOpenSearch(true)}
+                />
+
+                {/* MOBILE STORY SCROLLER */}
+                <MobileStories pathname={pathname} />
+                <div className="hidden md:flex relative z-40 justify-center border-t border-gray-200 bg-white">
+                    <YodhaMegaMenu />
+                </div>
+            </header>
+
+
+            {/* DRAWERS */}
+            <MobileMenuDrawer open={openDrawer} setOpen={setOpenDrawer} />
+            <CartDrawer
+                open={openCart}
+                onClose={() => setOpenCart(false)}
+            />
+            <WishlistDrawer
+                open={openWishlist}
+                onClose={() => setOpenWishlist(false)}
+            />
+            <SearchModal
+                isOpen={openSearch}
+                onClose={() => setOpenSearch(false)}
+            />
+
+
+        </>
+    );
+}

@@ -19,7 +19,7 @@ const YodhaFamSection = () => {
                             Come, join <br /> the fam!
                         </h2>
                         <div
-                            className={`absolute top-28 md:top-4 -right-0 md:-right-40 md:-right-48 rotate-[-12deg] text-2xl md:text-3xl text-[#b85c7c] leading-none`}
+                            className={`absolute top-28 md:top-4 -right-0 md:-right-40 md:-right-48 rotate-[-12deg] text-2xl md:text-3xl text-[#ec512a] leading-none`}
                             style={{ fontFamily: "var(--font-permanent-marker)" }}
                         >
                             GO <br /> TRUTH <br /> SEEKERS!
@@ -32,7 +32,7 @@ const YodhaFamSection = () => {
                         <Link
                             href="https://www.instagram.com/yodhafoods"
                             target="_blank"
-                            className="flex items-center justify-between gap-3 px-6 py-3 rounded-full border border-[#6e2c38] text-[#6e2c38] hover:bg-[#6e2c38] hover:text-white transition-all duration-300 w-full md:w-fit group font-semibold"
+                            className="flex items-center justify-between gap-3 px-6 py-3 rounded-full border border-[#0d380f] text-[#0d380f] hover:bg-[#0d380f] hover:text-white transition-all duration-300 w-full md:w-fit group font-semibold"
                         >
                             <div className="flex items-center gap-2">
                                 <Instagram size={20} />
@@ -45,7 +45,7 @@ const YodhaFamSection = () => {
                             <Link
                                 href="https://www.youtube.com/@yodhafoods"
                                 target="_blank"
-                                className="flex items-center justify-between gap-2 px-6 py-3 rounded-full border border-[#6e2c38] text-[#6e2c38] hover:bg-[#6e2c38] hover:text-white transition-all duration-300 flex-1 md:flex-initial font-semibold group"
+                                className="flex items-center justify-between gap-2 px-6 py-3 rounded-full border border-[#0d380f] text-[#0d380f] hover:bg-[#0d380f] hover:text-white transition-all duration-300 flex-1 md:flex-initial font-semibold group"
                             >
                                 <div className="flex items-center gap-2">
                                     <Youtube size={20} />
@@ -57,7 +57,7 @@ const YodhaFamSection = () => {
                             <Link
                                 href="https://www.linkedin.com/company/yodhafoods"
                                 target="_blank"
-                                className="flex items-center justify-between gap-2 px-6 py-3 rounded-full border border-[#6e2c38] text-[#6e2c38] hover:bg-[#6e2c38] hover:text-white transition-all duration-300 flex-1 md:flex-initial font-semibold group"
+                                className="flex items-center justify-between gap-2 px-6 py-3 rounded-full border border-[#0d380f] text-[#0d380f] hover:bg-[#0d380f] hover:text-white transition-all duration-300 flex-1 md:flex-initial font-semibold group"
                             >
                                 <div className="flex items-center gap-2">
                                     <Linkedin size={20} />
@@ -70,7 +70,7 @@ const YodhaFamSection = () => {
 
                     <div className="mt-8 relative">
                         <div
-                            className="text-4xl md:text-5xl text-[#b85c7c] leading-tight"
+                            className="text-4xl md:text-5xl text-[#ec512a] leading-tight"
                             style={{ fontFamily: "var(--font-permanent-marker)" }}
                         >
                             BLEND THE BEST! <br />
