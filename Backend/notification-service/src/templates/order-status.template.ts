@@ -1,4 +1,4 @@
-import { OrderStatus } from "../types/notification-event";
+import { OrderStatus } from "../types/notification-event.js";
 
 const subjectMap: Record<OrderStatus, string> = {
   PLACED: "Order Placed ✅",

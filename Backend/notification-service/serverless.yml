@@ -1,0 +1,26 @@
+service: notification-service
+
+frameworkVersion: "4"
+
+provider:
+  name: aws
+  runtime: nodejs22.x
+  region: ap-south-1
+  stage: prod
+  memorySize: 1024
+  timeout: 30
+
+  environment:
+    SES_SENDER_EMAIL: Yodhafoods@gmail.com
+
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - ses:SendEmail
+          Resource: "*"
+
+functions:
+  notificationHandler:
+    handler: dist/index.handler
