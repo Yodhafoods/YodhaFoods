@@ -12,6 +12,8 @@ export interface IUser extends Document {
   role: UserRole;
   verified: boolean;
   googleId?: string;
+  resetPasswordToken ?: string;
+  resetPasswordExpire ?: Date;
 }
 
 const userSchema = new Schema<IUser>(
@@ -29,6 +31,8 @@ const userSchema = new Schema<IUser>(
     },
     verified: { type: Boolean, default: false },
     googleId: { type: String }, // Add googleId field
+    resetPasswordToken: { type: String },
+    resetPasswordExpire: { type: Date },
   },
   { timestamps: true }
 );

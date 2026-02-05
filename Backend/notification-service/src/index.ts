@@ -2,6 +2,7 @@ import { SQSEvent } from "aws-lambda";
 import { NotificationEvent } from "./types/notification-event.js";
 import { handleEmailVerification } from "./handlers/email-verification.handler.js";
 import { handleOrderStatus } from "./handlers/order-status.handler.js";
+import { handleForgotPassword } from "./handlers/forget-password.handler.js";
 
 export const handler = async (event: SQSEvent) => {
   for (const record of event.Records) {
@@ -20,6 +21,13 @@ export const handler = async (event: SQSEvent) => {
           message.email,
           message.data.orderId,
           message.data.status
+        );
+        break;
+
+      case "FORGOT_PASSWORD":
+        await handleForgotPassword(
+          message.email,
+          message.data.resetPasswordLink
         );
         break;
 

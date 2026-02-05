@@ -16,4 +16,9 @@ export type NotificationEvent =
       eventType: "ORDER_STATUS_CHANGED";
       email: string;
       data: { orderId: string; status: OrderStatus };
-    };
+    }
+  |{
+    eventType: "FORGOT_PASSWORD";
+    email: string;
+    data: { resetPasswordLink: string };
+  };
